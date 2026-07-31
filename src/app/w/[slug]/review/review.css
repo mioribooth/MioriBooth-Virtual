@@ -1,0 +1,16 @@
+.review-preview {
+  background: white;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+  padding: 14px;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.review-preview img {
+  width: 100%;
+  border-radius: var(--radius-sm);
+  display: block;
+}

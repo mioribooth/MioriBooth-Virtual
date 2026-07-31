@@ -1,0 +1,99 @@
+// Miori Booth Virtual — schema database
+// Dev: SQLite. Production: ganti provider ke "postgresql" + DATABASE_URL Postgres.
+//
+// CATATAN: SQLite tidak mendukung tipe `enum` di Prisma, jadi MediaMode dan
+// FrameType di sini memakai String biasa dengan nilai yang dikontrol lewat
+// kode aplikasi (lihat komentar di tiap field). Kalau nanti pindah ke
+// Postgres, field-field ini BOLEH (opsional) diubah balik jadi enum asli.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Vendor {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  password  String // hashed (bcrypt)
+  name      String
+  weddings  Wedding[]
+  createdAt DateTime  @default(now())
+}
+
+model BoothPackage {
+  id                   String @id @default(cuid())
+  name                 String // "Bronze" / "Silver" / "Gold"
+  mediaMode            String // "PHOTO_ONLY" | "PHOTO_AND_VOICE"
+  includedFrameDesigns Int // info buat vendor, tidak mengunci fitur
+  accessDurationDays   Int // dipakai hitung Wedding.accessExpiresAt
+  price                Int
+  weddings             Wedding[]
+}
+
+model Wedding {
+  id          String @id @default(cuid())
+  slug        String @unique // URL booth tamu: /w/[slug]
+  gallerySlug String @unique // URL galeri: /gallery/[gallerySlug]
+
+  vendorId  String
+  vendor    Vendor       @relation(fields: [vendorId], references: [id])
+  packageId String
+  package   BoothPackage @relation(fields: [packageId], references: [id])
+
+  groomName     String
+  brideName     String
+  eventDate     DateTime
+  coverImageUrl String?
+  welcomeText   String?
+
+  accessExpiresAt DateTime // = eventDate + package.accessDurationDays (bisa diedit manual vendor)
+  isActive        Boolean  @default(true)
+
+  frames      FrameTemplate[]
+  submissions GuestSubmission[]
+  createdAt   DateTime          @default(now())
+}
+
+model FrameTemplate {
+  id        String @id @default(cuid())
+  weddingId String
+  wedding   Wedding @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+
+  name            String
+  type            String // "PHOTO" | "VIDEO"
+  slotCount       Int // 3 untuk PHOTO, 1 untuk VIDEO
+  overlayImageUrl String // PNG frame (Cloudinary secure_url)
+  overlayPublicId String // Cloudinary public_id, dipakai saat compositing
+  frameWidth      Int // dimensi asli file frame (px), dari respons upload Cloudinary
+  frameHeight     Int
+  previewUrl      String?
+  slotPositions   String // JSON string: [{x,y,width,height}], nilai 0..1 relatif ke frame
+  order           Int     @default(0)
+
+  submissions GuestSubmission[]
+  createdAt   DateTime          @default(now())
+}
+
+model GuestSubmission {
+  id        String  @id @default(cuid())
+  weddingId String
+  wedding   Wedding @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  frameId   String
+  frame     FrameTemplate @relation(fields: [frameId], references: [id])
+
+  guestName String?
+  mediaType String // "PHOTO" | "VIDEO"
+
+  rawPhotoUrls String? // JSON array string, kalau PHOTO
+  rawVideoUrl  String? // kalau VIDEO
+  composedUrl  String // hasil akhir siap download
+
+  voiceNoteUrl  String? // null kalau paket PHOTO_ONLY
+  voiceDuration Int?
+
+  createdAt DateTime @default(now())
+}

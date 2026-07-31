@@ -1,0 +1,66 @@
+.voice-panel {
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  padding: 34px 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.voice-timer {
+  font-family: var(--font-display);
+  font-size: 34px;
+  color: var(--color-maroon-700);
+}
+
+.voice-bars {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 34px;
+}
+
+.voice-bars span {
+  width: 3px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--color-gold-300);
+}
+
+.voice-bars.is-recording span {
+  animation: bar-bounce 0.9s ease-in-out infinite;
+  background: var(--color-maroon-700);
+}
+
+@keyframes bar-bounce {
+  0%,
+  100% {
+    height: 8px;
+  }
+  50% {
+    height: 30px;
+  }
+}
+
+.mic-button {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-maroon-700);
+  color: white;
+  font-size: 26px;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.mic-button:active {
+  transform: scale(0.95);
+}
+
+.mic-button.is-recording {
+  background: var(--color-danger);
+}

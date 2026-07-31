@@ -1,0 +1,45 @@
+.frame-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.frame-option {
+  border: 2px solid transparent;
+  background: white;
+  border-radius: var(--radius-md);
+  padding: 10px;
+  cursor: pointer;
+  text-align: left;
+  box-shadow: var(--shadow-soft);
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.frame-option:active {
+  transform: scale(0.98);
+}
+
+.frame-option.is-selected {
+  border-color: var(--color-maroon-700);
+}
+
+.frame-option img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  background: var(--color-cream-200);
+  display: block;
+}
+
+.frame-option-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.frame-option-name {
+  font-weight: 700;
+  font-size: 14px;
+}
