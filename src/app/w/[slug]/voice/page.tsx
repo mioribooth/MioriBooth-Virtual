@@ -41,7 +41,17 @@ export default function VoiceNotePage() {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
       chunksRef.current = [];
-      const recorder = new MediaRecorder(stream);
+
+      // Pilih mimeType yang didukung browser ini secara eksplisit (Chrome/Android
+      // biasanya webm, Safari/iOS biasanya mp4). Kalau tidak ada yang cocok,
+      // biarkan browser pilih default-nya sendiri.
+      const preferredTypes = ["audio/mp4", "audio/webm", "audio/ogg"];
+      const supportedType = preferredTypes.find((t) => MediaRecorder.isTypeSupported(t));
+
+      const recorder = supportedType
+        ? new MediaRecorder(stream, { mimeType: supportedType })
+        : new MediaRecorder(stream);
+
       recorder.ondataavailable = (e) => {
         if (e.data.size > 0) chunksRef.current.push(e.data);
       };
@@ -64,7 +74,11 @@ export default function VoiceNotePage() {
   }
 
   async function handleRecordingStop() {
-    const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+    // Pakai mimeType ASLI dari recorder (bukan hardcode) supaya Blob-nya konsisten
+    // dengan data yang benar-benar direkam browser ini — kalau labelnya salah,
+    // <audio> gagal mainkan preview walau datanya sebenarnya valid.
+    const actualMimeType = recorderRef.current?.mimeType || "audio/webm";
+    const blob = new Blob(chunksRef.current, { type: actualMimeType });
     const previewUrl = URL.createObjectURL(blob);
     const duration = seconds;
     setResult({ previewUrl, url: "", duration });

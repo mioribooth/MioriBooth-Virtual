@@ -60,7 +60,17 @@ export default function CaptureVideoPage() {
   function startRecording() {
     if (!streamRef.current) return;
     chunksRef.current = [];
-    const recorder = new MediaRecorder(streamRef.current, { mimeType: "video/webm" });
+
+    // Pilih mimeType yang didukung browser ini. Safari/iOS tidak mendukung
+    // webm sama sekali (constructor bisa throw kalau dipaksa), jadi cek dulu
+    // satu-satu dan pakai yang pertama didukung.
+    const preferredTypes = ["video/mp4", "video/webm;codecs=vp9,opus", "video/webm"];
+    const supportedType = preferredTypes.find((t) => MediaRecorder.isTypeSupported(t));
+
+    const recorder = supportedType
+      ? new MediaRecorder(streamRef.current, { mimeType: supportedType })
+      : new MediaRecorder(streamRef.current);
+
     recorder.ondataavailable = (e) => {
       if (e.data.size > 0) chunksRef.current.push(e.data);
     };
@@ -86,7 +96,10 @@ export default function CaptureVideoPage() {
   }
 
   async function handleRecordingStop() {
-    const blob = new Blob(chunksRef.current, { type: "video/webm" });
+    // Pakai mimeType ASLI dari recorder, bukan hardcode, supaya preview lokal
+    // konsisten dengan data yang benar-benar direkam browser ini.
+    const actualMimeType = recorderRef.current?.mimeType || "video/webm";
+    const blob = new Blob(chunksRef.current, { type: actualMimeType });
     const previewUrl = URL.createObjectURL(blob);
     setResult({ previewUrl, url: "" });
     setUploading(true);

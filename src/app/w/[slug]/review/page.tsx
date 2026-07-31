@@ -16,6 +16,7 @@ export default function ReviewPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [previewFailed, setPreviewFailed] = useState(false);
 
   useEffect(() => {
     if (!token) return;
@@ -91,13 +92,25 @@ export default function ReviewPage() {
 
         <div className="review-preview">
           {loading && <p className="muted">Menyusun hasil...</p>}
-          {!loading && composedUrl && mediaType === "PHOTO" && (
+          {!loading && composedUrl && mediaType === "PHOTO" && !previewFailed && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={composedUrl} alt="Hasil frame" />
+            <img src={composedUrl} alt="Hasil frame" onError={() => setPreviewFailed(true)} />
           )}
           {!loading && composedUrl && mediaType === "VIDEO" && (
             // eslint-disable-next-line jsx-a11y/media-has-caption
             <video src={composedUrl} controls style={{ width: "100%", borderRadius: "var(--radius-md)" }} />
+          )}
+          {!loading && composedUrl && previewFailed && (
+            <div style={{ padding: 16 }}>
+              <p className="muted" style={{ color: "var(--color-danger)", marginBottom: 10 }}>
+                Gambar gagal dimuat. Kirim link di bawah ini ke admin untuk dicek:
+              </p>
+              <p style={{ wordBreak: "break-all", fontSize: 12 }}>
+                <a href={composedUrl} target="_blank" rel="noreferrer">
+                  {composedUrl}
+                </a>
+              </p>
+            </div>
           )}
         </div>
 
