@@ -1,13 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getVendorFromCookies } from "@/lib/auth";
-import { randomUUID } from "crypto";
 
 function slugify(text: string): string {
   return text
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
+}
+
+/** Cari slug unik: coba base dulu, kalau sudah dipakai baru tambah -2, -3, dst. */
+async function findUniqueSlug(
+  base: string,
+  isTaken: (candidate: string) => Promise<boolean>
+): Promise<string> {
+  if (!(await isTaken(base))) return base;
+  let n = 2;
+  while (await isTaken(`${base}-${n}`)) {
+    n++;
+  }
+  return `${base}-${n}`;
 }
 
 export async function GET() {
@@ -45,9 +57,14 @@ export async function POST(req: NextRequest) {
   }
 
   const baseSlug = slugify(`${groomName}-${brideName}`);
-  const uniqueSuffix = randomUUID().slice(0, 6);
-  const slug = `${baseSlug}-${uniqueSuffix}`;
-  const gallerySlug = `${baseSlug}-gallery-${randomUUID().slice(0, 6)}`;
+  const slug = await findUniqueSlug(baseSlug, async (candidate) => {
+    const existing = await prisma.wedding.findUnique({ where: { slug: candidate } });
+    return !!existing;
+  });
+  const gallerySlug = await findUniqueSlug(`${baseSlug}-gallery`, async (candidate) => {
+    const existing = await prisma.wedding.findUnique({ where: { gallerySlug: candidate } });
+    return !!existing;
+  });
 
   const eventDateObj = new Date(eventDate);
   const accessExpiresAt = new Date(eventDateObj);

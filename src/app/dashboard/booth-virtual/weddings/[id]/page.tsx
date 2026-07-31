@@ -3,6 +3,8 @@ import { redirect, notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getVendorFromCookies } from "@/lib/auth";
 import AdminTopbar from "@/components/AdminTopbar";
+import CopyLinkRow from "@/components/CopyLinkRow";
+import DeleteWeddingButton from "@/components/DeleteWeddingButton";
 
 export default async function WeddingDetailPage({
   params,
@@ -26,10 +28,8 @@ export default async function WeddingDetailPage({
 
   if (!wedding) notFound();
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "";
-  const boothUrl = `${baseUrl}/w/${wedding.slug}`;
-  const galleryUrl = `${baseUrl}/gallery/${wedding.gallerySlug}`;
   const isExpired = new Date() > wedding.accessExpiresAt;
+  const coupleName = `${wedding.groomName} & ${wedding.brideName}`;
 
   return (
     <div className="admin-shell">
@@ -39,31 +39,42 @@ export default async function WeddingDetailPage({
           ← Semua wedding
         </Link>
 
-        <div style={{ marginTop: 12, marginBottom: 24 }}>
-          <span className="eyebrow">{wedding.package.name} Package</span>
-          <h1 className="font-display" style={{ margin: "4px 0" }}>
-            {wedding.groomName} &amp; {wedding.brideName}
-          </h1>
-          <p className="muted">
-            {new Date(wedding.eventDate).toLocaleDateString("id-ID", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            })}{" "}
-            ·{" "}
-            <span className={isExpired ? "badge badge-muted" : "badge"}>
-              {isExpired
-                ? "Akses berakhir"
-                : `Akses sampai ${new Date(wedding.accessExpiresAt).toLocaleDateString("id-ID")}`}
-            </span>
-          </p>
+        <div
+          style={{
+            marginTop: 12,
+            marginBottom: 24,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            gap: 12,
+            flexWrap: "wrap",
+          }}
+        >
+          <div>
+            <span className="eyebrow">{wedding.package.name} Package</span>
+            <h1 className="font-display" style={{ margin: "4px 0" }}>
+              {coupleName}
+            </h1>
+            <p className="muted">
+              {new Date(wedding.eventDate).toLocaleDateString("id-ID", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })}{" "}
+              ·{" "}
+              <span className={isExpired ? "badge badge-muted" : "badge"}>
+                {isExpired
+                  ? "Akses berakhir"
+                  : `Akses sampai ${new Date(wedding.accessExpiresAt).toLocaleDateString("id-ID")}`}
+              </span>
+            </p>
+          </div>
+          <DeleteWeddingButton weddingId={wedding.id} coupleName={coupleName} />
         </div>
 
         <div className="card" style={{ marginBottom: 24 }}>
-          <span className="field-label">Link Booth (share via QR code ke tamu)</span>
-          <p style={{ wordBreak: "break-all", marginBottom: 12 }}>{boothUrl}</p>
-          <span className="field-label">Link Galeri (share ke pengantin)</span>
-          <p style={{ wordBreak: "break-all" }}>{galleryUrl}</p>
+          <CopyLinkRow label="Link Booth (share via QR code ke tamu)" path={`/w/${wedding.slug}`} />
+          <CopyLinkRow label="Link Galeri (share ke pengantin)" path={`/gallery/${wedding.gallerySlug}`} />
         </div>
 
         <div

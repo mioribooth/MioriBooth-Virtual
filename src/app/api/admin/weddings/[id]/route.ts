@@ -26,3 +26,26 @@ export async function GET(
 
   return NextResponse.json(wedding);
 }
+
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const vendor = await getVendorFromCookies();
+  if (!vendor) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const wedding = await prisma.wedding.findFirst({
+    where: { id: params.id, vendorId: vendor.vendorId },
+  });
+  if (!wedding) {
+    return NextResponse.json({ error: "Wedding tidak ditemukan" }, { status: 404 });
+  }
+
+  // FrameTemplate dan GuestSubmission punya onDelete: Cascade di schema,
+  // jadi otomatis ikut terhapus bersama wedding ini.
+  await prisma.wedding.delete({ where: { id: wedding.id } });
+
+  return NextResponse.json({ ok: true });
+}

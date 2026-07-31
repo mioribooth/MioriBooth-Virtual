@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import FrameSlotEditor, { SlotBox } from "@/components/FrameSlotEditor";
+import { uploadToCloudinary } from "@/lib/uploadClient";
 
 interface FrameData {
   id: string;
@@ -18,14 +19,20 @@ interface FrameData {
 export default function FrameEditorPage() {
   const { id, frameId } = useParams<{ id: string; frameId: string }>();
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [frame, setFrame] = useState<FrameData | null>(null);
   const [slots, setSlots] = useState<SlotBox[]>([]);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [replacing, setReplacing] = useState(false);
 
   useEffect(() => {
+    loadFrame();
+  }, [id, frameId]);
+
+  function loadFrame() {
     fetch(`/api/admin/weddings/${id}/frames/${frameId}`)
       .then((res) => {
         if (!res.ok) throw new Error("Frame tidak ditemukan");
@@ -36,7 +43,7 @@ export default function FrameEditorPage() {
         setSlots(JSON.parse(data.slotPositions));
       })
       .catch((err) => setError(err.message));
-  }, [id, frameId]);
+  }
 
   async function handleSave() {
     setSaving(true);
@@ -72,6 +79,38 @@ export default function FrameEditorPage() {
             height: 0.27,
           }));
     setSlots(defaults);
+  }
+
+  async function handleReplaceFrame(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setReplacing(true);
+    setError(null);
+    try {
+      const uploaded = await uploadToCloudinary(file, "image", "booth-virtual/frames");
+      const res = await fetch(`/api/admin/weddings/${id}/frames/${frameId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          overlayImageUrl: uploaded.secure_url,
+          overlayPublicId: uploaded.public_id,
+          frameWidth: uploaded.width ?? 1000,
+          frameHeight: uploaded.height ?? 1200,
+          previewUrl: uploaded.secure_url,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error ?? "Gagal mengganti frame");
+      }
+      // Muat ulang data frame supaya aspect ratio & gambar baru ke-refresh di editor.
+      loadFrame();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Terjadi kesalahan");
+    } finally {
+      setReplacing(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
   }
 
   if (error && !frame) {
@@ -133,6 +172,22 @@ export default function FrameEditorPage() {
             {error}
           </p>
         )}
+
+        <div style={{ borderTop: "1px solid var(--color-cream-200)", marginTop: 26, paddingTop: 18 }}>
+          <span className="field-label">Ganti Gambar Frame</span>
+          <p className="muted" style={{ marginBottom: 10 }}>
+            Upload PNG baru untuk gantikan desain frame ini (posisi slot yang sudah diatur tetap
+            dipakai, cek ulang setelah ganti kalau proporsinya beda).
+          </p>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/png"
+            onChange={handleReplaceFrame}
+            disabled={replacing}
+          />
+          {replacing && <p className="muted">Mengunggah frame baru...</p>}
+        </div>
       </div>
     </div>
   );
