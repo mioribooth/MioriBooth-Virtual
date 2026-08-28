@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { uploadToCloudinary } from "@/lib/uploadClient";
 import CustomSelect from "@/components/CustomSelect";
 import DatePicker from "@/components/DatePicker";
@@ -16,8 +16,23 @@ interface Package {
   price: number;
 }
 
-export default function NewWeddingPage() {
+interface WeddingData {
+  id: string;
+  groomName: string;
+  brideName: string;
+  eventDate: string;
+  packageId: string;
+  coverImageUrl: string | null;
+  welcomeText: string | null;
+  clientPhone: string | null;
+  clientAddress: string | null;
+}
+
+export default function EditWeddingPage() {
   const router = useRouter();
+  const params = useParams<{ id: string }>();
+  const weddingId = params.id;
+
   const [packages, setPackages] = useState<Package[]>([]);
   const [groomName, setGroomName] = useState("");
   const [brideName, setBrideName] = useState("");
@@ -28,17 +43,29 @@ export default function NewWeddingPage() {
   const [welcomeText, setWelcomeText] = useState("");
   const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null);
   const [uploadingCover, setUploadingCover] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/api/admin/packages")
-      .then((res) => res.json())
-      .then((data: Package[]) => {
-        setPackages(data);
-        if (data[0]) setPackageId(data[0].id);
-      });
-  }, []);
+    Promise.all([
+      fetch("/api/admin/packages").then((res) => res.json()),
+      fetch(`/api/admin/weddings/${weddingId}`).then((res) => res.json()),
+    ])
+      .then(([pkgs, wedding]: [Package[], WeddingData]) => {
+        setPackages(pkgs);
+        setGroomName(wedding.groomName);
+        setBrideName(wedding.brideName);
+        setEventDate(wedding.eventDate.slice(0, 10));
+        setPackageId(wedding.packageId);
+        setClientPhone(wedding.clientPhone ?? "");
+        setClientAddress(wedding.clientAddress ?? "");
+        setWelcomeText(wedding.welcomeText ?? "");
+        setCoverImageUrl(wedding.coverImageUrl);
+      })
+      .catch(() => setError("Gagal memuat data wedding."))
+      .finally(() => setLoading(false));
+  }, [weddingId]);
 
   async function handleCoverUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -63,8 +90,8 @@ export default function NewWeddingPage() {
     setSaving(true);
     setError(null);
     try {
-      const res = await fetch("/api/admin/weddings", {
-        method: "POST",
+      const res = await fetch(`/api/admin/weddings/${weddingId}`, {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           groomName,
@@ -79,26 +106,38 @@ export default function NewWeddingPage() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error ?? "Gagal membuat wedding");
+        throw new Error(data.error ?? "Gagal menyimpan perubahan");
       }
-      const wedding = await res.json();
-      router.push(`/dashboard/booth-virtual/weddings/${wedding.id}`);
+      router.push(`/dashboard/booth-virtual/weddings/${weddingId}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Terjadi kesalahan");
       setSaving(false);
     }
   }
 
+  if (loading) {
+    return (
+      <div className="admin-shell">
+        <div className="admin-container">
+          <div className="page-loading">
+            <div className="page-loading-spinner" />
+            <span>Memuat...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="admin-shell">
       <div className="admin-container" style={{ maxWidth: 560 }}>
-        <BackButton href="/dashboard/booth-virtual/weddings" label="Semua wedding" />
+        <BackButton href={`/dashboard/booth-virtual/weddings/${weddingId}`} label="Kembali" />
 
         <span className="eyebrow" style={{ display: "block", marginTop: 16 }}>
-          Wedding Baru
+          Edit Wedding
         </span>
         <h1 className="font-display" style={{ marginBottom: 20 }}>
-          Buat Booth Virtual Baru
+          {groomName} &amp; {brideName}
         </h1>
 
         <form onSubmit={handleSubmit} className="card" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -134,6 +173,9 @@ export default function NewWeddingPage() {
                 </option>
               ))}
             </CustomSelect>
+            <p className="muted" style={{ fontSize: 12, marginTop: 6 }}>
+              Mengganti paket atau tanggal acara akan menghitung ulang tanggal akses berakhir.
+            </p>
           </div>
 
           <div style={{ borderTop: "1px solid var(--color-cream-200)", paddingTop: 16 }}>
@@ -201,7 +243,7 @@ export default function NewWeddingPage() {
                 <Spinner /> Menyimpan...
               </>
             ) : (
-              "Buat Wedding"
+              "Simpan Perubahan"
             )}
           </button>
         </form>

@@ -1,0 +1,96 @@
+.slideshow-shell {
+  min-height: 100dvh;
+  width: 100%;
+  background: var(--color-ink-900);
+  color: var(--color-cream-100);
+  overflow: hidden;
+  position: relative;
+}
+
+.slideshow-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 14px;
+  padding: 40px;
+}
+
+.slideshow-state .eyebrow {
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.slideshow-state h1 {
+  font-size: 48px;
+  font-style: italic;
+  margin: 4px 0 8px;
+}
+
+.slideshow-state .muted {
+  max-width: 480px;
+  opacity: 0.75;
+}
+
+.slideshow-state .btn-primary {
+  margin-top: 12px;
+}
+
+.slideshow-stage {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
+
+.slideshow-media {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  animation: slideshow-fade-in 0.6s ease;
+}
+
+@keyframes slideshow-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.slideshow-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 28px 40px 32px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.75), transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: center;
+}
+
+.slideshow-name {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 32px;
+}
+
+.slideshow-couple {
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.65;
+}

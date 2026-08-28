@@ -1,8 +1,9 @@
-import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getVendorFromCookies } from "@/lib/auth";
 import AdminTopbar from "@/components/AdminTopbar";
+import SubmissionCard from "@/components/SubmissionCard";
+import BackButton from "@/components/BackButton";
 
 export default async function SubmissionsPage({
   params,
@@ -26,43 +27,30 @@ export default async function SubmissionsPage({
     <div className="admin-shell">
       <AdminTopbar vendorName={vendor.name} />
       <div className="admin-container">
-        <Link href={`/dashboard/booth-virtual/weddings/${wedding.id}`} className="muted">
-          ← Kembali ke {wedding.groomName} &amp; {wedding.brideName}
-        </Link>
+        <BackButton
+          href={`/dashboard/booth-virtual/weddings/${wedding.id}`}
+          label={`Kembali ke ${wedding.groomName} & ${wedding.brideName}`}
+        />
 
-        <h1 className="font-display" style={{ margin: "12px 0 20px" }}>
-          Semua Submission ({wedding.submissions.length})
-        </h1>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, flexWrap: "wrap", margin: "12px 0 8px" }}>
+          <h1 className="font-display" style={{ margin: 0 }}>
+            Semua Submission ({wedding.submissions.length})
+          </h1>
+          {wedding.submissions.length > 0 && (
+            <a href={`/api/admin/weddings/${wedding.id}/download-zip`} className="btn btn-primary">
+              Download Semua (ZIP)
+            </a>
+          )}
+        </div>
+
+        <p className="muted" style={{ fontSize: 13, marginBottom: 16 }}>
+          Submission yang disembunyikan tidak akan tampil di galeri publik tamu, tapi tetap
+          tersimpan di sini dan bisa ditampilkan lagi kapan saja.
+        </p>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px,1fr))", gap: 16 }}>
           {wedding.submissions.map((s) => (
-            <div key={s.id} className="card">
-              {s.mediaType === "PHOTO" ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={s.composedUrl}
-                  alt={s.guestName ?? "Tamu"}
-                  style={{ width: "100%", aspectRatio: "3/4", objectFit: "cover", borderRadius: 8 }}
-                />
-              ) : (
-                // eslint-disable-next-line jsx-a11y/media-has-caption
-                <video
-                  src={s.composedUrl}
-                  controls
-                  style={{ width: "100%", aspectRatio: "3/4", objectFit: "cover", borderRadius: 8 }}
-                />
-              )}
-              <div style={{ marginTop: 10 }}>
-                <strong style={{ fontSize: 14 }}>{s.guestName || "Tamu"}</strong>
-                <p className="muted" style={{ fontSize: 12, margin: "4px 0" }}>
-                  {new Date(s.createdAt).toLocaleString("id-ID")}
-                </p>
-                {s.voiceNoteUrl && (
-                  // eslint-disable-next-line jsx-a11y/media-has-caption
-                  <audio src={s.voiceNoteUrl} controls style={{ width: "100%", height: 32 }} />
-                )}
-              </div>
-            </div>
+            <SubmissionCard key={s.id} weddingId={wedding.id} submission={s} />
           ))}
           {wedding.submissions.length === 0 && (
             <p className="muted">Belum ada submission dari tamu.</p>

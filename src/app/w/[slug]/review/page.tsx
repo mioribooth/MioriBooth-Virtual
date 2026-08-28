@@ -17,7 +17,6 @@ export default function ReviewPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [previewFailed, setPreviewFailed] = useState(false);
-
   useEffect(() => {
     if (!token) return;
     (async () => {
@@ -67,6 +66,10 @@ export default function ReviewPage() {
       setError(err instanceof Error ? err.message : "Terjadi kesalahan");
       setSaving(false);
     }
+  }
+
+  function handleRetake() {
+    router.push(`/w/${slug}/capture/${mediaType === "VIDEO" ? "video" : "photo"}`);
   }
 
   if (!token) {
@@ -120,13 +123,21 @@ export default function ReviewPage() {
           </p>
         )}
 
-        <div style={{ marginTop: "auto", paddingTop: 20 }}>
+        <div style={{ marginTop: "auto", paddingTop: 20, display: "flex", flexDirection: "column", gap: 10 }}>
           <button
             className="btn btn-primary btn-block"
             onClick={handleSave}
             disabled={!composedUrl || saving}
           >
             {saving ? "Menyimpan..." : "Simpan Kenangan"}
+          </button>
+          <button
+            className="btn btn-secondary btn-block"
+            onClick={handleRetake}
+            disabled={saving}
+            type="button"
+          >
+            Ambil Ulang
           </button>
         </div>
       </div>

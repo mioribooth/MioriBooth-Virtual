@@ -8,7 +8,7 @@ export async function GET(
   const wedding = await prisma.wedding.findUnique({
     where: { gallerySlug: params.gallerySlug },
     include: {
-      submissions: { orderBy: { createdAt: "desc" } },
+      submissions: { where: { isHidden: false }, orderBy: { createdAt: "desc" } },
     },
   });
 

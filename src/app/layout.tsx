@@ -15,9 +15,39 @@ const body = Manrope({
   variable: "--font-body",
 });
 
+// TODO: ganti dengan domain asli begitu sudah pakai custom domain (bukan *.vercel.app)
+const SITE_URL = "https://miori-booth-virtual.vercel.app";
+
 export const metadata: Metadata = {
-  title: "Miori Booth — Virtual Photobooth",
-  description: "Photobooth virtual untuk kenangan pernikahan.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "MioriBooth Virtual — Photobooth Virtual untuk Wedding",
+    template: "%s · MioriBooth Virtual",
+  },
+  description:
+    "Photobooth virtual untuk wedding: tamu scan QR, ambil foto/video, tinggalkan pesan suara, dan langsung dapat frame siap dibagikan ke story. Kenangan tersimpan rapi untuk pengantin.",
+  keywords: [
+    "photobooth virtual",
+    "photobooth wedding",
+    "digital photobooth pernikahan",
+    "MioriBooth",
+    "vendor wedding",
+  ],
+  openGraph: {
+    type: "website",
+    locale: "id_ID",
+    url: SITE_URL,
+    siteName: "MioriBooth Virtual",
+    title: "MioriBooth Virtual — Photobooth Virtual untuk Wedding",
+    description:
+      "Tamu scan QR, ambil foto/video, tinggalkan pesan suara — langsung jadi kenangan berbingkai untuk pengantin.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "MioriBooth Virtual — Photobooth Virtual untuk Wedding",
+    description:
+      "Tamu scan QR, ambil foto/video, tinggalkan pesan suara — langsung jadi kenangan berbingkai untuk pengantin.",
+  },
 };
 
 export default function RootLayout({

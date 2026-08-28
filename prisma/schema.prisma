@@ -49,6 +49,8 @@ model Wedding {
   eventDate     DateTime
   coverImageUrl String?
   welcomeText   String?
+  clientPhone   String? // nomor WA/HP client (pengantin), buat komunikasi vendor
+  clientAddress String? // alamat client atau venue acara
 
   accessExpiresAt DateTime // = eventDate + package.accessDurationDays (bisa diedit manual vendor)
   isActive        Boolean  @default(true)
@@ -94,6 +96,8 @@ model GuestSubmission {
 
   voiceNoteUrl  String? // null kalau paket PHOTO_ONLY
   voiceDuration Int?
+
+  isHidden Boolean @default(false) // disembunyikan vendor dari galeri publik, tapi tetap ada di dashboard admin
 
   createdAt DateTime @default(now())
 }

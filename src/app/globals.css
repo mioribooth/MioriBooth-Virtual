@@ -1,22 +1,23 @@
 /* ---------------------------------------------------------------
    Design tokens — Miori Booth Virtual
-   Palette diambil dari identitas booth fisik: merah marun tua,
-   krem hangat, dan aksen emas pudar. Signature: motif lubang
-   perforasi film strip dipakai sebagai indikator langkah wizard —
-   merujuk langsung ke bentuk fisik hasil cetak photobooth strip.
+   Palette: biru wedding aesthetic ala dekorasi resepsi Indonesia —
+   navy/dusty blue sebagai warna utama, putih/off-white bersih, dan
+   aksen biru keperakan lembut. Signature: motif lubang perforasi
+   film strip dipakai sebagai indikator langkah wizard — merujuk
+   langsung ke bentuk fisik hasil cetak photobooth strip.
 ------------------------------------------------------------------ */
 
 :root {
-  --color-maroon-900: #4a1420;
-  --color-maroon-700: #6b1f2b;
-  --color-maroon-500: #8c2f3d;
-  --color-cream-100: #fbf5ea;
-  --color-cream-200: #f3e8d6;
-  --color-gold-500: #b08d57;
-  --color-gold-300: #d4b483;
-  --color-blush-200: #e7c7c2;
-  --color-ink-900: #241014;
-  --color-ink-600: #5a4247;
+  --color-maroon-900: #142338;
+  --color-maroon-700: #1f3a5f;
+  --color-maroon-500: #3f6690;
+  --color-cream-100: #f6f9fc;
+  --color-cream-200: #e6edf5;
+  --color-gold-500: #6f97c2;
+  --color-gold-300: #bcd4ea;
+  --color-blush-200: #cfe0ef;
+  --color-ink-900: #1c2733;
+  --color-ink-600: #55677a;
   --color-success: #4c7a5a;
   --color-danger: #a5333e;
 
@@ -27,7 +28,7 @@
   --radius-md: 14px;
   --radius-lg: 26px;
 
-  --shadow-soft: 0 12px 30px rgba(74, 20, 32, 0.14);
+  --shadow-soft: 0 12px 30px rgba(20, 35, 56, 0.14);
 }
 
 * {
@@ -58,6 +59,7 @@ h3,
 
 a {
   color: inherit;
+  text-decoration: none;
 }
 
 button {
@@ -124,11 +126,16 @@ button {
   font-weight: 600;
   font-size: 15px;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease,
+    background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
   text-decoration: none;
 }
 
-.btn:active {
+.btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.btn:active:not(:disabled) {
   transform: scale(0.97);
 }
 
@@ -143,8 +150,9 @@ button {
   box-shadow: var(--shadow-soft);
 }
 
-.btn-primary:hover {
+.btn-primary:hover:not(:disabled) {
   background: var(--color-maroon-900);
+  box-shadow: 0 16px 34px rgba(20, 35, 56, 0.22);
 }
 
 .btn-secondary {
@@ -153,9 +161,19 @@ button {
   border: 1.5px solid var(--color-maroon-700);
 }
 
+.btn-secondary:hover:not(:disabled) {
+  background: var(--color-maroon-700);
+  color: var(--color-cream-100);
+}
+
 .btn-ghost {
   background: var(--color-cream-200);
   color: var(--color-ink-900);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: var(--color-cream-100);
+  box-shadow: var(--shadow-soft);
 }
 
 .btn-block {
@@ -165,6 +183,79 @@ button {
 .btn-danger {
   background: var(--color-danger);
   color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+/* --- Spinner --- */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: currentColor;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+.spinner-dark {
+  border: 2px solid rgba(20, 35, 56, 0.15);
+  border-top-color: var(--color-maroon-700);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* --- Back button (pill, ikon panah) --- */
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-ink-600);
+  background: white;
+  border: 1.5px solid var(--color-cream-200);
+  border-radius: 999px;
+  padding: 8px 16px 8px 12px;
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.back-button:hover {
+  color: var(--color-maroon-700);
+  border-color: var(--color-maroon-700);
+  transform: translateX(-2px);
+}
+
+.back-button svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* --- "Kelola" row button (bukan cuma teks link) --- */
+.row-manage-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--color-maroon-700);
+  background: var(--color-cream-200);
+  padding: 7px 14px;
+  border-radius: 999px;
+  transition: background 0.15s ease, color 0.15s ease, gap 0.15s ease;
+}
+
+.row-manage-link:hover {
+  background: var(--color-maroon-700);
+  color: var(--color-cream-100);
+  gap: 8px;
 }
 
 /* --- Cards / inputs shared --- */
@@ -190,6 +281,227 @@ button {
 .field-input:focus {
   outline: 2px solid var(--color-gold-500);
   outline-offset: 1px;
+}
+
+.field-input {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.field-input:hover {
+  border-color: var(--color-gold-500);
+}
+
+/* --- Custom select --- */
+.custom-select {
+  position: relative;
+}
+
+.custom-select-native {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 38px;
+  cursor: pointer;
+}
+
+.custom-select-chevron {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  color: var(--color-ink-600);
+  pointer-events: none;
+}
+
+/* --- Custom date picker --- */
+.date-picker {
+  position: relative;
+}
+
+.date-picker-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  text-align: left;
+}
+
+.date-picker-trigger svg {
+  width: 18px;
+  height: 18px;
+  color: var(--color-ink-600);
+  flex-shrink: 0;
+}
+
+.date-picker-placeholder {
+  color: var(--color-ink-600);
+  opacity: 0.7;
+}
+
+.date-picker-popup {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 280px;
+  background: white;
+  border-radius: var(--radius-md);
+  box-shadow: 0 20px 45px rgba(20, 35, 56, 0.22);
+  padding: 14px;
+  animation: date-picker-pop 0.15s ease;
+}
+
+@keyframes date-picker-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.date-picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--color-ink-900);
+}
+
+.date-picker-header button {
+  background: var(--color-cream-200);
+  border: none;
+  border-radius: 8px;
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--color-ink-600);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.date-picker-header button:hover {
+  background: var(--color-maroon-700);
+  color: white;
+}
+
+.date-picker-header svg {
+  width: 16px;
+  height: 16px;
+}
+
+.date-picker-weekdays,
+.date-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  text-align: center;
+}
+
+.date-picker-weekdays span {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-ink-600);
+  padding: 4px 0;
+}
+
+.date-picker-day {
+  background: none;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 0;
+  font-size: 13px;
+  font-family: var(--font-body);
+  color: var(--color-ink-900);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.date-picker-day:hover {
+  background: var(--color-cream-200);
+}
+
+.date-picker-day.is-today {
+  font-weight: 700;
+  color: var(--color-maroon-700);
+}
+
+.date-picker-day.is-selected {
+  background: var(--color-maroon-700);
+  color: white;
+  font-weight: 700;
+}
+
+/* --- Client data grid (wedding detail page) --- */
+.client-data-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+.client-data-label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-ink-600);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.client-data-value {
+  font-size: 14px;
+  color: var(--color-ink-900);
+  font-weight: 600;
+  white-space: pre-line;
+}
+
+@media (max-width: 560px) {
+  .client-data-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- Page loading (Next.js loading.tsx) --- */
+.page-loading {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  animation: page-loading-fade 0.25s ease;
+}
+
+@keyframes page-loading-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.page-loading-spinner {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 3px solid var(--color-cream-200);
+  border-top-color: var(--color-maroon-700);
+  animation: spin 0.7s linear infinite;
+}
+
+.page-loading span {
+  font-size: 13px;
+  color: var(--color-ink-600);
+  font-weight: 600;
 }
 
 .card {
@@ -236,6 +548,38 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.admin-vendor-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(246, 249, 252, 0.15);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.admin-logout-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: white;
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.admin-logout-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.7);
 }
 
 .admin-container {
@@ -280,4 +624,152 @@ button {
 .badge-muted {
   background: var(--color-cream-200);
   color: var(--color-ink-600);
+}
+
+/* --- Status pills (dot + label), distinct from paket badges --- */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 11px 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.status-pill::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-pill-active {
+  background: rgba(76, 122, 90, 0.12);
+  color: var(--color-success);
+}
+
+.status-pill-active::before {
+  background: var(--color-success);
+}
+
+.status-pill-expired {
+  background: var(--color-cream-200);
+  color: var(--color-ink-600);
+}
+
+.status-pill-expired::before {
+  background: var(--color-ink-600);
+  opacity: 0.5;
+}
+
+/* --- Dashboard summary stat cards --- */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  background: white;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-card-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-ink-600);
+  font-weight: 700;
+}
+
+.stat-card-value {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-style: italic;
+  color: var(--color-maroon-700);
+}
+
+@media (max-width: 760px) {
+  .stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* --- Couple monogram avatar --- */
+.couple-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(160deg, var(--color-maroon-500), var(--color-maroon-900));
+  color: var(--color-cream-100);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.couple-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.couple-cell-names {
+  font-weight: 600;
+  color: var(--color-ink-900);
+}
+
+/* --- Table row link --- */
+.admin-table tbody tr {
+  transition: background 0.15s ease;
+}
+
+.admin-table tbody tr:hover {
+  background: var(--color-cream-100);
+}
+
+.admin-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* --- Empty state --- */
+.empty-state {
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  padding: 56px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.empty-state-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--color-cream-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gold-500);
+  margin-bottom: 6px;
+}
+
+.empty-state h2 {
+  font-size: 22px;
+  margin: 0;
 }

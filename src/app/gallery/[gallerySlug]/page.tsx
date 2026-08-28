@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import GalleryLightbox from "./GalleryLightbox";
 import "./gallery.css";
 
 export default async function GalleryPage({
@@ -8,7 +9,7 @@ export default async function GalleryPage({
 }) {
   const wedding = await prisma.wedding.findUnique({
     where: { gallerySlug: params.gallerySlug },
-    include: { submissions: { orderBy: { createdAt: "desc" } } },
+    include: { submissions: { where: { isHidden: false }, orderBy: { createdAt: "desc" } } },
   });
 
   if (!wedding) {
@@ -43,28 +44,8 @@ export default async function GalleryPage({
           </p>
         </div>
       ) : (
-        <div className="gallery-grid">
-          {wedding.submissions.map((s) => (
-            <div key={s.id} className="gallery-card">
-              {s.mediaType === "PHOTO" ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={s.composedUrl} alt={s.guestName ?? "Tamu"} />
-              ) : (
-                // eslint-disable-next-line jsx-a11y/media-has-caption
-                <video src={s.composedUrl} controls />
-              )}
-              <div className="gallery-card-info">
-                <span className="gallery-card-name">{s.guestName || "Tamu"}</span>
-                {s.voiceNoteUrl && (
-                  // eslint-disable-next-line jsx-a11y/media-has-caption
-                  <audio src={s.voiceNoteUrl} controls />
-                )}
-              </div>
-            </div>
-          ))}
-          {wedding.submissions.length === 0 && (
-            <p className="muted">Belum ada kenangan yang tersimpan.</p>
-          )}
+        <div className="gallery-grid-wrap">
+          <GalleryLightbox submissions={wedding.submissions} />
         </div>
       )}
     </div>

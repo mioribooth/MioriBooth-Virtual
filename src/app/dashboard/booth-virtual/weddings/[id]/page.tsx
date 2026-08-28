@@ -5,6 +5,7 @@ import { getVendorFromCookies } from "@/lib/auth";
 import AdminTopbar from "@/components/AdminTopbar";
 import CopyLinkRow from "@/components/CopyLinkRow";
 import DeleteWeddingButton from "@/components/DeleteWeddingButton";
+import BackButton from "@/components/BackButton";
 
 export default async function WeddingDetailPage({
   params,
@@ -35,9 +36,7 @@ export default async function WeddingDetailPage({
     <div className="admin-shell">
       <AdminTopbar vendorName={vendor.name} />
       <div className="admin-container">
-        <Link href="/dashboard/booth-virtual/weddings" className="muted">
-          ← Semua wedding
-        </Link>
+        <BackButton href="/dashboard/booth-virtual/weddings" label="Semua wedding" />
 
         <div
           style={{
@@ -69,12 +68,44 @@ export default async function WeddingDetailPage({
               </span>
             </p>
           </div>
-          <DeleteWeddingButton weddingId={wedding.id} coupleName={coupleName} />
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            <Link
+              href={`/dashboard/booth-virtual/weddings/${wedding.id}/edit`}
+              className="btn btn-ghost"
+            >
+              Edit Data
+            </Link>
+            <DeleteWeddingButton weddingId={wedding.id} coupleName={coupleName} />
+          </div>
+        </div>
+
+        <div className="card" style={{ marginBottom: 20 }}>
+          <span className="eyebrow" style={{ display: "block", marginBottom: 12 }}>
+            Data Client
+          </span>
+          <div className="client-data-grid">
+            <div>
+              <span className="client-data-label">Nomor WhatsApp</span>
+              <span className="client-data-value">
+                {wedding.clientPhone || <span className="muted">Belum diisi</span>}
+              </span>
+            </div>
+            <div>
+              <span className="client-data-label">Alamat / Venue</span>
+              <span className="client-data-value">
+                {wedding.clientAddress || <span className="muted">Belum diisi</span>}
+              </span>
+            </div>
+          </div>
         </div>
 
         <div className="card" style={{ marginBottom: 24 }}>
           <CopyLinkRow label="Link Booth (share via QR code ke tamu)" path={`/w/${wedding.slug}`} />
           <CopyLinkRow label="Link Galeri (share ke pengantin)" path={`/gallery/${wedding.gallerySlug}`} />
+          <CopyLinkRow
+            label="Link Live Slideshow (buka di layar/proyektor venue)"
+            path={`/gallery/${wedding.gallerySlug}/slideshow`}
+          />
         </div>
 
         <div

@@ -18,19 +18,9 @@ export default function AdminTopbar({ vendorName }: { vendorName: string }) {
         Miori Booth · Virtual Photobooth
       </Link>
       <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 14 }}>
+        <span className="admin-vendor-avatar">{vendorName.charAt(0).toUpperCase()}</span>
         <span>{vendorName}</span>
-        <button
-          onClick={handleLogout}
-          style={{
-            background: "transparent",
-            border: "1px solid rgba(255,255,255,0.4)",
-            color: "white",
-            borderRadius: 8,
-            padding: "6px 12px",
-            cursor: "pointer",
-            fontSize: 13,
-          }}
-        >
+        <button onClick={handleLogout} className="admin-logout-btn">
           Keluar
         </button>
       </div>

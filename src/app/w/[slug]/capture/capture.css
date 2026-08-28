@@ -59,6 +59,63 @@
   }
 }
 
+/* --- Countdown 3-2-1 sebelum jepret otomatis --- */
+.countdown-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 35, 56, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.countdown-number {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 96px;
+  color: white;
+  text-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+  animation: countdown-pop 0.8s ease;
+}
+
+@keyframes countdown-pop {
+  0% {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+  25% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+/* --- Efek kilat kamera saat foto benar-benar diambil --- */
+.capture-flash {
+  position: absolute;
+  inset: 0;
+  background: white;
+  animation: capture-flash-out 0.18s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes capture-flash-out {
+  from {
+    opacity: 0.9;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
 .slot-strip {
   display: flex;
   gap: 10px;
@@ -100,7 +157,7 @@
 .slot-thumb-uploading {
   position: absolute;
   inset: 0;
-  background: rgba(74, 20, 32, 0.55);
+  background: rgba(20, 35, 56, 0.55);
   color: white;
   display: flex;
   align-items: center;
