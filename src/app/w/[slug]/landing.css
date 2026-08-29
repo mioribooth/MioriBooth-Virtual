@@ -6,6 +6,8 @@
   position: relative;
   width: 100%;
   aspect-ratio: 4 / 5;
+  max-height: 42vh;
+  flex-shrink: 0;
   overflow: hidden;
   background: var(--color-maroon-700);
 }
@@ -27,7 +29,7 @@
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(20, 35, 56, 0) 55%,
+    rgba(47, 5, 18, 0) 55%,
     var(--color-maroon-900) 100%
   );
 }

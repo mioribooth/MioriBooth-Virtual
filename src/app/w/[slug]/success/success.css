@@ -5,19 +5,30 @@
 .success-content {
   align-items: center;
   text-align: center;
-  padding-top: 48px;
+  padding-top: 32px;
+  min-height: 0;
 }
 
 .success-preview {
-  width: 100%;
+  width: auto;
+  max-width: 100%;
+  flex: 1;
+  min-height: 0;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-soft);
   overflow: hidden;
   margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .success-preview img {
-  width: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
   display: block;
 }
 

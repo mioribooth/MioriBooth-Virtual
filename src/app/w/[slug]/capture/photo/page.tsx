@@ -218,8 +218,13 @@ export default function CapturePhotoPage() {
         </p>
 
         <div className="camera-frame">
-          {reviewSlot !== null ? (
-            <>
+          {cameraError ? (
+            <div className="camera-error">{cameraError}</div>
+          ) : (
+            <video ref={videoRef} autoPlay playsInline muted className="camera-video" />
+          )}
+          {reviewSlot !== null && (
+            <div className="camera-review-overlay">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={reviewShot?.status === "captured" ? reviewShot.previewUrl : ""}
@@ -232,11 +237,7 @@ export default function CapturePhotoPage() {
                   Mengunggah...
                 </div>
               )}
-            </>
-          ) : cameraError ? (
-            <div className="camera-error">{cameraError}</div>
-          ) : (
-            <video ref={videoRef} autoPlay playsInline muted className="camera-video" />
+            </div>
           )}
           <canvas ref={canvasRef} style={{ display: "none" }} />
           {countdown !== null && (

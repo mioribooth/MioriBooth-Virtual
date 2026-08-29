@@ -1,7 +1,8 @@
 .camera-frame {
   position: relative;
   width: 100%;
-  aspect-ratio: 3 / 4;
+  flex: 1;
+  min-height: 0;
   background: var(--color-ink-900);
   border-radius: var(--radius-md);
   overflow: hidden;
@@ -13,6 +14,14 @@
   height: 100%;
   object-fit: cover;
   transform: scaleX(-1); /* preview selfie mirror */
+}
+
+/* Overlay hasil foto di atas <video> yang tetap hidup di background —
+   supaya stream kamera tidak pernah di-unmount (itu sebabnya kamera bisa
+   nge-black kalau videonya dibongkar-pasang React tiap ganti tampilan). */
+.camera-review-overlay {
+  position: absolute;
+  inset: 0;
 }
 
 .camera-error {
@@ -63,7 +72,7 @@
 .countdown-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(20, 35, 56, 0.35);
+  background: rgba(47, 5, 18, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -157,7 +166,7 @@
 .slot-thumb-uploading {
   position: absolute;
   inset: 0;
-  background: rgba(20, 35, 56, 0.55);
+  background: rgba(47, 5, 18, 0.55);
   color: white;
   display: flex;
   align-items: center;

@@ -13,11 +13,11 @@ export default function AppleIcon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "linear-gradient(160deg, #3f6690 0%, #142338 100%)",
+          background: "linear-gradient(160deg, #9c2a45 0%, #2f0512 100%)",
           fontFamily: "serif",
         }}
       >
-        <span style={{ color: "#bcd4ea", fontSize: 96, fontStyle: "italic" }}>M</span>
+        <span style={{ color: "#d9bd8a", fontSize: 96, fontStyle: "italic" }}>M</span>
       </div>
     ),
     { ...size }

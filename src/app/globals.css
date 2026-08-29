@@ -8,16 +8,16 @@
 ------------------------------------------------------------------ */
 
 :root {
-  --color-maroon-900: #142338;
-  --color-maroon-700: #1f3a5f;
-  --color-maroon-500: #3f6690;
-  --color-cream-100: #f6f9fc;
-  --color-cream-200: #e6edf5;
-  --color-gold-500: #6f97c2;
-  --color-gold-300: #bcd4ea;
-  --color-blush-200: #cfe0ef;
-  --color-ink-900: #1c2733;
-  --color-ink-600: #55677a;
+  --color-maroon-900: #2f0512;
+  --color-maroon-700: #6d0f28;
+  --color-maroon-500: #9c2a45;
+  --color-cream-100: #faf6f4;
+  --color-cream-200: #f2e2e4;
+  --color-gold-500: #b08d57;
+  --color-gold-300: #d9bd8a;
+  --color-blush-200: #d9a8b3;
+  --color-ink-900: #2a1015;
+  --color-ink-600: #6b4a52;
   --color-success: #4c7a5a;
   --color-danger: #a5333e;
 
@@ -28,7 +28,7 @@
   --radius-md: 14px;
   --radius-lg: 26px;
 
-  --shadow-soft: 0 12px 30px rgba(20, 35, 56, 0.14);
+  --shadow-soft: 0 12px 30px rgba(47, 5, 18, 0.14);
 }
 
 * {
@@ -68,7 +68,8 @@ button {
 
 /* Layout shell dipakai di semua halaman tamu (mobile-first, max width phone) */
 .booth-shell {
-  min-height: 100dvh;
+  height: 100dvh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   max-width: 480px;
@@ -79,6 +80,8 @@ button {
 
 .booth-content {
   flex: 1;
+  min-height: 0;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   padding: 24px 22px 32px;
@@ -152,7 +155,7 @@ button {
 
 .btn-primary:hover:not(:disabled) {
   background: var(--color-maroon-900);
-  box-shadow: 0 16px 34px rgba(20, 35, 56, 0.22);
+  box-shadow: 0 16px 34px rgba(47, 5, 18, 0.22);
 }
 
 .btn-secondary {
@@ -201,7 +204,7 @@ button {
 }
 
 .spinner-dark {
-  border: 2px solid rgba(20, 35, 56, 0.15);
+  border: 2px solid rgba(47, 5, 18, 0.15);
   border-top-color: var(--color-maroon-700);
 }
 
@@ -347,7 +350,7 @@ button {
   width: 280px;
   background: white;
   border-radius: var(--radius-md);
-  box-shadow: 0 20px 45px rgba(20, 35, 56, 0.22);
+  box-shadow: 0 20px 45px rgba(47, 5, 18, 0.22);
   padding: 14px;
   animation: date-picker-pop 0.15s ease;
 }
@@ -561,7 +564,7 @@ button {
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: rgba(246, 249, 252, 0.15);
+  background: rgba(250, 246, 244, 0.15);
   font-size: 13px;
   font-weight: 700;
 }

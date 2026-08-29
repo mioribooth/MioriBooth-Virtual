@@ -164,11 +164,19 @@ export default function CaptureVideoPage() {
         <div className="camera-frame">
           {cameraError ? (
             <div className="camera-error">{cameraError}</div>
-          ) : result ? (
-            // eslint-disable-next-line jsx-a11y/media-has-caption
-            <video src={result.previewUrl} controls className="camera-video" style={{ transform: "none" }} />
           ) : (
             <video ref={videoRef} autoPlay playsInline muted className="camera-video" />
+          )}
+          {result && (
+            <div className="camera-review-overlay">
+              {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+              <video
+                src={result.previewUrl}
+                controls
+                className="camera-video"
+                style={{ transform: "none" }}
+              />
+            </div>
           )}
           {recording && (
             <div className="record-badge">

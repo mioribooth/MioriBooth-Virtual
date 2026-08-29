@@ -45,7 +45,7 @@
 
 .gallery-card-button:hover {
   transform: translateY(-3px);
-  box-shadow: 0 16px 34px rgba(20, 35, 56, 0.18);
+  box-shadow: 0 16px 34px rgba(47, 5, 18, 0.18);
 }
 
 .gallery-card img,
