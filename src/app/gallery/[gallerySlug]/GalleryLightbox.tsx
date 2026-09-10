@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import AudioPlayer from "@/components/AudioPlayer";
 
 interface GalleryItem {
   id: string;
@@ -113,10 +114,7 @@ export default function GalleryLightbox({ submissions }: { submissions: GalleryI
             )}
             <div className="lightbox-info">
               <span className="lightbox-name">{active.guestName || "Tamu"}</span>
-              {active.voiceNoteUrl && (
-                // eslint-disable-next-line jsx-a11y/media-has-caption
-                <audio src={active.voiceNoteUrl} controls preload="none" />
-              )}
+              {active.voiceNoteUrl && <AudioPlayer src={active.voiceNoteUrl} variant="dark" />}
               {active.videoNoteUrl && (
                 <>
                   <span className="lightbox-video-note-label">Pesan Video</span>

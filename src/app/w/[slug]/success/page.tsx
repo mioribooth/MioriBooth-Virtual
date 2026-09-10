@@ -8,12 +8,40 @@ export default function SuccessPage() {
   const { slug } = useParams<{ slug: string }>();
   const [result, setResult] = useState<{ composedUrl: string; gallerySlug: string } | null>(null);
   const [shareSupported, setShareSupported] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
     const raw = sessionStorage.getItem(`booth_result_${slug}`);
     if (raw) setResult(JSON.parse(raw));
     setShareSupported(typeof navigator !== "undefined" && !!navigator.share);
   }, [slug]);
+
+  // Attribute `download` di <a> diabaikan browser untuk URL cross-origin
+  // (Cloudinary bukan domain kita) — hasilnya cuma buka tab baru berisi link
+  // gambar, bukan mengunduh. Jadi fetch dulu jadi blob, baru trigger unduhan
+  // dari blob URL (same-origin), supaya benar-benar langsung tersimpan ke HP.
+  async function handleDownload() {
+    if (!result || downloading) return;
+    setDownloading(true);
+    try {
+      const res = await fetch(result.composedUrl);
+      const blob = await res.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const ext = blob.type.includes("png") ? "png" : "jpg";
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = `miori-booth-${Date.now()}.${ext}`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 4000);
+    } catch {
+      // Fallback kalau fetch gagal (mis. CORS diblok) — tetap buka link asli.
+      window.open(result.composedUrl, "_blank");
+    } finally {
+      setDownloading(false);
+    }
+  }
 
   async function handleShare() {
     if (!result) return;
@@ -56,9 +84,14 @@ export default function SuccessPage() {
         </div>
 
         <div className="success-actions">
-          <a className="btn btn-primary btn-block" href={result.composedUrl} download>
-            Download Hasil
-          </a>
+          <button
+            type="button"
+            className="btn btn-primary btn-block"
+            onClick={handleDownload}
+            disabled={downloading}
+          >
+            {downloading ? "Menyiapkan..." : "Download Hasil"}
+          </button>
           {shareSupported && (
             <button className="btn btn-secondary btn-block" onClick={handleShare}>
               Bagikan ke Media Sosial

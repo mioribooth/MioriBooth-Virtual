@@ -227,6 +227,16 @@ export default function CapturePhotoPage() {
           ) : (
             <video ref={videoRef} autoPlay playsInline muted className="camera-video" />
           )}
+
+          {!cameraError && reviewSlot === null && (
+            <div className="camera-hud">
+              <span className="camera-hud-chip">
+                <span className="camera-hud-dot" />
+                Slot {activeSlot + 1}/{slotCount ?? "-"}
+              </span>
+            </div>
+          )}
+
           {reviewSlot !== null && (
             <div className="camera-review-overlay">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -253,9 +263,9 @@ export default function CapturePhotoPage() {
           )}
           {flash && <div className="capture-flash" />}
 
-          <div className="camera-frame-actions">
+          <div className={`camera-frame-actions ${reviewSlot !== null ? "is-review" : "is-idle"}`}>
             {reviewSlot !== null ? (
-              <div style={{ display: "flex", gap: 10, width: "100%" }}>
+              <div className="review-action-row">
                 <button
                   className="btn btn-secondary"
                   style={{ flex: 1 }}
@@ -276,15 +286,22 @@ export default function CapturePhotoPage() {
               </div>
             ) : (
               <button
-                className="btn btn-primary btn-block"
+                className="shutter-btn"
                 onClick={startCountdown}
                 disabled={!!cameraError || slots[activeSlot]?.status === "captured" || countdown !== null}
+                type="button"
+                aria-label="Ambil Foto"
               >
-                {countdown !== null ? "Bersiap..." : "Ambil Foto"}
+                <span className="shutter-btn-ring" />
               </button>
             )}
           </div>
         </div>
+        {reviewSlot === null && (
+          <p className="capture-shutter-hint">
+            {countdown !== null ? "Bersiap..." : "Ketuk untuk ambil foto"}
+          </p>
+        )}
 
         <div className="slot-strip">
           {slots.map((slot, i) => (

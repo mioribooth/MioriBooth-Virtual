@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import FilmstripSteps from "@/components/FilmstripSteps";
+import AudioPlayer from "@/components/AudioPlayer";
 import { getBoothToken, patchSession } from "@/lib/wizardClient";
 import { uploadToCloudinary } from "@/lib/uploadClient";
 import "./voice.css";
@@ -163,8 +164,7 @@ export default function VoiceNotePage() {
             </>
           ) : (
             <>
-              {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-              <audio src={result.previewUrl} controls style={{ width: "100%", marginBottom: 14 }} />
+              <AudioPlayer src={result.previewUrl} variant="light" />
               <button className="btn btn-secondary btn-block" onClick={handleRetake} disabled={uploading}>
                 Rekam Ulang
               </button>

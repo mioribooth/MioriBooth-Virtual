@@ -16,12 +16,21 @@
   margin: 6px 0;
 }
 
+/* 2 kolom kiri-kanan secara default (termasuk di HP, target utama halaman
+   ini) — baru di layar lebar beralih ke auto-fill supaya lebih banyak kolom. */
 .gallery-grid {
   max-width: 900px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+@media (min-width: 640px) {
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 18px;
+  }
 }
 
 .gallery-card {
@@ -48,11 +57,12 @@
   box-shadow: 0 16px 34px rgba(47, 5, 18, 0.18);
 }
 
+/* height:auto (bukan aspect-ratio tetap + object-fit:cover) supaya frame
+   foto tampil UTUH sesuai rasio aslinya, tidak terpotong atas/bawah. */
 .gallery-card img,
 .gallery-card video {
   width: 100%;
-  aspect-ratio: 3 / 4;
-  object-fit: cover;
+  height: auto;
   display: block;
   background: var(--color-ink-900);
 }

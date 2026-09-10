@@ -1,0 +1,111 @@
+.audio-player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 999px;
+}
+
+/* Varian terang — dipakai di atas kartu putih (form rekam suara, kartu galeri) */
+.audio-player-light {
+  background: var(--color-cream-200);
+}
+
+/* Varian gelap — dipakai di atas backdrop lightbox */
+.audio-player-dark {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.audio-player-btn {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-maroon-700);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.audio-player-btn:active {
+  transform: scale(0.92);
+}
+
+.audio-player-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.audio-player-dark .audio-player-btn {
+  background: var(--color-gold-500);
+}
+
+.audio-player-track {
+  position: relative;
+  flex: 1;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.audio-player-track::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.audio-player-dark .audio-player-track::before {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.audio-player-progress {
+  position: absolute;
+  left: 0;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--color-maroon-700);
+  pointer-events: none;
+}
+
+.audio-player-dark .audio-player-progress {
+  background: var(--color-gold-500);
+}
+
+.audio-player-knob {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--color-maroon-700);
+  transform: translateX(-50%);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+}
+
+.audio-player-dark .audio-player-knob {
+  background: var(--color-gold-500);
+}
+
+.audio-player-time {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink-600);
+  min-width: 70px;
+  text-align: right;
+}
+
+.audio-player-dark .audio-player-time {
+  color: rgba(255, 255, 255, 0.75);
+}

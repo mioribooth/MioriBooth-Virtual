@@ -1,12 +1,57 @@
+/* Rasio 3:4 dikunci eksplisit — bukan flex:1 mengisi sisa ruang — supaya
+   preview SELALU portrait sesuai orientasi kamera depan HP, apapun yang
+   terjadi di layout di sekitarnya (header lebih panjang, dsb). */
 .camera-frame {
   position: relative;
   width: 100%;
-  flex: 1;
-  min-height: 0;
+  aspect-ratio: 3 / 4;
+  flex-shrink: 0;
   background: var(--color-ink-900);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-soft);
+}
+
+/* --- HUD ala aplikasi kamera: chip slot mengambang di pojok atas --- */
+.camera-hud {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  right: 14px;
+  z-index: 4;
+  display: flex;
+  pointer-events: none;
+}
+
+.camera-hud-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(10, 4, 6, 0.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.camera-hud-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-gold-300);
+}
+
+.capture-shutter-hint {
+  margin: 10px 0 0;
+  text-align: center;
+  font-size: 12px;
+  color: var(--color-ink-600);
+  flex-shrink: 0;
 }
 
 /* Header ringkas di atas kamera — dirapatkan supaya area kamera dapat ruang maksimal */
@@ -33,11 +78,60 @@
   right: 0;
   bottom: 0;
   z-index: 5;
-  padding: 14px;
-  padding-top: 40px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.55), transparent);
+  padding: 18px;
+  padding-top: 48px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
   display: flex;
+  justify-content: center;
   pointer-events: auto;
+}
+
+.camera-frame-actions.is-review {
+  justify-content: stretch;
+}
+
+.review-action-row {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+/* --- Tombol jepret bundar ala shutter kamera HP, bukan tombol teks panjang --- */
+.shutter-btn {
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.shutter-btn:active {
+  transform: scale(0.9);
+}
+
+.shutter-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.shutter-btn-ring {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: white;
+  transition: transform 0.15s ease;
+}
+
+.shutter-btn:active .shutter-btn-ring {
+  transform: scale(0.88);
 }
 
 .camera-video {
@@ -173,10 +267,12 @@
   border-radius: var(--radius-sm);
   overflow: hidden;
   background: var(--color-cream-200);
+  box-shadow: 0 2px 8px rgba(47, 5, 18, 0.1);
+  transition: outline-color 0.2s ease;
 }
 
 .slot-thumb.is-active {
-  outline: 2px solid var(--color-maroon-700);
+  outline: 2px solid var(--color-gold-500);
   outline-offset: 2px;
 }
 
