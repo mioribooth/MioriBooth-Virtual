@@ -81,6 +81,20 @@ export async function GET(
           // lewati kalau gagal
         }
       }
+
+      if (s.videoNoteUrl) {
+        try {
+          const videoNoteRes = await fetch(s.videoNoteUrl);
+          if (videoNoteRes.ok && videoNoteRes.body) {
+            const ext = guessExtension(s.videoNoteUrl, "mp4");
+            archive.append(Readable.fromWeb(videoNoteRes.body as any), {
+              name: `${namePart}-pesan-video.${ext}`,
+            });
+          }
+        } catch {
+          // lewati kalau gagal
+        }
+      }
     }
     archive.finalize();
   })().catch(() => {

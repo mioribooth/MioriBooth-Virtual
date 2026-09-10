@@ -73,7 +73,9 @@ export default async function LandingPage({
             "Tinggalkan foto dan pesan suara terbaikmu untuk kami kenang selamanya."}
         </p>
 
-        <StartBoothButton weddingId={wedding.id} slug={wedding.slug} />
+        <div className="landing-cta-wrap">
+          <StartBoothButton weddingId={wedding.id} slug={wedding.slug} />
+        </div>
       </div>
     </div>
   );

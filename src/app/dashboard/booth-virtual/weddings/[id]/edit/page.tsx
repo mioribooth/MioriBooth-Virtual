@@ -168,7 +168,13 @@ export default function EditWeddingPage() {
             <CustomSelect value={packageId} onChange={setPackageId} required>
               {packages.map((p) => (
                 <option key={p.id} value={p.id}>
-                  {p.name} — {p.mediaMode === "PHOTO_ONLY" ? "Foto saja" : "Foto & Voice note"} · Akses{" "}
+                  {p.name} —{" "}
+                  {p.mediaMode === "PHOTO_AND_VIDEO"
+                    ? "Foto & Pesan Video"
+                    : p.mediaMode === "PHOTO_AND_VOICE"
+                    ? "Foto & Voice Note"
+                    : "Foto saja"}{" "}
+                  · Akses{" "}
                   {p.accessDurationDays} hari · Rp{p.price.toLocaleString("id-ID")}
                 </option>
               ))}

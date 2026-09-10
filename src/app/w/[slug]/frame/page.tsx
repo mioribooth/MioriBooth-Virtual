@@ -17,7 +17,7 @@ interface FrameOption {
 interface WeddingData {
   groomName: string;
   brideName: string;
-  mediaMode: "PHOTO_ONLY" | "PHOTO_AND_VOICE";
+  mediaMode: "PHOTO_ONLY" | "PHOTO_AND_VOICE" | "PHOTO_AND_VIDEO";
   isExpired: boolean;
   frames: FrameOption[];
 }
@@ -89,7 +89,7 @@ export default function FrameSelectPage() {
     );
   }
 
-  const totalSteps = wedding.mediaMode === "PHOTO_AND_VOICE" ? 5 : 4;
+  const totalSteps = wedding.mediaMode === "PHOTO_ONLY" ? 4 : 5;
 
   return (
     <div className="booth-shell">

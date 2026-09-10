@@ -27,7 +27,7 @@ model Vendor {
 model BoothPackage {
   id                   String @id @default(cuid())
   name                 String // "Bronze" / "Silver" / "Gold"
-  mediaMode            String // "PHOTO_ONLY" | "PHOTO_AND_VOICE"
+  mediaMode            String // "PHOTO_ONLY" | "PHOTO_AND_VOICE" | "PHOTO_AND_VIDEO"
   includedFrameDesigns Int // info buat vendor, tidak mengunci fitur
   accessDurationDays   Int // dipakai hitung Wedding.accessExpiresAt
   price                Int
@@ -96,6 +96,9 @@ model GuestSubmission {
 
   voiceNoteUrl  String? // null kalau paket PHOTO_ONLY
   voiceDuration Int?
+
+  videoNoteUrl  String? // pesan video opsional (maks 60 detik), khusus paket PHOTO_AND_VIDEO
+  videoDuration Int?
 
   isHidden Boolean @default(false) // disembunyikan vendor dari galeri publik, tapi tetap ada di dashboard admin
 

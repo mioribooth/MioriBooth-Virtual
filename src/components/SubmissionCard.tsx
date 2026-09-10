@@ -9,6 +9,7 @@ export interface SubmissionCardData {
   mediaType: string; // "PHOTO" | "VIDEO"
   composedUrl: string;
   voiceNoteUrl: string | null;
+  videoNoteUrl: string | null;
   createdAt: string | Date;
   isHidden: boolean;
 }
@@ -114,6 +115,19 @@ export default function SubmissionCard({
         {submission.voiceNoteUrl && (
           // eslint-disable-next-line jsx-a11y/media-has-caption
           <audio src={submission.voiceNoteUrl} controls style={{ width: "100%", height: 32 }} />
+        )}
+        {submission.videoNoteUrl && (
+          <div style={{ marginTop: 6 }}>
+            <span className="badge badge-muted" style={{ fontSize: 10, marginBottom: 4, display: "inline-block" }}>
+              Pesan Video
+            </span>
+            {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+            <video
+              src={submission.videoNoteUrl}
+              controls
+              style={{ width: "100%", borderRadius: 6, display: "block" }}
+            />
+          </div>
         )}
         <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
           <button

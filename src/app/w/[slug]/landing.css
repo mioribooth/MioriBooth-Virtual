@@ -6,7 +6,7 @@
   position: relative;
   width: 100%;
   aspect-ratio: 4 / 5;
-  max-height: 42vh;
+  max-height: 34vh;
   flex-shrink: 0;
   overflow: hidden;
   background: var(--color-maroon-700);
@@ -39,7 +39,8 @@
   color: var(--color-cream-100);
   text-align: center;
   align-items: center;
-  padding-top: 8px;
+  padding-top: 6px;
+  justify-content: center;
 }
 
 .landing-content .eyebrow {
@@ -47,27 +48,35 @@
 }
 
 .landing-title {
-  font-size: 42px;
-  line-height: 1.15;
-  margin: 10px 0 6px;
+  font-size: 30px;
+  line-height: 1.1;
+  margin: 6px 0 2px;
   font-style: italic;
 }
 
 .landing-amp {
   display: block;
-  font-size: 24px;
+  font-size: 18px;
   color: var(--color-gold-300);
-  margin: 2px 0;
+  margin: 0;
   font-style: normal;
 }
 
 .landing-date {
+  font-size: 13px;
   color: var(--color-blush-200);
-  margin-bottom: 22px;
+  margin-bottom: 10px;
 }
 
 .landing-welcome {
+  font-size: 13px;
   color: var(--color-cream-200);
-  max-width: 320px;
-  margin: 0 auto 30px;
+  max-width: 300px;
+  margin: 0 auto 18px;
+}
+
+.landing-cta-wrap {
+  width: 100%;
+  margin-top: auto;
+  flex-shrink: 0;
 }

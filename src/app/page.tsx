@@ -403,7 +403,9 @@ export default async function LandingPage() {
                   <p className="landing-price-amount">{formatRupiah(pkg.price)}</p>
                   <ul className="landing-price-list">
                     <li>
-                      {pkg.mediaMode === "PHOTO_AND_VOICE"
+                      {pkg.mediaMode === "PHOTO_AND_VIDEO"
+                        ? "Foto + pesan video (maks 1 menit)"
+                        : pkg.mediaMode === "PHOTO_AND_VOICE"
                         ? "Foto/video + pesan suara"
                         : "Foto/video saja"}
                     </li>

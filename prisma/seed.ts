@@ -20,7 +20,7 @@ async function main() {
     },
     {
       name: "Gold",
-      mediaMode: "PHOTO_AND_VOICE",
+      mediaMode: "PHOTO_AND_VIDEO",
       includedFrameDesigns: 3,
       accessDurationDays: 14,
       price: 400000,

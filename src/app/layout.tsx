@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Manrope } from "next/font/google";
 import "./globals.css";
 
@@ -48,6 +48,15 @@ export const metadata: Metadata = {
     description:
       "Tamu scan QR, ambil foto/video, tinggalkan pesan suara — langsung jadi kenangan berbingkai untuk pengantin.",
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  // viewportFit "cover" wajib supaya env(safe-area-inset-*) di CSS bisa
+  // kebaca beneran di iPhone (notch/home-indicator) — tanpa ini, nilainya
+  // selalu 0 dan tombol di bagian bawah layar booth bisa ketutup area itu.
+  viewportFit: "cover",
 };
 
 export default function RootLayout({

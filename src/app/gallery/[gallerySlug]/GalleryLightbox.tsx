@@ -8,6 +8,7 @@ interface GalleryItem {
   mediaType: string; // "PHOTO" | "VIDEO"
   composedUrl: string;
   voiceNoteUrl: string | null;
+  videoNoteUrl: string | null;
 }
 
 export default function GalleryLightbox({ submissions }: { submissions: GalleryItem[] }) {
@@ -115,6 +116,13 @@ export default function GalleryLightbox({ submissions }: { submissions: GalleryI
               {active.voiceNoteUrl && (
                 // eslint-disable-next-line jsx-a11y/media-has-caption
                 <audio src={active.voiceNoteUrl} controls preload="none" />
+              )}
+              {active.videoNoteUrl && (
+                <>
+                  <span className="lightbox-video-note-label">Pesan Video</span>
+                  {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+                  <video src={active.videoNoteUrl} controls preload="none" className="lightbox-video-note" />
+                </>
               )}
             </div>
           </div>

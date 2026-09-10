@@ -9,6 +9,37 @@
   box-shadow: var(--shadow-soft);
 }
 
+/* Header ringkas di atas kamera — dirapatkan supaya area kamera dapat ruang maksimal */
+.capture-header {
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+
+.capture-header h2 {
+  font-size: 21px;
+  margin: 4px 0 2px;
+}
+
+.capture-header p {
+  margin: 0;
+  font-size: 13px;
+}
+
+/* Tombol aksi ditaruh menyatu di dalam kotak kamera, mengambang di bagian
+   bawah viewfinder — bukan lagi kotak terpisah di bawah preview kamera. */
+.camera-frame-actions {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 5;
+  padding: 14px;
+  padding-top: 40px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.55), transparent);
+  display: flex;
+  pointer-events: auto;
+}
+
 .camera-video {
   width: 100%;
   height: 100%;
@@ -22,6 +53,7 @@
 .camera-review-overlay {
   position: absolute;
   inset: 0;
+  z-index: 2;
 }
 
 .camera-error {
@@ -72,10 +104,12 @@
 .countdown-overlay {
   position: absolute;
   inset: 0;
+  z-index: 3;
   background: rgba(47, 5, 18, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: none;
 }
 
 .countdown-number {
@@ -128,7 +162,8 @@
 .slot-strip {
   display: flex;
   gap: 10px;
-  margin-top: 16px;
+  margin-top: 12px;
+  flex-shrink: 0;
 }
 
 .slot-thumb {

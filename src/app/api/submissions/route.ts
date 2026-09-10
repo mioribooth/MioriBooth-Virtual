@@ -49,6 +49,8 @@ export async function POST(req: NextRequest) {
       composedUrl: session.composedUrl,
       voiceNoteUrl: session.voiceNoteUrl ?? null,
       voiceDuration: session.voiceDuration ?? null,
+      videoNoteUrl: session.videoNoteUrl ?? null,
+      videoDuration: session.videoDuration ?? null,
     },
   });
 

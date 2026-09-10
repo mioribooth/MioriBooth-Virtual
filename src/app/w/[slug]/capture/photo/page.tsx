@@ -182,11 +182,13 @@ export default function CapturePhotoPage() {
       const session = await patchSession(token, { rawPhotoUrls: urls, step: "capture_done" });
       streamRef.current?.getTracks().forEach((t) => t.stop());
 
-      // Cek mediaMode wedding untuk tahu lanjut ke voice atau langsung review.
+      // Cek mediaMode wedding untuk tahu lanjut ke voice, video-note, atau langsung review.
       const weddingRes = await fetch(`/api/weddings/${slug}`);
       const wedding = await weddingRes.json();
       if (wedding.mediaMode === "PHOTO_AND_VOICE") {
         router.push(`/w/${slug}/voice`);
+      } else if (wedding.mediaMode === "PHOTO_AND_VIDEO") {
+        router.push(`/w/${slug}/video-note`);
       } else {
         router.push(`/w/${slug}/review`);
       }
@@ -211,11 +213,13 @@ export default function CapturePhotoPage() {
     <div className="booth-shell">
       <FilmstripSteps total={slotCount && slotCount > 0 ? 5 : 4} currentIndex={1} />
       <div className="booth-content">
-        <span className="eyebrow">Langkah 2</span>
-        <h2 className="font-display">Ambil foto terbaikmu</h2>
-        <p className="muted" style={{ marginBottom: 14 }}>
-          {reviewSlot !== null ? "Sudah oke?" : `Slot ${activeSlot + 1} dari ${slotCount ?? "-"}`}
-        </p>
+        <div className="capture-header">
+          <span className="eyebrow">Langkah 2</span>
+          <h2 className="font-display">Ambil foto terbaikmu</h2>
+          <p className="muted">
+            {reviewSlot !== null ? "Sudah oke?" : `Slot ${activeSlot + 1} dari ${slotCount ?? "-"}`}
+          </p>
+        </div>
 
         <div className="camera-frame">
           {cameraError ? (
@@ -248,38 +252,39 @@ export default function CapturePhotoPage() {
             </div>
           )}
           {flash && <div className="capture-flash" />}
-        </div>
 
-        {reviewSlot !== null ? (
-          <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
-            <button
-              className="btn btn-secondary"
-              style={{ flex: 1 }}
-              onClick={() => handleRetake(reviewSlot)}
-              type="button"
-            >
-              Ambil Ulang
-            </button>
-            <button
-              className="btn btn-primary"
-              style={{ flex: 1 }}
-              onClick={handleConfirmShot}
-              disabled={reviewShot?.status === "captured" && reviewShot.uploading}
-              type="button"
-            >
-              Gunakan Foto Ini
-            </button>
+          <div className="camera-frame-actions">
+            {reviewSlot !== null ? (
+              <div style={{ display: "flex", gap: 10, width: "100%" }}>
+                <button
+                  className="btn btn-secondary"
+                  style={{ flex: 1 }}
+                  onClick={() => handleRetake(reviewSlot)}
+                  type="button"
+                >
+                  Ambil Ulang
+                </button>
+                <button
+                  className="btn btn-primary"
+                  style={{ flex: 1 }}
+                  onClick={handleConfirmShot}
+                  disabled={reviewShot?.status === "captured" && reviewShot.uploading}
+                  type="button"
+                >
+                  Gunakan Foto Ini
+                </button>
+              </div>
+            ) : (
+              <button
+                className="btn btn-primary btn-block"
+                onClick={startCountdown}
+                disabled={!!cameraError || slots[activeSlot]?.status === "captured" || countdown !== null}
+              >
+                {countdown !== null ? "Bersiap..." : "Ambil Foto"}
+              </button>
+            )}
           </div>
-        ) : (
-          <button
-            className="btn btn-primary btn-block"
-            style={{ marginTop: 16 }}
-            onClick={startCountdown}
-            disabled={!!cameraError || slots[activeSlot]?.status === "captured" || countdown !== null}
-          >
-            {countdown !== null ? "Bersiap..." : "Ambil Foto"}
-          </button>
-        )}
+        </div>
 
         <div className="slot-strip">
           {slots.map((slot, i) => (

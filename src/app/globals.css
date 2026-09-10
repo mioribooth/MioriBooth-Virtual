@@ -1,10 +1,9 @@
 /* ---------------------------------------------------------------
    Design tokens — Miori Booth Virtual
-   Palette: biru wedding aesthetic ala dekorasi resepsi Indonesia —
-   navy/dusty blue sebagai warna utama, putih/off-white bersih, dan
-   aksen biru keperakan lembut. Signature: motif lubang perforasi
-   film strip dipakai sebagai indikator langkah wizard — merujuk
-   langsung ke bentuk fisik hasil cetak photobooth strip.
+   Palette: burgundy elegan dipadukan aksen gold — kombinasi klasik
+   dekorasi wedding. Signature: motif lubang perforasi film strip
+   dipakai sebagai indikator langkah wizard — merujuk langsung ke
+   bentuk fisik hasil cetak photobooth strip.
 ------------------------------------------------------------------ */
 
 :root {
@@ -66,9 +65,14 @@ button {
   font-family: inherit;
 }
 
-/* Layout shell dipakai di semua halaman tamu (mobile-first, max width phone) */
+/* Layout shell dipakai di semua halaman tamu (mobile-first, max width phone).
+   Pakai 100svh (small viewport height), BUKAN 100dvh — svh selalu menghitung
+   area yang pasti kelihatan meski toolbar browser (mis. Safari) sedang tampil.
+   100dvh bisa telat update di beberapa browser mobile, bikin bagian bawah
+   halaman (termasuk tombol) ketutup toolbar dan baru bisa diklik setelah scroll. */
 .booth-shell {
-  height: 100dvh;
+  height: 100vh; /* fallback kalau browser belum kenal svh */
+  height: 100svh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -84,7 +88,7 @@ button {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  padding: 24px 22px 32px;
+  padding: 24px 22px calc(32px + env(safe-area-inset-bottom, 0px));
 }
 
 /* --- Signature: film-strip step indicator --- */

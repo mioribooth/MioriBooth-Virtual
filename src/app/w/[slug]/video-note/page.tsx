@@ -5,13 +5,15 @@ import { useParams, useRouter } from "next/navigation";
 import FilmstripSteps from "@/components/FilmstripSteps";
 import { getBoothToken, patchSession } from "@/lib/wizardClient";
 import { uploadToCloudinary } from "@/lib/uploadClient";
-import "../capture.css";
+import "../capture/capture.css";
 
-const MAX_DURATION_SECONDS = 15;
+const MAX_DURATION_SECONDS = 60;
 
-export default function CaptureVideoPage() {
+export default function VideoNotePage() {
   const { slug } = useParams<{ slug: string }>();
   const router = useRouter();
+
+  const [phase, setPhase] = useState<"choice" | "record">("choice");
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -22,14 +24,19 @@ export default function CaptureVideoPage() {
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [recording, setRecording] = useState(false);
   const [seconds, setSeconds] = useState(0);
-  const [result, setResult] = useState<{ previewUrl: string; url: string } | null>(null);
+  const [result, setResult] = useState<{ previewUrl: string; url: string; duration: number } | null>(
+    null
+  );
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [finishing, setFinishing] = useState(false);
 
   const token = getBoothToken(slug);
 
+  // Kamera baru diminta setelah tamu benar-benar pilih "Ya, Rekam Video" —
+  // supaya tamu yang mau skip tidak perlu ditanya izin kamera sama sekali.
   useEffect(() => {
+    if (phase !== "record") return;
     let active = true;
     async function startCamera() {
       try {
@@ -55,15 +62,12 @@ export default function CaptureVideoPage() {
       streamRef.current?.getTracks().forEach((t) => t.stop());
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, []);
+  }, [phase]);
 
   function startRecording() {
     if (!streamRef.current) return;
     chunksRef.current = [];
 
-    // Pilih mimeType yang didukung browser ini. Safari/iOS tidak mendukung
-    // webm sama sekali (constructor bisa throw kalau dipaksa), jadi cek dulu
-    // satu-satu dan pakai yang pertama didukung.
     const preferredTypes = ["video/mp4", "video/webm;codecs=vp9,opus", "video/webm"];
     const supportedType = preferredTypes.find((t) => MediaRecorder.isTypeSupported(t));
 
@@ -96,16 +100,15 @@ export default function CaptureVideoPage() {
   }
 
   async function handleRecordingStop() {
-    // Pakai mimeType ASLI dari recorder, bukan hardcode, supaya preview lokal
-    // konsisten dengan data yang benar-benar direkam browser ini.
     const actualMimeType = recorderRef.current?.mimeType || "video/webm";
     const blob = new Blob(chunksRef.current, { type: actualMimeType });
     const previewUrl = URL.createObjectURL(blob);
-    setResult({ previewUrl, url: "" });
+    const duration = seconds;
+    setResult({ previewUrl, url: "", duration });
     setUploading(true);
     try {
-      const uploaded = await uploadToCloudinary(blob, "video", "booth-virtual/raw-videos");
-      setResult({ previewUrl, url: uploaded.secure_url });
+      const uploaded = await uploadToCloudinary(blob, "video", "booth-virtual/video-notes");
+      setResult({ previewUrl, url: uploaded.secure_url, duration });
     } catch {
       setError("Upload video gagal, coba rekam ulang.");
       setResult(null);
@@ -119,21 +122,23 @@ export default function CaptureVideoPage() {
     setSeconds(0);
   }
 
+  function handleSkip() {
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+    router.push(`/w/${slug}/review`);
+  }
+
   async function handleFinish() {
     if (!token || !result?.url) return;
     setFinishing(true);
     setError(null);
     try {
-      await patchSession(token, { rawVideoUrl: result.url, step: "capture_done" });
+      await patchSession(token, {
+        videoNoteUrl: result.url,
+        videoDuration: result.duration,
+        step: "video_note_done",
+      });
       streamRef.current?.getTracks().forEach((t) => t.stop());
-
-      const weddingRes = await fetch(`/api/weddings/${slug}`);
-      const wedding = await weddingRes.json();
-      if (wedding.mediaMode === "PHOTO_AND_VOICE") {
-        router.push(`/w/${slug}/voice`);
-      } else {
-        router.push(`/w/${slug}/review`);
-      }
+      router.push(`/w/${slug}/review`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Terjadi kesalahan");
       setFinishing(false);
@@ -151,13 +156,43 @@ export default function CaptureVideoPage() {
     );
   }
 
+  if (phase === "choice") {
+    return (
+      <div className="booth-shell">
+        <FilmstripSteps total={5} currentIndex={2} />
+        <div className="booth-content" style={{ justifyContent: "center", textAlign: "center" }}>
+          <span className="eyebrow">Langkah 3</span>
+          <h2 className="font-display" style={{ margin: "6px 0 10px" }}>
+            Mau tinggalkan pesan video?
+          </h2>
+          <p className="muted" style={{ maxWidth: 320, margin: "0 auto 28px" }}>
+            Opsional — rekam ucapan video singkat (maksimal {MAX_DURATION_SECONDS} detik) untuk
+            kedua mempelai, atau lewati saja kalau tidak sempat.
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%" }}>
+            <button
+              className="btn btn-primary btn-block"
+              onClick={() => setPhase("record")}
+              type="button"
+            >
+              Ya, Rekam Video
+            </button>
+            <button className="btn btn-ghost btn-block" onClick={handleSkip} type="button">
+              Lewati
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="booth-shell">
-      <FilmstripSteps total={5} currentIndex={1} />
+      <FilmstripSteps total={5} currentIndex={2} />
       <div className="booth-content">
         <div className="capture-header">
-          <span className="eyebrow">Langkah 2</span>
-          <h2 className="font-display">Rekam video ucapanmu</h2>
+          <span className="eyebrow">Langkah 3</span>
+          <h2 className="font-display">Rekam pesan videomu</h2>
           <p className="muted">Maksimal {MAX_DURATION_SECONDS} detik</p>
         </div>
 
@@ -212,7 +247,7 @@ export default function CaptureVideoPage() {
           </p>
         )}
 
-        <div style={{ marginTop: "auto", paddingTop: 20 }}>
+        <div style={{ marginTop: "auto", paddingTop: 20, display: "flex", flexDirection: "column", gap: 10 }}>
           <button
             className="btn btn-primary btn-block"
             onClick={handleFinish}
@@ -220,6 +255,11 @@ export default function CaptureVideoPage() {
           >
             {finishing ? "Memproses..." : "Lanjutkan"}
           </button>
+          {!recording && (
+            <button className="btn btn-ghost btn-block" onClick={handleSkip} type="button" disabled={finishing}>
+              Lewati
+            </button>
+          )}
         </div>
       </div>
     </div>
