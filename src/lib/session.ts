@@ -22,6 +22,8 @@ export interface WizardSession {
   rawVideoUrl?: string;
   voiceNoteUrl?: string;
   voiceDuration?: number;
+  videoNoteUrl?: string;
+  videoDuration?: number;
   composedUrl?: string;
   step?: WizardStep;
 }
