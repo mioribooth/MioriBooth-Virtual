@@ -2,59 +2,65 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import AudioPlayer from "@/components/AudioPlayer";
 import "./success.css";
 
 export default function SuccessPage() {
   const { slug } = useParams<{ slug: string }>();
-  const [result, setResult] = useState<{ composedUrl: string; gallerySlug: string } | null>(null);
-  const [shareSupported, setShareSupported] = useState(false);
+  const [result, setResult] = useState<{
+    composedUrl: string;
+    voiceNoteUrl: string | null;
+    gallerySlug: string;
+  } | null>(null);
   const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
     const raw = sessionStorage.getItem(`booth_result_${slug}`);
     if (raw) setResult(JSON.parse(raw));
-    setShareSupported(typeof navigator !== "undefined" && !!navigator.share);
   }, [slug]);
 
-  // Attribute `download` di <a> diabaikan browser untuk URL cross-origin
-  // (Cloudinary bukan domain kita) — hasilnya cuma buka tab baru berisi link
-  // gambar, bukan mengunduh. Jadi fetch dulu jadi blob, baru trigger unduhan
-  // dari blob URL (same-origin), supaya benar-benar langsung tersimpan ke HP.
+  // Attribute `download` di <a> (atau trik blob+anchor) sering diabaikan total
+  // di in-app browser (WhatsApp, Instagram, dll di iOS) — tombol ditekan tapi
+  // unduhan tidak pernah mulai. Web Share API dengan File memicu share-sheet
+  // asli HP (ada opsi "Simpan ke Foto"/"Simpan ke Galeri"), ini yang paling
+  // konsisten jalan di lingkungan seperti itu. Kalau itu pun tidak didukung,
+  // baru fallback ke blob+anchor (jalan di Chrome Android/desktop), dan
+  // fallback terakhir cukup arahkan ke gambar aslinya di tab yang sama.
   async function handleDownload() {
     if (!result || downloading) return;
     setDownloading(true);
     try {
       const res = await fetch(result.composedUrl);
+      if (!res.ok) throw new Error("fetch gagal");
       const blob = await res.blob();
-      const blobUrl = URL.createObjectURL(blob);
       const ext = blob.type.includes("png") ? "png" : "jpg";
+      const fileName = `miori-booth-${Date.now()}.${ext}`;
+      const file = new File([blob], fileName, { type: blob.type || "image/jpeg" });
+
+      if (navigator.canShare?.({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file] });
+          return;
+        } catch (shareErr) {
+          // Dibatalkan pengguna sendiri — jangan lanjut ke fallback lain.
+          if (shareErr instanceof Error && shareErr.name === "AbortError") return;
+        }
+      }
+
+      const blobUrl = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = blobUrl;
-      a.download = `miori-booth-${Date.now()}.${ext}`;
+      a.download = fileName;
       document.body.appendChild(a);
       a.click();
       a.remove();
       setTimeout(() => URL.revokeObjectURL(blobUrl), 4000);
     } catch {
-      // Fallback kalau fetch gagal (mis. CORS diblok) — tetap buka link asli.
-      window.open(result.composedUrl, "_blank");
+      // Fallback terakhir: buka gambar aslinya di tab yang sama (bukan tab
+      // baru) supaya tamu bisa tekan-tahan gambarnya untuk simpan manual.
+      window.location.href = result.composedUrl;
     } finally {
       setDownloading(false);
-    }
-  }
-
-  async function handleShare() {
-    if (!result) return;
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: "Kenangan Pernikahan",
-          text: "Lihat kenangan yang aku tinggalkan lewat Miori Booth!",
-          url: result.composedUrl,
-        });
-      }
-    } catch {
-      // dibatalkan pengguna, biarkan saja
     }
   }
 
@@ -83,6 +89,12 @@ export default function SuccessPage() {
           <img src={result.composedUrl} alt="Hasil kenangan" />
         </div>
 
+        {result.voiceNoteUrl && (
+          <div style={{ width: "100%", marginBottom: 20 }}>
+            <AudioPlayer src={result.voiceNoteUrl} variant="light" />
+          </div>
+        )}
+
         <div className="success-actions">
           <button
             type="button"
@@ -92,11 +104,10 @@ export default function SuccessPage() {
           >
             {downloading ? "Menyiapkan..." : "Download Hasil"}
           </button>
-          {shareSupported && (
-            <button className="btn btn-secondary btn-block" onClick={handleShare}>
-              Bagikan ke Media Sosial
-            </button>
-          )}
+          <p className="muted" style={{ fontSize: 12, margin: "-4px 0 0" }}>
+            Unduhan tidak mulai? Tekan &amp; tahan gambar di atas, lalu pilih
+            &quot;Simpan ke Foto/Galeri&quot;.
+          </p>
           <a className="btn btn-ghost btn-block" href={`/gallery/${result.gallerySlug}`}>
             Lihat Galeri Semua Tamu
           </a>

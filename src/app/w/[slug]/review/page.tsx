@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import FilmstripSteps from "@/components/FilmstripSteps";
+import PrintReveal from "@/components/PrintReveal";
 import { getBoothToken, getSession } from "@/lib/wizardClient";
 import "./review.css";
 
@@ -59,7 +60,11 @@ export default function ReviewPage() {
       const data = await res.json();
       sessionStorage.setItem(
         `booth_result_${slug}`,
-        JSON.stringify({ composedUrl: data.composedUrl, gallerySlug: data.gallerySlug })
+        JSON.stringify({
+          composedUrl: data.composedUrl,
+          voiceNoteUrl: data.voiceNoteUrl ?? null,
+          gallerySlug: data.gallerySlug,
+        })
       );
       router.push(`/w/${slug}/success`);
     } catch (err) {
@@ -94,17 +99,15 @@ export default function ReviewPage() {
         </p>
 
         <div className="review-preview">
-          {loading && <p className="muted">Menyusun hasil...</p>}
-          {!loading && composedUrl && mediaType === "PHOTO" && !previewFailed && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={composedUrl} alt="Hasil frame" onError={() => setPreviewFailed(true)} />
-          )}
-          {!loading && composedUrl && mediaType === "VIDEO" && (
-            // eslint-disable-next-line jsx-a11y/media-has-caption
-            <video src={composedUrl} controls style={{ width: "100%", borderRadius: "var(--radius-md)" }} />
+          {!previewFailed && (
+            <PrintReveal
+              src={composedUrl}
+              mediaType={mediaType}
+              onImgError={() => setPreviewFailed(true)}
+            />
           )}
           {!loading && composedUrl && previewFailed && (
-            <div style={{ padding: 16 }}>
+            <div className="review-error-card">
               <p className="muted" style={{ color: "var(--color-danger)", marginBottom: 10 }}>
                 Gambar gagal dimuat. Kirim link di bawah ini ke admin untuk dicek:
               </p>

@@ -59,6 +59,7 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({
     id: submission.id,
     composedUrl: submission.composedUrl,
+    voiceNoteUrl: submission.voiceNoteUrl,
     gallerySlug: wedding.gallerySlug,
   });
 }

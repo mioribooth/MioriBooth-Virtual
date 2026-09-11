@@ -1,22 +1,31 @@
+/* Kotak "kartu putih" dihapus — foto hasil cetak sudah punya latar putih +
+   bayangannya sendiri (lihat PrintReveal.css), jadi tidak perlu dibungkus
+   kartu putih lain yang lebih lebar dari fotonya (itu penyebab spasi kosong
+   kiri-kanan sebelumnya). Sekarang foto langsung ditaruh di tengah, mengisi
+   tinggi yang tersedia semaksimal mungkin. */
 .review-preview {
-  background: white;
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-soft);
-  padding: 10px;
   flex: 1;
   min-height: 0;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
 }
 
-/* width/height 100% (bukan max-width/max-height) supaya gambar benar-benar
-   diperbesar mengisi kotak preview, bukan cuma dibatasi ukuran aslinya. */
-.review-preview img {
-  width: 100%;
+.review-preview video {
   height: 100%;
+  width: auto;
+  max-width: 100%;
   object-fit: contain;
   border-radius: var(--radius-sm);
   display: block;
+  box-shadow: var(--shadow-soft);
+}
+
+.review-error-card {
+  background: white;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+  padding: 16px;
 }
