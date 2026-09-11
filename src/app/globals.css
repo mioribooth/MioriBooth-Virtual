@@ -103,6 +103,28 @@ button {
   color: rgba(255, 255, 255, 0.8);
 }
 
+/* Input teks di wizard tamu juga ikut tema (bukan kotak putih) — glass style
+   senada sama kartu pilihan frame. Ini di-scope ke .booth-shell aja supaya
+   form di dashboard admin (tetap terang) gak ikut kena. */
+.booth-shell .field-input {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  color: white;
+}
+
+.booth-shell .field-input::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.booth-shell .field-input:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.booth-shell .field-input:focus {
+  outline: 2px solid var(--color-gold-300);
+  outline-offset: 1px;
+}
+
 .booth-shell .btn-primary {
   background: white;
   color: var(--color-maroon-700);

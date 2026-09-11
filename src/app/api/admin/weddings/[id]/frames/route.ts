@@ -27,6 +27,7 @@ export async function POST(
     frameWidth,
     frameHeight,
     previewUrl,
+    slotCount: requestedSlotCount,
   } = body ?? {};
 
   if (!name || !type || !overlayImageUrl || !overlayPublicId || !frameWidth || !frameHeight) {
@@ -36,18 +37,32 @@ export async function POST(
     );
   }
 
-  const slotCount = type === "VIDEO" ? 1 : 3;
+  // Video selalu 1 slot. Foto sekarang bisa 1/2/3 slot (vendor pilih di form) —
+  // default ke 3 kalau nilainya gak valid, biar konsisten sama behavior lama.
+  const slotCount =
+    type === "VIDEO"
+      ? 1
+      : [1, 2, 3].includes(Number(requestedSlotCount))
+        ? Number(requestedSlotCount)
+        : 3;
 
-  // Default slot positions awal (ditumpuk vertikal simetris) — vendor bisa geser lewat Frame Editor nanti.
+  // Default slot positions awal (ditumpuk vertikal simetris, jarak rata) —
+  // vendor bisa geser lewat Frame Editor nanti. Dibikin generik biar jalan
+  // buat berapa pun jumlah slotnya (1, 2, 3, dst).
   const defaultSlots =
     slotCount === 1
       ? [{ x: 0.1, y: 0.1, width: 0.8, height: 0.8 }]
-      : Array.from({ length: slotCount }).map((_, i) => ({
-          x: 0.08,
-          y: 0.05 + i * 0.31,
-          width: 0.84,
-          height: 0.27,
-        }));
+      : (() => {
+          const gap = 0.03;
+          const marginY = 0.05;
+          const height = (1 - marginY * 2 - gap * (slotCount - 1)) / slotCount;
+          return Array.from({ length: slotCount }).map((_, i) => ({
+            x: 0.08,
+            y: marginY + i * (height + gap),
+            width: 0.84,
+            height,
+          }));
+        })();
 
   const frame = await prisma.frameTemplate.create({
     data: {

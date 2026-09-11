@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { uploadToCloudinary } from "@/lib/uploadClient";
+import CustomSelect from "@/components/CustomSelect";
 
 export default function NewFramePage() {
   const { id } = useParams<{ id: string }>();
@@ -10,6 +11,7 @@ export default function NewFramePage() {
 
   const [name, setName] = useState("");
   const [type, setType] = useState<"PHOTO" | "VIDEO">("PHOTO");
+  const [slotCount, setSlotCount] = useState("3");
   const [uploaded, setUploaded] = useState<{
     url: string;
     publicId: string;
@@ -60,6 +62,7 @@ export default function NewFramePage() {
           frameWidth: uploaded.width,
           frameHeight: uploaded.height,
           previewUrl: uploaded.url,
+          slotCount: type === "PHOTO" ? Number(slotCount) : 1,
         }),
       });
       if (!res.ok) {
@@ -96,15 +99,22 @@ export default function NewFramePage() {
 
           <div>
             <label className="field-label">Jenis Frame</label>
-            <select
-              className="field-input"
-              value={type}
-              onChange={(e) => setType(e.target.value as "PHOTO" | "VIDEO")}
-            >
-              <option value="PHOTO">Foto (3 slot)</option>
+            <CustomSelect value={type} onChange={(v) => setType(v as "PHOTO" | "VIDEO")}>
+              <option value="PHOTO">Foto</option>
               <option value="VIDEO">Video (1 slot)</option>
-            </select>
+            </CustomSelect>
           </div>
+
+          {type === "PHOTO" && (
+            <div>
+              <label className="field-label">Jumlah Slot Foto</label>
+              <CustomSelect value={slotCount} onChange={setSlotCount}>
+                <option value="1">1 slot (rasio 3:4)</option>
+                <option value="2">2 slot (rasio 1:1)</option>
+                <option value="3">3 slot (rasio 16:9)</option>
+              </CustomSelect>
+            </div>
+          )}
 
           <div>
             <label className="field-label">
