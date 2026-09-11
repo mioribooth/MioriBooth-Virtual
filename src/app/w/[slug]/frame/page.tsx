@@ -89,7 +89,7 @@ export default function FrameSelectPage() {
     );
   }
 
-  const totalSteps = wedding.mediaMode === "PHOTO_ONLY" ? 4 : 5;
+  const totalSteps = wedding.mediaMode === "PHOTO_ONLY" ? 5 : 6;
 
   return (
     <div className="booth-shell">

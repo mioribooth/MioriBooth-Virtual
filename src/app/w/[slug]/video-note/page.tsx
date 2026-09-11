@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import FilmstripSteps from "@/components/FilmstripSteps";
+import Spinner from "@/components/Spinner";
 import { getBoothToken, patchSession } from "@/lib/wizardClient";
 import { uploadToCloudinary } from "@/lib/uploadClient";
 import "../capture/capture.css";
@@ -124,7 +125,7 @@ export default function VideoNotePage() {
 
   function handleSkip() {
     streamRef.current?.getTracks().forEach((t) => t.stop());
-    router.push(`/w/${slug}/review`);
+    router.push(`/w/${slug}/print`);
   }
 
   async function handleFinish() {
@@ -138,7 +139,7 @@ export default function VideoNotePage() {
         step: "video_note_done",
       });
       streamRef.current?.getTracks().forEach((t) => t.stop());
-      router.push(`/w/${slug}/review`);
+      router.push(`/w/${slug}/print`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Terjadi kesalahan");
       setFinishing(false);
@@ -159,9 +160,9 @@ export default function VideoNotePage() {
   if (phase === "choice") {
     return (
       <div className="booth-shell">
-        <FilmstripSteps total={5} currentIndex={2} />
+        <FilmstripSteps total={6} currentIndex={3} />
         <div className="booth-content" style={{ justifyContent: "center", textAlign: "center" }}>
-          <span className="eyebrow">Langkah 3</span>
+          <span className="eyebrow">Langkah 4</span>
           <h2 className="font-display" style={{ margin: "6px 0 10px" }}>
             Mau tinggalkan pesan video?
           </h2>
@@ -188,10 +189,10 @@ export default function VideoNotePage() {
 
   return (
     <div className="booth-shell">
-      <FilmstripSteps total={5} currentIndex={2} />
+      <FilmstripSteps total={6} currentIndex={3} />
       <div className="booth-content">
         <div className="capture-header">
-          <span className="eyebrow">Langkah 3</span>
+          <span className="eyebrow">Langkah 4</span>
           <h2 className="font-display">Rekam pesan videomu</h2>
           <p className="muted">Maksimal {MAX_DURATION_SECONDS} detik</p>
         </div>
@@ -240,7 +241,11 @@ export default function VideoNotePage() {
           </div>
         </div>
 
-        {uploading && <p className="muted">Mengunggah video...</p>}
+        {uploading && (
+          <p className="muted" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <Spinner dark /> Mengunggah video...
+          </p>
+        )}
         {error && (
           <p className="muted" style={{ color: "var(--color-danger)" }}>
             {error}
@@ -253,7 +258,13 @@ export default function VideoNotePage() {
             onClick={handleFinish}
             disabled={!result?.url || finishing}
           >
-            {finishing ? "Memproses..." : "Lanjutkan"}
+            {finishing ? (
+              <>
+                <Spinner /> Memproses...
+              </>
+            ) : (
+              "Lanjutkan"
+            )}
           </button>
           {!recording && (
             <button className="btn btn-ghost btn-block" onClick={handleSkip} type="button" disabled={finishing}>

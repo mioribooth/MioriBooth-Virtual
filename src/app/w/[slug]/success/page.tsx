@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import AudioPlayer from "@/components/AudioPlayer";
+import Spinner from "@/components/Spinner";
+import { IconDownload, IconGallery, IconSparkle } from "@/components/icons";
 import "./success.css";
 
 export default function SuccessPage() {
@@ -78,7 +80,9 @@ export default function SuccessPage() {
   return (
     <div className="booth-shell success-shell">
       <div className="booth-content success-content">
-        <span className="eyebrow">Selesai</span>
+        <span className="eyebrow" style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+          <IconSparkle size={13} /> Selesai
+        </span>
         <h2 className="font-display">Terima kasih!</h2>
         <p className="muted" style={{ marginBottom: 20 }}>
           Kenanganmu sudah tersimpan untuk kedua mempelai.
@@ -102,14 +106,22 @@ export default function SuccessPage() {
             onClick={handleDownload}
             disabled={downloading}
           >
-            {downloading ? "Menyiapkan..." : "Download Hasil"}
+            {downloading ? (
+              <>
+                <Spinner /> Menyiapkan...
+              </>
+            ) : (
+              <>
+                <IconDownload /> Download Hasil
+              </>
+            )}
           </button>
           <p className="muted" style={{ fontSize: 12, margin: "-4px 0 0" }}>
             Unduhan tidak mulai? Tekan &amp; tahan gambar di atas, lalu pilih
             &quot;Simpan ke Foto/Galeri&quot;.
           </p>
           <a className="btn btn-ghost btn-block" href={`/gallery/${result.gallerySlug}`}>
-            Lihat Galeri Semua Tamu
+            <IconGallery /> Lihat Galeri Semua Tamu
           </a>
         </div>
       </div>

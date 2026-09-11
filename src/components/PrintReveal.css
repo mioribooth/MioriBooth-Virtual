@@ -88,7 +88,10 @@
   100% { transform: translateX(340%); }
 }
 
-/* --- Kertas foto: mulai tersembunyi di balik slot, lalu meluncur turun --- */
+/* --- Kertas foto: mulai tersembunyi (masked) di balik slot, lalu "dicetak
+   keluar" secara patah-patah/mendadak per-sentakan — bukan meluncur mulus.
+   Pakai clip-path + steps() supaya gerakannya kaku kayak printer fisik
+   menarik kertas, bukan animasi CSS yang halus/elastis. */
 .print-paper {
   height: 100%;
   width: auto;
@@ -98,38 +101,32 @@
   border-radius: var(--radius-sm);
   background: white;
   box-shadow: 0 14px 30px rgba(47, 5, 18, 0.22);
-  transform: translateY(-118%) rotate(-4deg);
-  opacity: 0;
+  clip-path: inset(0 0 100% 0);
 }
 
 .print-paper.is-feeding {
-  animation: printFeedOut 1.15s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-name: printFeedOut, printJerk;
+  animation-duration: 0.85s, 0.85s;
+  animation-timing-function: steps(7, jump-end), steps(7, jump-end);
+  animation-fill-mode: forwards, forwards;
 }
 
 .print-paper.is-done {
-  transform: translateY(0) rotate(0deg);
-  opacity: 1;
+  clip-path: inset(0 0 0% 0);
 }
 
 @keyframes printFeedOut {
   0% {
-    transform: translateY(-118%) rotate(-4deg);
-    opacity: 0;
-  }
-  12% {
-    opacity: 1;
-  }
-  58% {
-    transform: translateY(4%) rotate(2deg);
-    opacity: 1;
-  }
-  78% {
-    transform: translateY(-2%) rotate(-1deg);
+    clip-path: inset(0 0 100% 0);
   }
   100% {
-    transform: translateY(0) rotate(0deg);
-    opacity: 1;
+    clip-path: inset(0 0 0% 0);
   }
+}
+
+@keyframes printJerk {
+  0% { transform: translateY(-3px); }
+  100% { transform: translateY(0); }
 }
 
 .print-reveal-caption {

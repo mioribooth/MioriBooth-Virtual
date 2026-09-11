@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import FilmstripSteps from "@/components/FilmstripSteps";
-import PrintReveal from "@/components/PrintReveal";
+import Spinner from "@/components/Spinner";
+import { IconCheck, IconRefresh } from "@/components/icons";
 import { getBoothToken, getSession } from "@/lib/wizardClient";
 import "./review.css";
 
@@ -14,16 +15,28 @@ export default function ReviewPage() {
 
   const [composedUrl, setComposedUrl] = useState<string | null>(null);
   const [mediaType, setMediaType] = useState<"PHOTO" | "VIDEO">("PHOTO");
+  const [mediaMode, setMediaMode] = useState<"PHOTO_ONLY" | "PHOTO_AND_VOICE" | "PHOTO_AND_VIDEO">(
+    "PHOTO_ONLY"
+  );
+  const [totalSteps, setTotalSteps] = useState(6);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [previewFailed, setPreviewFailed] = useState(false);
+
   useEffect(() => {
     if (!token) return;
     (async () => {
       try {
-        const session = await getSession(token);
+        const [session, weddingRes] = await Promise.all([
+          getSession(token),
+          fetch(`/api/weddings/${slug}`),
+        ]);
         setMediaType(session?.mediaType ?? "PHOTO");
+        const wedding = await weddingRes.json().catch(() => null);
+        if (wedding?.mediaMode) {
+          setMediaMode(wedding.mediaMode);
+          setTotalSteps(wedding.mediaMode === "PHOTO_ONLY" ? 5 : 6);
+        }
         const res = await fetch("/api/compose", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -41,35 +54,20 @@ export default function ReviewPage() {
         setLoading(false);
       }
     })();
-  }, [token]);
+  }, [token, slug]);
 
-  async function handleSave() {
-    if (!token) return;
-    setSaving(true);
-    setError(null);
-    try {
-      const res = await fetch("/api/submissions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token }),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error ?? "Gagal menyimpan");
-      }
-      const data = await res.json();
-      sessionStorage.setItem(
-        `booth_result_${slug}`,
-        JSON.stringify({
-          composedUrl: data.composedUrl,
-          voiceNoteUrl: data.voiceNoteUrl ?? null,
-          gallerySlug: data.gallerySlug,
-        })
-      );
-      router.push(`/w/${slug}/success`);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Terjadi kesalahan");
-      setSaving(false);
+  // Simpan Kenangan sekarang tidak langsung save ke server — tergantung
+  // paketnya, tamu masih perlu lanjut rekam suara/video dulu. Baru di
+  // halaman animasi cetak (setelah itu semua) submission-nya benar-benar
+  // dikirim ke server.
+  function handleContinue() {
+    if (!composedUrl) return;
+    if (mediaMode === "PHOTO_AND_VOICE") {
+      router.push(`/w/${slug}/voice`);
+    } else if (mediaMode === "PHOTO_AND_VIDEO") {
+      router.push(`/w/${slug}/video-note`);
+    } else {
+      router.push(`/w/${slug}/print`);
     }
   }
 
@@ -90,22 +88,31 @@ export default function ReviewPage() {
 
   return (
     <div className="booth-shell">
-      <FilmstripSteps total={5} currentIndex={3} />
+      <FilmstripSteps total={totalSteps} currentIndex={2} />
       <div className="booth-content">
-        <span className="eyebrow">Langkah 4</span>
+        <span className="eyebrow">Langkah 3</span>
         <h2 className="font-display">Cek hasilnya</h2>
         <p className="muted" style={{ marginBottom: 16 }}>
-          Pastikan hasilnya sudah sesuai sebelum disimpan.
+          Pastikan hasilnya sudah sesuai sebelum lanjut.
         </p>
 
         <div className="review-preview">
-          {!previewFailed && (
-            <PrintReveal
-              src={composedUrl}
-              mediaType={mediaType}
-              onImgError={() => setPreviewFailed(true)}
-            />
+          {loading && (
+            <div className="review-loading">
+              <Spinner dark />
+            </div>
           )}
+
+          {!loading && composedUrl && !previewFailed && mediaType === "PHOTO" && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={composedUrl} alt="Hasil frame" onError={() => setPreviewFailed(true)} />
+          )}
+
+          {!loading && composedUrl && mediaType === "VIDEO" && (
+            // eslint-disable-next-line jsx-a11y/media-has-caption
+            <video src={composedUrl} controls />
+          )}
+
           {!loading && composedUrl && previewFailed && (
             <div className="review-error-card">
               <p className="muted" style={{ color: "var(--color-danger)", marginBottom: 10 }}>
@@ -129,18 +136,17 @@ export default function ReviewPage() {
         <div style={{ marginTop: "auto", paddingTop: 20, display: "flex", flexDirection: "column", gap: 10 }}>
           <button
             className="btn btn-primary btn-block"
-            onClick={handleSave}
-            disabled={!composedUrl || saving}
+            onClick={handleContinue}
+            disabled={!composedUrl}
           >
-            {saving ? "Menyimpan..." : "Simpan Kenangan"}
+            <IconCheck /> Simpan Kenangan
           </button>
           <button
             className="btn btn-secondary btn-block"
             onClick={handleRetake}
-            disabled={saving}
             type="button"
           >
-            Ambil Ulang
+            <IconRefresh /> Ambil Ulang
           </button>
         </div>
       </div>

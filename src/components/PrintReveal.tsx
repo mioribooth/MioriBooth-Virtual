@@ -4,36 +4,42 @@ import { useEffect, useState } from "react";
 import "./PrintReveal.css";
 
 /**
- * Animasi "foto keluar dari printer" yang tampil sebelum halaman Cek Hasil
- * sepenuhnya interaktif. Selama proses compose masih berjalan (src null),
- * tampilkan slot printer dengan kertas kosong yang bergetar halus. Begitu
- * composedUrl siap, foto "dicetak keluar" — meluncur turun dari celah
- * printer sambil sedikit oleng lalu mendarat rapi.
+ * Animasi "foto keluar dari printer" — halaman tersendiri sebelum Terima
+ * Kasih. Selama proses compose masih berjalan (src null), tampilkan slot
+ * printer dengan indikator loading. Begitu src siap, foto "dicetak keluar"
+ * dari celah slot secara MENDADAK dan patah-patah (stepped), bukan meluncur
+ * mulus — biar berasa kayak printer fisik yang narik kertas per-sentakan,
+ * bukan animasi CSS yang halus.
  */
 export default function PrintReveal({
   src,
   mediaType,
   onImgError,
+  onRevealed,
 }: {
   src: string | null;
   mediaType: "PHOTO" | "VIDEO";
   onImgError?: () => void;
+  onRevealed?: () => void;
 }) {
   const [phase, setPhase] = useState<"printing" | "feeding" | "done">("printing");
 
   useEffect(() => {
     if (src && phase === "printing") {
-      const t = setTimeout(() => setPhase("feeding"), 120);
+      const t = setTimeout(() => setPhase("feeding"), 150);
       return () => clearTimeout(t);
     }
   }, [src, phase]);
 
   useEffect(() => {
     if (phase === "feeding") {
-      const t = setTimeout(() => setPhase("done"), 1300);
+      const t = setTimeout(() => {
+        setPhase("done");
+        onRevealed?.();
+      }, 950);
       return () => clearTimeout(t);
     }
-  }, [phase]);
+  }, [phase, onRevealed]);
 
   return (
     <div className="print-reveal">

@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import FilmstripSteps from "@/components/FilmstripSteps";
+import Spinner from "@/components/Spinner";
+import { IconFlipCamera } from "@/components/icons";
 import { getBoothToken, patchSession } from "@/lib/wizardClient";
 import { uploadToCloudinary } from "@/lib/uploadClient";
 import "../capture.css";
@@ -26,15 +28,25 @@ export default function CaptureVideoPage() {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [finishing, setFinishing] = useState(false);
+  const [facingMode, setFacingMode] = useState<"user" | "environment">("user");
+  const [totalSteps, setTotalSteps] = useState(6);
 
   const token = getBoothToken(slug);
 
   useEffect(() => {
+    fetch(`/api/weddings/${slug}`)
+      .then((res) => res.json())
+      .then((wedding) => setTotalSteps(wedding.mediaMode === "PHOTO_ONLY" ? 5 : 6))
+      .catch(() => {});
+  }, [slug]);
+
+  useEffect(() => {
     let active = true;
     async function startCamera() {
+      streamRef.current?.getTracks().forEach((t) => t.stop());
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "user" },
+          video: { facingMode },
           audio: true,
         });
         if (!active) {
@@ -43,6 +55,7 @@ export default function CaptureVideoPage() {
         }
         streamRef.current = stream;
         if (videoRef.current) videoRef.current.srcObject = stream;
+        setCameraError(null);
       } catch {
         setCameraError(
           "Tidak bisa mengakses kamera/mic. Pastikan kamu mengizinkan akses di browser."
@@ -55,7 +68,12 @@ export default function CaptureVideoPage() {
       streamRef.current?.getTracks().forEach((t) => t.stop());
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, []);
+  }, [facingMode]);
+
+  function handleFlipCamera() {
+    if (recording || result) return;
+    setFacingMode((m) => (m === "user" ? "environment" : "user"));
+  }
 
   function startRecording() {
     if (!streamRef.current) return;
@@ -119,6 +137,8 @@ export default function CaptureVideoPage() {
     setSeconds(0);
   }
 
+  // Urutan sekarang selalu: capture -> cek hasil (review). Rekam suara dan
+  // animasi cetak dipindah setelah review.
   async function handleFinish() {
     if (!token || !result?.url) return;
     setFinishing(true);
@@ -126,14 +146,7 @@ export default function CaptureVideoPage() {
     try {
       await patchSession(token, { rawVideoUrl: result.url, step: "capture_done" });
       streamRef.current?.getTracks().forEach((t) => t.stop());
-
-      const weddingRes = await fetch(`/api/weddings/${slug}`);
-      const wedding = await weddingRes.json();
-      if (wedding.mediaMode === "PHOTO_AND_VOICE") {
-        router.push(`/w/${slug}/voice`);
-      } else {
-        router.push(`/w/${slug}/review`);
-      }
+      router.push(`/w/${slug}/review`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Terjadi kesalahan");
       setFinishing(false);
@@ -153,7 +166,7 @@ export default function CaptureVideoPage() {
 
   return (
     <div className="booth-shell">
-      <FilmstripSteps total={5} currentIndex={1} />
+      <FilmstripSteps total={totalSteps} currentIndex={1} />
       <div className="booth-content">
         <div className="capture-header">
           <span className="eyebrow">Langkah 2</span>
@@ -165,7 +178,14 @@ export default function CaptureVideoPage() {
           {cameraError ? (
             <div className="camera-error">{cameraError}</div>
           ) : (
-            <video ref={videoRef} autoPlay playsInline muted className="camera-video" />
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              className="camera-video"
+              style={{ transform: facingMode === "user" ? "scaleX(-1)" : "none" }}
+            />
           )}
           {result && (
             <div className="camera-review-overlay">
@@ -181,6 +201,20 @@ export default function CaptureVideoPage() {
           {recording && (
             <div className="record-badge">
               <span className="record-dot" /> {seconds}s
+            </div>
+          )}
+
+          {!cameraError && !recording && !result && (
+            <div className="camera-hud">
+              <span />
+              <button
+                className="camera-flip-btn"
+                onClick={handleFlipCamera}
+                type="button"
+                aria-label="Ganti kamera depan/belakang"
+              >
+                <IconFlipCamera size={16} />
+              </button>
             </div>
           )}
 
@@ -205,7 +239,11 @@ export default function CaptureVideoPage() {
           </div>
         </div>
 
-        {uploading && <p className="muted">Mengunggah video...</p>}
+        {uploading && (
+          <p className="muted" style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10 }}>
+            <Spinner dark /> Mengunggah video...
+          </p>
+        )}
         {error && (
           <p className="muted" style={{ color: "var(--color-danger)" }}>
             {error}
@@ -218,7 +256,13 @@ export default function CaptureVideoPage() {
             onClick={handleFinish}
             disabled={!result?.url || finishing}
           >
-            {finishing ? "Memproses..." : "Lanjutkan"}
+            {finishing ? (
+              <>
+                <Spinner /> Memproses...
+              </>
+            ) : (
+              "Lanjutkan"
+            )}
           </button>
         </div>
       </div>

@@ -54,6 +54,9 @@
   font-size: 26px;
   cursor: pointer;
   box-shadow: var(--shadow-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: transform 0.15s ease, background 0.15s ease;
 }
 
@@ -63,4 +66,12 @@
 
 .mic-button.is-recording {
   background: var(--color-danger);
+  box-shadow: 0 0 0 8px rgba(214, 61, 61, 0.16);
+}
+
+.mic-button-stop {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background: white;
 }

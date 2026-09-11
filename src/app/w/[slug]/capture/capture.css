@@ -20,6 +20,8 @@
   right: 14px;
   z-index: 4;
   display: flex;
+  align-items: center;
+  justify-content: space-between;
   pointer-events: none;
 }
 
@@ -44,6 +46,33 @@
   height: 7px;
   border-radius: 50%;
   background: var(--color-gold-300);
+}
+
+/* --- Tombol ganti kamera depan/belakang --- */
+.camera-flip-btn {
+  pointer-events: auto;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(10, 4, 6, 0.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.camera-flip-btn:active {
+  transform: scale(0.9) rotate(180deg);
+}
+
+.camera-flip-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .capture-shutter-hint {

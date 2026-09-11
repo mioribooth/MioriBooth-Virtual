@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import FilmstripSteps from "@/components/FilmstripSteps";
+import Spinner from "@/components/Spinner";
+import { IconFlipCamera, IconCheck, IconRefresh } from "@/components/icons";
 import { getBoothToken, getSession, patchSession } from "@/lib/wizardClient";
 import { uploadToCloudinary } from "@/lib/uploadClient";
 import "../capture.css";
@@ -28,6 +30,8 @@ export default function CapturePhotoPage() {
   const [countdown, setCountdown] = useState<number | null>(null);
   const [flash, setFlash] = useState(false);
   const [reviewSlot, setReviewSlot] = useState<number | null>(null);
+  const [facingMode, setFacingMode] = useState<"user" | "environment">("user");
+  const [totalSteps, setTotalSteps] = useState(6);
   const countdownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const token = getBoothToken(slug);
 
@@ -41,13 +45,22 @@ export default function CapturePhotoPage() {
     });
   }, [token]);
 
-  // Buka kamera
+  // Jumlah step di filmstrip beda tergantung paket wedding-nya (ada rekam suara/video atau tidak).
+  useEffect(() => {
+    fetch(`/api/weddings/${slug}`)
+      .then((res) => res.json())
+      .then((wedding) => setTotalSteps(wedding.mediaMode === "PHOTO_ONLY" ? 5 : 6))
+      .catch(() => {});
+  }, [slug]);
+
+  // Buka kamera — dependensi ke facingMode supaya bisa switch depan/belakang.
   useEffect(() => {
     let active = true;
     async function startCamera() {
+      streamRef.current?.getTracks().forEach((t) => t.stop());
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "user" },
+          video: { facingMode },
           audio: false,
         });
         if (!active) {
@@ -58,6 +71,7 @@ export default function CapturePhotoPage() {
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
+        setCameraError(null);
       } catch {
         setCameraError(
           "Tidak bisa mengakses kamera. Pastikan kamu mengizinkan akses kamera di browser."
@@ -70,7 +84,12 @@ export default function CapturePhotoPage() {
       streamRef.current?.getTracks().forEach((t) => t.stop());
       if (countdownTimerRef.current) clearTimeout(countdownTimerRef.current);
     };
-  }, []);
+  }, [facingMode]);
+
+  function handleFlipCamera() {
+    if (countdown !== null || reviewSlot !== null) return;
+    setFacingMode((m) => (m === "user" ? "environment" : "user"));
+  }
 
   // Countdown 3-2-1 sebelum kamera otomatis jepret — biar kerasa seperti photobooth fisik.
   function startCountdown() {
@@ -105,9 +124,12 @@ export default function CapturePhotoPage() {
     canvas.height = video.videoHeight * scale;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    // Mirror horizontal supaya hasil sesuai apa yang dilihat tamu di preview (selfie).
-    ctx.translate(canvas.width, 0);
-    ctx.scale(-1, 1);
+    // Mirror horizontal cuma untuk kamera depan, supaya hasil sesuai apa yang
+    // dilihat tamu di preview (selfie). Kamera belakang tidak perlu di-mirror.
+    if (facingMode === "user") {
+      ctx.translate(canvas.width, 0);
+      ctx.scale(-1, 1);
+    }
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
     canvas.toBlob(
@@ -173,25 +195,18 @@ export default function CapturePhotoPage() {
     slots.every((s) => s.status === "captured" && !s.uploading);
   const reviewShot = reviewSlot !== null ? slots[reviewSlot] : null;
 
+  // Urutan sekarang selalu: capture -> cek hasil (review). Rekam suara/video
+  // dan animasi cetak dipindah setelah review, jadi di sini tinggal lanjut
+  // ke /review tanpa perlu cek mediaMode dulu.
   async function handleFinish() {
     if (!token || !allDone) return;
     setFinishing(true);
     setError(null);
     try {
       const urls = slots.map((s) => (s.status === "captured" ? s.url : "")).filter(Boolean);
-      const session = await patchSession(token, { rawPhotoUrls: urls, step: "capture_done" });
+      await patchSession(token, { rawPhotoUrls: urls, step: "capture_done" });
       streamRef.current?.getTracks().forEach((t) => t.stop());
-
-      // Cek mediaMode wedding untuk tahu lanjut ke voice, video-note, atau langsung review.
-      const weddingRes = await fetch(`/api/weddings/${slug}`);
-      const wedding = await weddingRes.json();
-      if (wedding.mediaMode === "PHOTO_AND_VOICE") {
-        router.push(`/w/${slug}/voice`);
-      } else if (wedding.mediaMode === "PHOTO_AND_VIDEO") {
-        router.push(`/w/${slug}/video-note`);
-      } else {
-        router.push(`/w/${slug}/review`);
-      }
+      router.push(`/w/${slug}/review`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Terjadi kesalahan");
       setFinishing(false);
@@ -211,7 +226,7 @@ export default function CapturePhotoPage() {
 
   return (
     <div className="booth-shell">
-      <FilmstripSteps total={slotCount && slotCount > 0 ? 5 : 4} currentIndex={1} />
+      <FilmstripSteps total={totalSteps} currentIndex={1} />
       <div className="booth-content">
         <div className="capture-header">
           <span className="eyebrow">Langkah 2</span>
@@ -225,7 +240,14 @@ export default function CapturePhotoPage() {
           {cameraError ? (
             <div className="camera-error">{cameraError}</div>
           ) : (
-            <video ref={videoRef} autoPlay playsInline muted className="camera-video" />
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              className="camera-video"
+              style={{ transform: facingMode === "user" ? "scaleX(-1)" : "none" }}
+            />
           )}
 
           {!cameraError && reviewSlot === null && (
@@ -234,6 +256,15 @@ export default function CapturePhotoPage() {
                 <span className="camera-hud-dot" />
                 Slot {activeSlot + 1}/{slotCount ?? "-"}
               </span>
+              <button
+                className="camera-flip-btn"
+                onClick={handleFlipCamera}
+                type="button"
+                aria-label="Ganti kamera depan/belakang"
+                disabled={countdown !== null}
+              >
+                <IconFlipCamera size={16} />
+              </button>
             </div>
           )}
 
@@ -247,8 +278,8 @@ export default function CapturePhotoPage() {
                 style={{ transform: "none" }}
               />
               {reviewShot?.status === "captured" && reviewShot.uploading && (
-                <div className="slot-thumb-uploading" style={{ fontSize: 13 }}>
-                  Mengunggah...
+                <div className="slot-thumb-uploading">
+                  <Spinner />
                 </div>
               )}
             </div>
@@ -272,7 +303,7 @@ export default function CapturePhotoPage() {
                   onClick={() => handleRetake(reviewSlot)}
                   type="button"
                 >
-                  Ambil Ulang
+                  <IconRefresh /> Ambil Ulang
                 </button>
                 <button
                   className="btn btn-primary"
@@ -281,7 +312,7 @@ export default function CapturePhotoPage() {
                   disabled={reviewShot?.status === "captured" && reviewShot.uploading}
                   type="button"
                 >
-                  Gunakan Foto Ini
+                  <IconCheck /> Gunakan Foto Ini
                 </button>
               </div>
             ) : (
@@ -310,7 +341,11 @@ export default function CapturePhotoPage() {
                 <>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={slot.previewUrl} alt={`Slot ${i + 1}`} />
-                  {slot.uploading && <div className="slot-thumb-uploading">Mengunggah...</div>}
+                  {slot.uploading && (
+                    <div className="slot-thumb-uploading">
+                      <Spinner />
+                    </div>
+                  )}
                   <div className="slot-thumb-actions">
                     <button
                       className="btn btn-ghost"
@@ -319,7 +354,7 @@ export default function CapturePhotoPage() {
                       type="button"
                       disabled={countdown !== null}
                     >
-                      Ambil Ulang
+                      <IconRefresh size={13} /> Ambil Ulang
                     </button>
                   </div>
                 </>
@@ -349,7 +384,13 @@ export default function CapturePhotoPage() {
             onClick={handleFinish}
             disabled={!allDone || finishing}
           >
-            {finishing ? "Memproses..." : "Lanjutkan"}
+            {finishing ? (
+              <>
+                <Spinner /> Memproses...
+              </>
+            ) : (
+              "Lanjutkan"
+            )}
           </button>
         </div>
       </div>

@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import FilmstripSteps from "@/components/FilmstripSteps";
 import AudioPlayer from "@/components/AudioPlayer";
+import Spinner from "@/components/Spinner";
+import { IconMic, IconRefresh } from "@/components/icons";
 import { getBoothToken, patchSession } from "@/lib/wizardClient";
 import { uploadToCloudinary } from "@/lib/uploadClient";
 import "./voice.css";
@@ -100,6 +102,8 @@ export default function VoiceNotePage() {
     setSeconds(0);
   }
 
+  // Habis ini lanjut ke halaman animasi cetak (bukan langsung review lagi —
+  // review sudah lewat sebelum rekam suara).
   async function handleFinish() {
     if (!token || !result?.url) return;
     setFinishing(true);
@@ -110,7 +114,7 @@ export default function VoiceNotePage() {
         voiceDuration: result.duration,
         step: "voice_done",
       });
-      router.push(`/w/${slug}/review`);
+      router.push(`/w/${slug}/print`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Terjadi kesalahan");
       setFinishing(false);
@@ -130,9 +134,9 @@ export default function VoiceNotePage() {
 
   return (
     <div className="booth-shell">
-      <FilmstripSteps total={5} currentIndex={2} />
+      <FilmstripSteps total={6} currentIndex={3} />
       <div className="booth-content">
-        <span className="eyebrow">Langkah 3</span>
+        <span className="eyebrow">Langkah 4</span>
         <h2 className="font-display">Tinggalkan pesan suara</h2>
         <p className="muted" style={{ marginBottom: 30 }}>
           Ucapkan doa atau harapan terbaikmu untuk kedua mempelai.
@@ -158,7 +162,7 @@ export default function VoiceNotePage() {
                 type="button"
                 aria-label={recording ? "Berhenti merekam" : "Mulai merekam"}
               >
-                {recording ? "■" : "●"}
+                {recording ? <span className="mic-button-stop" /> : <IconMic size={26} />}
               </button>
               <p className="muted">{recording ? "Ketuk untuk berhenti" : "Ketuk untuk mulai rekam"}</p>
             </>
@@ -166,12 +170,16 @@ export default function VoiceNotePage() {
             <>
               <AudioPlayer src={result.previewUrl} variant="light" />
               <button className="btn btn-secondary btn-block" onClick={handleRetake} disabled={uploading}>
-                Rekam Ulang
+                <IconRefresh /> Rekam Ulang
               </button>
             </>
           )}
 
-          {uploading && <p className="muted">Mengunggah pesan suara...</p>}
+          {uploading && (
+            <p className="muted" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <Spinner dark /> Mengunggah pesan suara...
+            </p>
+          )}
           {error && (
             <p className="muted" style={{ color: "var(--color-danger)" }}>
               {error}
@@ -185,7 +193,13 @@ export default function VoiceNotePage() {
             onClick={handleFinish}
             disabled={!result?.url || finishing}
           >
-            {finishing ? "Memproses..." : "Lanjutkan"}
+            {finishing ? (
+              <>
+                <Spinner /> Memproses...
+              </>
+            ) : (
+              "Lanjutkan"
+            )}
           </button>
         </div>
       </div>
