@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import StartBoothButton from "./StartBoothButton";
+import SplashScreen from "./SplashScreen";
 import "./landing.css";
 
 export default async function LandingPage({
@@ -48,35 +49,37 @@ export default async function LandingPage({
   });
 
   return (
-    <div className="booth-shell landing-shell">
-      <div className="landing-cover">
-        {wedding.coverImageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={wedding.coverImageUrl} alt={`${wedding.groomName} & ${wedding.brideName}`} />
-        ) : (
-          <div className="landing-cover-placeholder" />
-        )}
-        <div className="landing-cover-fade" />
-      </div>
+    <SplashScreen>
+      <div className="booth-shell landing-shell">
+        <div className="landing-cover">
+          {wedding.coverImageUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={wedding.coverImageUrl} alt={`${wedding.groomName} & ${wedding.brideName}`} />
+          ) : (
+            <div className="landing-cover-placeholder" />
+          )}
+          <div className="landing-cover-fade" />
+        </div>
 
-      <div className="booth-content landing-content">
-        <span className="eyebrow">Wedding Memories Of</span>
-        <h1 className="font-display landing-title">
-          {wedding.groomName}
-          <span className="landing-amp">&amp;</span>
-          {wedding.brideName}
-        </h1>
-        <p className="muted landing-date">{eventDateLabel}</p>
+        <div className="booth-content landing-content">
+          <span className="eyebrow">Wedding Memories Of</span>
+          <h1 className="font-display landing-title">
+            {wedding.groomName}
+            <span className="landing-amp">&amp;</span>
+            {wedding.brideName}
+          </h1>
+          <p className="muted landing-date">{eventDateLabel}</p>
 
-        <p className="muted landing-welcome">
-          {wedding.welcomeText ??
-            "Tinggalkan foto dan pesan suara terbaikmu untuk kami kenang selamanya."}
-        </p>
+          <p className="muted landing-welcome">
+            {wedding.welcomeText ??
+              "Tinggalkan foto dan pesan suara terbaikmu untuk kami kenang selamanya."}
+          </p>
 
-        <div className="landing-cta-wrap">
-          <StartBoothButton weddingId={wedding.id} slug={wedding.slug} />
+          <div className="landing-cta-wrap">
+            <StartBoothButton weddingId={wedding.id} slug={wedding.slug} />
+          </div>
         </div>
       </div>
-    </div>
+    </SplashScreen>
   );
 }

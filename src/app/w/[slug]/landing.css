@@ -1,3 +1,7 @@
+.landing-shell {
+  background: var(--color-maroon-900);
+}
+
 .landing-cover {
   position: relative;
   width: 100%;

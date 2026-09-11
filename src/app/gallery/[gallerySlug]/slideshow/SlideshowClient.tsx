@@ -158,56 +158,70 @@ export default function SlideshowClient({ gallerySlug }: { gallerySlug: string }
   const current = data.submissions[index % data.submissions.length];
   // Kumpulan foto tamu lain buat lapisan latar belakang (blur + redup) —
   // bukan foto yang lagi tampil supaya ga keliatan dobel.
-  const backdropPhotos = data.submissions
-    .filter((s) => s.id !== current.id)
-    .slice(0, 12);
+  const backdropPhotos = data.submissions.filter((s) => s.id !== current.id).slice(0, 12);
 
   return (
-    <div className="slideshow-shell">
-      <div className="slideshow-bg" aria-hidden="true">
-        {backdropPhotos.map((s) => (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img key={s.id} src={s.composedUrl} alt="" />
-        ))}
+    <div className="slideshow-shell slideshow-split">
+      {/* Kolom kiri: identitas mempelai — layar dimaksudkan untuk monitor landscape */}
+      <div className="slideshow-left">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/brand/logo-white-2.png" alt="MioriBooth" className="slideshow-logo" />
+        <div className="slideshow-left-body">
+          <span className="eyebrow">Wedding Memories Of</span>
+          <h1 className="font-display slideshow-names">
+            {data.groomName}
+            <span className="slideshow-amp">&amp;</span>
+            {data.brideName}
+          </h1>
+        </div>
+        <span className="slideshow-watermark">@mioribooth</span>
       </div>
-      <div className="slideshow-stage">
-        {current.mediaType === "VIDEO" ? (
-          // eslint-disable-next-line jsx-a11y/media-has-caption
-          <video
-            key={current.id}
-            ref={videoRef}
-            src={current.composedUrl}
-            className="slideshow-media"
-            autoPlay
-            playsInline
-            onEnded={goNext}
-          />
-        ) : (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            key={current.id}
-            src={current.composedUrl}
-            alt={current.guestName ?? "Tamu"}
-            className="slideshow-media"
-          />
-        )}
 
-        {current.mediaType === "PHOTO" && current.voiceNoteUrl && (
-          // eslint-disable-next-line jsx-a11y/media-has-caption
-          <audio
-            key={current.id + "-audio"}
-            ref={audioRef}
-            src={current.voiceNoteUrl}
-            autoPlay
-            onEnded={goNext}
-          />
-        )}
+      {/* Kolom kanan: foto tamu bergantian, meluncur dari kanan ke kiri */}
+      <div className="slideshow-right">
+        <div className="slideshow-bg" aria-hidden="true">
+          {backdropPhotos.map((s) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img key={s.id} src={s.composedUrl} alt="" />
+          ))}
+        </div>
 
-        <div className="slideshow-caption">
-          <span className="slideshow-name">{current.guestName || "Tamu"}</span>
-          <span className="slideshow-couple">
-            untuk {data.groomName} &amp; {data.brideName}
-          </span>
+        <div className="slideshow-photo-wrap">
+          {current.mediaType === "VIDEO" ? (
+            // eslint-disable-next-line jsx-a11y/media-has-caption
+            <video
+              key={current.id}
+              ref={videoRef}
+              src={current.composedUrl}
+              className="slideshow-media"
+              autoPlay
+              playsInline
+              onEnded={goNext}
+            />
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={current.id}
+              src={current.composedUrl}
+              alt={current.guestName ?? "Tamu"}
+              className="slideshow-media"
+            />
+          )}
+
+          {current.mediaType === "PHOTO" && current.voiceNoteUrl && (
+            // eslint-disable-next-line jsx-a11y/media-has-caption
+            <audio
+              key={current.id + "-audio"}
+              ref={audioRef}
+              src={current.voiceNoteUrl}
+              autoPlay
+              onEnded={goNext}
+            />
+          )}
+
+          <div key={current.id + "-caption"} className="slideshow-caption">
+            <span className="slideshow-name">{current.guestName || "Tamu"}</span>
+          </div>
         </div>
       </div>
     </div>

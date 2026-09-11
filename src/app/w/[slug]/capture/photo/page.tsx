@@ -13,6 +13,17 @@ type SlotState =
   | { status: "empty" }
   | { status: "captured"; previewUrl: string; url: string; uploading: boolean };
 
+// Rasio viewfinder mengikuti jumlah slot di frame: frame 2-slot pakai foto
+// 1:1, frame 3-slot pakai foto 16:9 (landscape) — sesuai desain frame yang
+// dipakai. Untuk 3-slot, preview kamera otomatis jadi kotak landscape supaya
+// tamu foto dengan komposisi landscape TANPA perlu memutar fisik HP-nya
+// (HP tetap dalam kunci layar potrait seperti biasa).
+function getCameraAspect(slotCount: number | null): { css: string; ratio: number } {
+  if (slotCount === 2) return { css: "1 / 1", ratio: 1 };
+  if (slotCount === 3) return { css: "16 / 9", ratio: 16 / 9 };
+  return { css: "3 / 4", ratio: 3 / 4 };
+}
+
 export default function CapturePhotoPage() {
   const { slug } = useParams<{ slug: string }>();
   const router = useRouter();
@@ -118,10 +129,30 @@ export default function CapturePhotoPage() {
     setTimeout(() => setFlash(false), 180);
     const video = videoRef.current;
     const canvas = canvasRef.current;
+
+    // Crop dulu sesuai rasio target slot (lihat getCameraAspect) dari tengah
+    // frame kamera, biar hasil capture persis sama dengan apa yang tamu lihat
+    // di viewfinder — bukan cuma preview-nya doang yang landscape/1:1 tapi
+    // foto mentahnya tetap rasio kamera aslinya.
+    const { ratio: targetAspect } = getCameraAspect(slotCount);
+    const videoAspect = video.videoWidth / video.videoHeight;
+    let sx: number, sy: number, sWidth: number, sHeight: number;
+    if (videoAspect > targetAspect) {
+      sHeight = video.videoHeight;
+      sWidth = sHeight * targetAspect;
+      sx = (video.videoWidth - sWidth) / 2;
+      sy = 0;
+    } else {
+      sWidth = video.videoWidth;
+      sHeight = sWidth / targetAspect;
+      sx = 0;
+      sy = (video.videoHeight - sHeight) / 2;
+    }
+
     const maxWidth = 1280;
-    const scale = Math.min(1, maxWidth / video.videoWidth);
-    canvas.width = video.videoWidth * scale;
-    canvas.height = video.videoHeight * scale;
+    const outputScale = Math.min(1, maxWidth / sWidth);
+    canvas.width = sWidth * outputScale;
+    canvas.height = sHeight * outputScale;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     // Mirror horizontal cuma untuk kamera depan, supaya hasil sesuai apa yang
@@ -130,7 +161,7 @@ export default function CapturePhotoPage() {
       ctx.translate(canvas.width, 0);
       ctx.scale(-1, 1);
     }
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    ctx.drawImage(video, sx, sy, sWidth, sHeight, 0, 0, canvas.width, canvas.height);
 
     canvas.toBlob(
       async (blob) => {
@@ -236,7 +267,7 @@ export default function CapturePhotoPage() {
           </p>
         </div>
 
-        <div className="camera-frame">
+        <div className="camera-frame" style={{ aspectRatio: getCameraAspect(slotCount).css }}>
           {cameraError ? (
             <div className="camera-error">{cameraError}</div>
           ) : (

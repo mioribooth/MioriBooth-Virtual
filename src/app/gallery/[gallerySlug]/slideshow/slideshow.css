@@ -46,6 +46,77 @@
   color: var(--color-maroon-700);
 }
 
+/* --- Layout dua kolom, dibuat untuk monitor landscape --- */
+.slideshow-split {
+  display: flex;
+  flex-direction: row;
+  height: 100dvh;
+}
+
+/* Kolom kiri: identitas mempelai */
+.slideshow-left {
+  position: relative;
+  z-index: 1;
+  width: 38%;
+  min-width: 320px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px;
+}
+
+.slideshow-logo {
+  position: absolute;
+  top: 40px;
+  left: 48px;
+  height: 28px;
+  width: auto;
+  opacity: 0.92;
+}
+
+.slideshow-left-body .eyebrow {
+  display: block;
+  color: var(--color-gold-300);
+  margin-bottom: 10px;
+}
+
+.slideshow-names {
+  font-size: clamp(38px, 5vw, 64px);
+  line-height: 1.15;
+  font-style: italic;
+  color: white;
+  margin: 0;
+}
+
+.slideshow-amp {
+  display: block;
+  font-size: 0.45em;
+  font-style: normal;
+  color: var(--color-gold-300);
+  margin: 6px 0;
+}
+
+.slideshow-watermark {
+  position: absolute;
+  left: 48px;
+  bottom: 36px;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* Kolom kanan: foto tamu, bergantian */
+.slideshow-right {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* --- Lapisan latar belakang: kolase foto tamu lain, diburamkan + digelapkan
    + dikasih tint burgundy, supaya jadi tekstur latar dan bukan bersaing
    sama foto utama yang lagi ditampilkan. --- */
@@ -79,36 +150,36 @@
     rgba(47, 5, 18, 0.35);
 }
 
-.slideshow-stage {
+.slideshow-photo-wrap {
   position: relative;
   z-index: 1;
   width: 100%;
-  height: 100vh;
-  height: 100svh;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .slideshow-media {
-  max-width: 92%;
-  max-height: 92%;
+  max-width: 78%;
+  max-height: 84%;
   width: auto;
   height: auto;
   object-fit: contain;
   border-radius: var(--radius-md);
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
-  animation: slideshow-fade-in 0.6s ease;
+  animation: slideshow-slide-in 0.9s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-@keyframes slideshow-fade-in {
+/* Foto baru meluncur masuk dari kanan ke kiri, easing halus — bukan cut/fade. */
+@keyframes slideshow-slide-in {
   from {
     opacity: 0;
-    transform: scale(1.02);
+    transform: translateX(9%);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: translateX(0);
   }
 }
 
@@ -116,27 +187,50 @@
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: 32px;
   z-index: 2;
-  padding: 28px 40px 32px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.65), transparent);
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-  text-align: center;
+  justify-content: center;
+  animation: slideshow-slide-in 0.9s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .slideshow-name {
   font-family: var(--font-display);
   font-style: italic;
-  font-size: 32px;
+  font-size: 26px;
   color: white;
+  background: rgba(47, 5, 18, 0.45);
+  padding: 6px 22px;
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
 }
 
-.slideshow-couple {
-  font-size: 14px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-gold-300);
-  opacity: 0.85;
+@media (max-width: 900px) {
+  .slideshow-split {
+    flex-direction: column;
+    height: auto;
+    min-height: 100dvh;
+  }
+
+  .slideshow-left {
+    width: 100%;
+    min-width: 0;
+    padding: 32px 24px;
+    text-align: center;
+    align-items: center;
+  }
+
+  .slideshow-logo {
+    position: static;
+    margin-bottom: 16px;
+  }
+
+  .slideshow-watermark {
+    position: static;
+    margin-top: 16px;
+  }
+
+  .slideshow-right {
+    min-height: 60vh;
+  }
 }
