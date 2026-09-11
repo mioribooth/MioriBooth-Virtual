@@ -84,7 +84,7 @@ export default function SuccessPage() {
           <IconSparkle size={13} /> Selesai
         </span>
         <h2 className="font-display">Terima kasih!</h2>
-        <p className="muted" style={{ marginBottom: 20 }}>
+        <p className="muted" style={{ marginBottom: 14 }}>
           Kenanganmu sudah tersimpan untuk kedua mempelai.
         </p>
 
@@ -94,33 +94,29 @@ export default function SuccessPage() {
         </div>
 
         {result.voiceNoteUrl && (
-          <div style={{ width: "100%", marginBottom: 20 }}>
-            <AudioPlayer src={result.voiceNoteUrl} variant="light" />
+          <div style={{ width: "100%", marginBottom: 16 }}>
+            <AudioPlayer src={result.voiceNoteUrl} variant="dark" />
           </div>
         )}
 
         <div className="success-actions">
           <button
             type="button"
-            className="btn btn-primary btn-block"
+            className="btn btn-block success-btn-primary"
             onClick={handleDownload}
             disabled={downloading}
           >
             {downloading ? (
               <>
-                <Spinner /> Menyiapkan...
+                <Spinner dark /> Menyiapkan...
               </>
             ) : (
               <>
-                <IconDownload /> Download Hasil
+                <IconDownload /> Download
               </>
             )}
           </button>
-          <p className="muted" style={{ fontSize: 12, margin: "-4px 0 0" }}>
-            Unduhan tidak mulai? Tekan &amp; tahan gambar di atas, lalu pilih
-            &quot;Simpan ke Foto/Galeri&quot;.
-          </p>
-          <a className="btn btn-ghost btn-block" href={`/gallery/${result.gallerySlug}`}>
+          <a className="btn btn-block success-btn-ghost" href={`/gallery/${result.gallerySlug}`}>
             <IconGallery /> Lihat Galeri Semua Tamu
           </a>
         </div>

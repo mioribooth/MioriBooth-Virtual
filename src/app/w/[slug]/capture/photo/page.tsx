@@ -263,7 +263,7 @@ export default function CapturePhotoPage() {
                 aria-label="Ganti kamera depan/belakang"
                 disabled={countdown !== null}
               >
-                <IconFlipCamera size={16} />
+                <IconFlipCamera size={19} />
               </button>
             </div>
           )}

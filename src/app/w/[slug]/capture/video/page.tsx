@@ -213,7 +213,7 @@ export default function CaptureVideoPage() {
                 type="button"
                 aria-label="Ganti kamera depan/belakang"
               >
-                <IconFlipCamera size={16} />
+                <IconFlipCamera size={19} />
               </button>
             </div>
           )}

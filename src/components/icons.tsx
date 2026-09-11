@@ -1,25 +1,30 @@
 export function IconFlipCamera({ size = 18 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      {/* Dua panah melingkar — elemen utama yang jelas berarti "putar/ganti",
+          bukan detail kecil di lensa supaya gampang dikenali di ukuran kecil. */}
       <path
-        d="M4 8h3l1.2-2h7.6L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"
+        d="M4.5 12a7.5 7.5 0 0 1 12.6-5.5"
         stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
       />
       <path
-        d="M9.2 13a2.8 2.8 0 1 0 1.9-2.65M14.8 13a2.8 2.8 0 1 1-1.9-2.65"
+        d="M19.5 12a7.5 7.5 0 0 1-12.6 5.5"
         stroke="currentColor"
-        strokeWidth="1.6"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M17.8 3v4.2h-4.2M6.2 21v-4.2h4.2"
+        stroke="currentColor"
+        strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path
-        d="M11 9.6 9.6 10.9M13 16.4l1.4-1.3"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-      />
+      {/* Kamera kecil di tengah, cuma sebagai konteks tambahan */}
+      <rect x="8.7" y="9.3" width="6.6" height="5.4" rx="1.3" fill="currentColor" />
+      <circle cx="12" cy="12" r="1.15" fill="var(--color-ink-900, #2a1015)" />
     </svg>
   );
 }

@@ -163,7 +163,7 @@ button {
 }
 
 .btn-secondary {
-  background: transparent;
+  background: rgba(109, 15, 40, 0.08);
   color: var(--color-maroon-700);
   border: 1.5px solid var(--color-maroon-700);
 }
@@ -524,6 +524,18 @@ button {
   letter-spacing: 0.14em;
   color: var(--color-gold-500);
   font-weight: 700;
+}
+
+/* Pola header di tiap halaman wizard: eyebrow -> judul -> subjudul, langsung
+   bersebelahan sebagai children .booth-content. Browser default kasih margin
+   gede di <h2>/<p> yang bikin renggang; dirapatkan di sini biar konsisten di
+   semua halaman tanpa perlu override manual satu-satu. */
+.booth-content > .eyebrow + h2.font-display {
+  margin: 3px 0 4px;
+}
+
+.booth-content > h2.font-display + p.muted {
+  margin-top: 0;
 }
 
 .muted {

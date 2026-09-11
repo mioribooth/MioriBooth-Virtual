@@ -36,7 +36,7 @@ export default function PrintReveal({
       const t = setTimeout(() => {
         setPhase("done");
         onRevealed?.();
-      }, 950);
+      }, 1350);
       return () => clearTimeout(t);
     }
   }, [phase, onRevealed]);

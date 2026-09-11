@@ -51,11 +51,11 @@
 /* --- Tombol ganti kamera depan/belakang --- */
 .camera-flip-btn {
   pointer-events: auto;
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(10, 4, 6, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(10, 4, 6, 0.5);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   color: white;

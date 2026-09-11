@@ -1,6 +1,32 @@
+/* Sama seperti halaman terima kasih — latar burgundy gelap, biar ada variasi
+   dan momen "keluarnya" foto terasa lebih dramatis (kertas putih nongol di
+   atas latar gelap). */
+.print-shell {
+  background: radial-gradient(circle at 50% 0%, var(--color-maroon-500) 0%, var(--color-maroon-900) 68%);
+}
+
 .print-content {
   align-items: center;
   text-align: center;
+}
+
+.print-content .eyebrow {
+  color: var(--color-gold-300);
+}
+
+.print-content h2.font-display {
+  color: white;
+}
+
+.print-content p.muted {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+/* Dot progress indicator dibikin kontras di atas latar gelap ini —
+   warna aslinya (maroon) hampir nyatu sama background burgundy. */
+.print-shell .filmstrip-hole.is-active {
+  background: white;
+  border-color: white;
 }
 
 .print-stage {

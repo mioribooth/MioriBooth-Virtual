@@ -133,20 +133,20 @@ export default function ReviewPage() {
           </p>
         )}
 
-        <div style={{ marginTop: "auto", paddingTop: 20, display: "flex", flexDirection: "column", gap: 10 }}>
+        <div className="review-actions-row">
           <button
-            className="btn btn-primary btn-block"
-            onClick={handleContinue}
-            disabled={!composedUrl}
-          >
-            <IconCheck /> Simpan Kenangan
-          </button>
-          <button
-            className="btn btn-secondary btn-block"
+            className="btn btn-secondary"
             onClick={handleRetake}
             type="button"
           >
-            <IconRefresh /> Ambil Ulang
+            <IconRefresh size={15} /> Ambil Ulang
+          </button>
+          <button
+            className="btn btn-primary"
+            onClick={handleContinue}
+            disabled={!composedUrl}
+          >
+            <IconCheck size={15} /> Simpan Kenangan
           </button>
         </div>
       </div>
