@@ -78,8 +78,59 @@ button {
   flex-direction: column;
   max-width: 480px;
   margin: 0 auto;
-  background: var(--color-cream-100);
+  background: radial-gradient(circle at 50% 0%, var(--color-maroon-500) 0%, var(--color-maroon-900) 68%);
   position: relative;
+}
+
+/* Semua halaman tamu sekarang pakai latar burgundy gelap (bukan krem) —
+   jadi teks & tombol default di-scope ulang di sini supaya tetap kebaca.
+   Kartu/elemen yang masih berlatar putih (voice-panel, frame-option, dsb)
+   di-restore manual di file CSS masing-masing halaman. */
+.booth-shell .eyebrow {
+  color: var(--color-gold-300);
+}
+
+.booth-shell h2 {
+  color: white;
+}
+
+.booth-shell .muted {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.booth-shell .field-label {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.booth-shell .btn-primary {
+  background: white;
+  color: var(--color-maroon-700);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+}
+
+.booth-shell .btn-primary:hover:not(:disabled) {
+  background: var(--color-cream-200);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.3);
+}
+
+.booth-shell .btn-secondary {
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+  border: 1.5px solid rgba(255, 255, 255, 0.55);
+}
+
+.booth-shell .btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.booth-shell .btn-ghost {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.booth-shell .btn-ghost:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.18);
 }
 
 .booth-content {
@@ -110,8 +161,8 @@ button {
 }
 
 .filmstrip-hole.is-active {
-  background: var(--color-maroon-700);
-  border-color: var(--color-maroon-700);
+  background: white;
+  border-color: white;
   transform: scale(1.25);
 }
 

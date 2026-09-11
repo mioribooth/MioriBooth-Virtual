@@ -156,9 +156,20 @@ export default function SlideshowClient({ gallerySlug }: { gallerySlug: string }
   }
 
   const current = data.submissions[index % data.submissions.length];
+  // Kumpulan foto tamu lain buat lapisan latar belakang (blur + redup) —
+  // bukan foto yang lagi tampil supaya ga keliatan dobel.
+  const backdropPhotos = data.submissions
+    .filter((s) => s.id !== current.id)
+    .slice(0, 12);
 
   return (
     <div className="slideshow-shell">
+      <div className="slideshow-bg" aria-hidden="true">
+        {backdropPhotos.map((s) => (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img key={s.id} src={s.composedUrl} alt="" />
+        ))}
+      </div>
       <div className="slideshow-stage">
         {current.mediaType === "VIDEO" ? (
           // eslint-disable-next-line jsx-a11y/media-has-caption

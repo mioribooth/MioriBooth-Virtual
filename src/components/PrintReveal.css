@@ -55,12 +55,15 @@
   50% { opacity: 0.25; }
 }
 
-/* --- Panggung tempat kertas foto "keluar" --- */
+/* --- Panggung tempat kertas foto "keluar" — overflow hidden supaya
+   fotonya beneran "nongol" dari balik slot pas meluncur turun, bukan cuma
+   di-mask di tempat. --- */
 .print-paper-stage {
   position: relative;
   flex: 1;
   min-height: 0;
   width: 100%;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -89,8 +92,10 @@
   100% { transform: translateX(340%); }
 }
 
-/* --- Kertas foto: mulai tersembunyi (masked) di balik slot, lalu "dicetak
-   keluar" turun halus dari atas ke bawah — transisi mulus, bukan patah-patah. */
+/* --- Kertas foto: mulai tersembunyi tepat di balik slot (di atas panggung
+   yang overflow-hidden), lalu BENERAN meluncur turun ke posisi akhirnya —
+   pakai transform translateY, bukan clip-path (itu kesannya cuma fade/wipe,
+   bukan gerakan fisik turun). --- */
 .print-paper {
   height: 100%;
   width: auto;
@@ -100,26 +105,22 @@
   border-radius: var(--radius-sm);
   background: white;
   box-shadow: 0 14px 30px rgba(47, 5, 18, 0.22);
-  clip-path: inset(0 0 100% 0);
-  transform: translateY(-3%);
+  transform: translateY(-100%);
 }
 
 .print-paper.is-feeding {
-  animation: printFeedOut 1.3s cubic-bezier(0.32, 0.08, 0.24, 1) forwards;
+  animation: printSlideDown 1.3s cubic-bezier(0.32, 0.08, 0.24, 1) forwards;
 }
 
 .print-paper.is-done {
-  clip-path: inset(0 0 0% 0);
   transform: translateY(0);
 }
 
-@keyframes printFeedOut {
+@keyframes printSlideDown {
   0% {
-    clip-path: inset(0 0 100% 0);
-    transform: translateY(-3%);
+    transform: translateY(-100%);
   }
   100% {
-    clip-path: inset(0 0 0% 0);
     transform: translateY(0);
   }
 }

@@ -104,7 +104,7 @@ export default function PrintPage() {
   }
 
   return (
-    <div className="booth-shell print-shell">
+    <div className="booth-shell">
       <FilmstripSteps total={totalSteps} currentIndex={currentIndex} />
       <div className="booth-content print-content">
         <span className="eyebrow">Langkah {currentIndex + 1}</span>

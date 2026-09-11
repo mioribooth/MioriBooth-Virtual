@@ -9,6 +9,24 @@
   gap: 14px;
 }
 
+/* Panel ini tetap kartu putih meski latar halamannya sekarang burgundy —
+   jadi teks & tombol default (yang sudah di-scope buat latar gelap) perlu
+   dikembalikan ke versi terang di sini supaya tetap kebaca. */
+.voice-panel .muted {
+  color: var(--color-ink-600);
+}
+
+.voice-panel .btn-secondary {
+  background: rgba(109, 15, 40, 0.08);
+  color: var(--color-maroon-700);
+  border: 1.5px solid var(--color-maroon-700);
+}
+
+.voice-panel .btn-secondary:hover:not(:disabled) {
+  background: var(--color-maroon-700);
+  color: var(--color-cream-100);
+}
+
 .voice-timer {
   font-family: var(--font-display);
   font-size: 34px;

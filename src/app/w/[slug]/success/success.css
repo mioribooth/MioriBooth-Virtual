@@ -1,27 +1,8 @@
-/* Halaman terakhir sengaja dibikin beda dari halaman lain (yang krem/putih) —
-   latar burgundy gelap biar hasil fotonya "pop" dan terasa seperti momen
-   puncak/penutup, bukan cuma form lagi. */
-.success-shell {
-  background: radial-gradient(circle at 50% 0%, var(--color-maroon-500) 0%, var(--color-maroon-900) 68%);
-}
-
 .success-content {
   align-items: center;
   text-align: center;
   padding-top: 18px;
   min-height: 0;
-}
-
-.success-content .eyebrow {
-  color: var(--color-gold-300);
-}
-
-.success-content h2.font-display {
-  color: white;
-}
-
-.success-content p.muted {
-  color: rgba(255, 255, 255, 0.72);
 }
 
 /* Frame dibikin sebesar mungkin, hampir penuh layar — ini yang jadi fokus
@@ -54,26 +35,4 @@
   flex-direction: column;
   gap: 10px;
   flex-shrink: 0;
-}
-
-/* Tombol dark-mode: bukan pakai .btn-primary/.btn-ghost bawaan (itu didesain
-   untuk latar krem) — di sini kontrasnya dibalik supaya tetap jelas di atas
-   burgundy. */
-.success-btn-primary {
-  background: white;
-  color: var(--color-maroon-700);
-}
-
-.success-btn-primary:hover:not(:disabled) {
-  background: var(--color-cream-200);
-}
-
-.success-btn-ghost {
-  background: rgba(255, 255, 255, 0.12);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-}
-
-.success-btn-ghost:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.2);
 }

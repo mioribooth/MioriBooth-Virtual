@@ -78,7 +78,7 @@ export default function SuccessPage() {
   }
 
   return (
-    <div className="booth-shell success-shell">
+    <div className="booth-shell">
       <div className="booth-content success-content">
         <span className="eyebrow" style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
           <IconSparkle size={13} /> Selesai
@@ -102,7 +102,7 @@ export default function SuccessPage() {
         <div className="success-actions">
           <button
             type="button"
-            className="btn btn-block success-btn-primary"
+            className="btn btn-primary btn-block"
             onClick={handleDownload}
             disabled={downloading}
           >
@@ -116,7 +116,7 @@ export default function SuccessPage() {
               </>
             )}
           </button>
-          <a className="btn btn-block success-btn-ghost" href={`/gallery/${result.gallerySlug}`}>
+          <a className="btn btn-ghost btn-block" href={`/gallery/${result.gallerySlug}`}>
             <IconGallery /> Lihat Galeri Semua Tamu
           </a>
         </div>
