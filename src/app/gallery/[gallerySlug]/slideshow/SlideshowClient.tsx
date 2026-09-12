@@ -156,16 +156,32 @@ export default function SlideshowClient({ gallerySlug }: { gallerySlug: string }
   }
 
   const current = data.submissions[index % data.submissions.length];
-  // Kumpulan foto tamu lain buat lapisan latar belakang (blur + redup) —
-  // bukan foto yang lagi tampil supaya ga keliatan dobel.
-  const backdropPhotos = data.submissions.filter((s) => s.id !== current.id).slice(0, 12);
+  // Kumpulan foto tamu lain buat lapisan latar belakang — beberapa thumbnail
+  // yang melayang (floating) di sekitar foto utama, bukan foto yang lagi
+  // tampil supaya ga keliatan dobel.
+  const backdropPhotos = data.submissions.filter((s) => s.id !== current.id).slice(0, 10);
+  const scatterPositions = [
+    { top: "6%", left: "4%" },
+    { top: "14%", left: "80%" },
+    { top: "32%", left: "2%" },
+    { top: "58%", left: "86%" },
+    { top: "72%", left: "6%" },
+    { top: "80%", left: "70%" },
+    { top: "4%", left: "48%" },
+    { top: "86%", left: "42%" },
+    { top: "42%", left: "92%" },
+    { top: "22%", left: "28%" },
+  ];
 
   return (
     <div className="slideshow-shell slideshow-split">
       {/* Kolom kiri: identitas mempelai — layar dimaksudkan untuk monitor landscape */}
       <div className="slideshow-left">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/brand/logo-white-2.png" alt="MioriBooth" className="slideshow-logo" />
+        <div className="slideshow-brand">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brand/logo-white-2.png" alt="MioriBooth" className="slideshow-logo" />
+          <span className="slideshow-app-label">Virtual Photobooth</span>
+        </div>
         <div className="slideshow-left-body">
           <span className="eyebrow">Wedding Memories Of</span>
           <h1 className="font-display slideshow-names">
@@ -180,11 +196,26 @@ export default function SlideshowClient({ gallerySlug }: { gallerySlug: string }
       {/* Kolom kanan: foto tamu bergantian, meluncur dari kanan ke kiri */}
       <div className="slideshow-right">
         <div className="slideshow-bg" aria-hidden="true">
-          {backdropPhotos.map((s) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img key={s.id} src={s.composedUrl} alt="" />
-          ))}
+          {backdropPhotos.map((s, i) => {
+            const pos = scatterPositions[i % scatterPositions.length];
+            return (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                key={s.id}
+                src={s.composedUrl}
+                alt=""
+                className="slideshow-bg-item"
+                style={{
+                  top: pos.top,
+                  left: pos.left,
+                  animationDelay: `${i * 0.6}s`,
+                  animationDuration: `${6 + (i % 3)}s`,
+                }}
+              />
+            );
+          })}
         </div>
+        <div className="slideshow-tint" aria-hidden="true" />
 
         <div className="slideshow-photo-wrap">
           {current.mediaType === "VIDEO" ? (

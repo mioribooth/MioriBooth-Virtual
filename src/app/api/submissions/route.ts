@@ -33,7 +33,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Masa akses booth ini sudah berakhir" }, { status: 410 });
   }
 
-  const needsVoice = wedding.package.mediaMode === "PHOTO_AND_VOICE";
+  // Pesan suara cuma wajib buat mode PHOTO_AND_VOICE — dan cuma kalau tamu
+  // memang mengambil FOTO (bukan video). Kalau tamu pilih frame video, video
+  // itu sendiri sudah jadi "pesan"-nya, gak perlu rekam suara tambahan lagi.
+  const needsVoice = wedding.package.mediaMode === "PHOTO_AND_VOICE" && session.mediaType !== "VIDEO";
   if (needsVoice && !session.voiceNoteUrl) {
     return NextResponse.json({ error: "Pesan suara belum direkam" }, { status: 400 });
   }
@@ -59,6 +62,7 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({
     id: submission.id,
     composedUrl: submission.composedUrl,
+    mediaType: submission.mediaType,
     voiceNoteUrl: submission.voiceNoteUrl,
     gallerySlug: wedding.gallerySlug,
   });

@@ -1,13 +1,14 @@
-/* --- Carousel frame: satu kartu besar di tengah, kiri-kanannya keliatan
-   kecil (di-scale turun via JS pas discroll) — geser buat pilih. --- */
+/* --- Carousel frame: satu kartu besar di tengah (hampir penuh lebar layar),
+   kiri-kanannya keliatan kecil (di-scale turun via JS pas discroll) — geser
+   buat pilih. --- */
 .frame-carousel {
   display: flex;
   align-items: center;
   overflow-x: auto;
   overflow-y: hidden;
   scroll-snap-type: x mandatory;
-  gap: 16px;
-  padding: 10px calc(50% - 105px) 14px;
+  gap: 14px;
+  padding: 10px 7% 14px;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 }
@@ -18,7 +19,7 @@
 
 .frame-carousel-item {
   flex-shrink: 0;
-  width: 210px;
+  width: 84%;
   scroll-snap-align: center;
   transition: transform 0.05s linear, opacity 0.05s linear;
 }

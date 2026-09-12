@@ -82,7 +82,11 @@ export function buildComposedVideoUrl(params: {
   const { cloudName, framePublicId, frameWidth, frameHeight, rawVideoPublicId } = params;
   const encodedFrameId = framePublicId.replace(/\//g, ":");
   const base = `https://res.cloudinary.com/${cloudName}/video/upload`;
-  const baseResize = `w_${frameWidth},h_${frameHeight},c_fill,g_auto`;
+  // g_auto TIDAK dipakai di sini — itu fitur "auto gravity" yang buat video
+  // butuh add-on khusus di Cloudinary dan kemungkinan besar ini penyebab
+  // transformasinya gagal total (video jadi gak bisa diputar sama sekali).
+  // c_fill polos (gravity default = center) sudah cukup dan pasti didukung.
+  const baseResize = `w_${frameWidth},h_${frameHeight},c_fill`;
   const overlay = `l_image:${encodedFrameId},w_${frameWidth},h_${frameHeight},c_fill/fl_layer_apply,g_center`;
   return `${base}/${baseResize}/${overlay}/${rawVideoPublicId}.mp4`;
 }

@@ -116,15 +116,15 @@ export default function ReviewPage() {
             <img src={composedUrl} alt="Hasil frame" onError={() => setPreviewFailed(true)} />
           )}
 
-          {!loading && composedUrl && mediaType === "VIDEO" && (
+          {!loading && composedUrl && !previewFailed && mediaType === "VIDEO" && (
             // eslint-disable-next-line jsx-a11y/media-has-caption
-            <video src={composedUrl} controls />
+            <video src={composedUrl} controls onError={() => setPreviewFailed(true)} />
           )}
 
           {!loading && composedUrl && previewFailed && (
             <div className="review-error-card">
               <p className="muted" style={{ color: "var(--color-danger)", marginBottom: 10 }}>
-                Gambar gagal dimuat. Kirim link di bawah ini ke admin untuk dicek:
+                Hasil gagal dimuat. Kirim link di bawah ini ke admin untuk dicek:
               </p>
               <p style={{ wordBreak: "break-all", fontSize: 12 }}>
                 <a href={composedUrl} target="_blank" rel="noreferrer">
