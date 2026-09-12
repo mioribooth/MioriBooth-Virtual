@@ -190,7 +190,7 @@ export default function CaptureVideoPage() {
           <p className="muted">Maksimal {MAX_DURATION_SECONDS} detik</p>
         </div>
 
-        <div className="camera-frame" style={{ aspectRatio: "9 / 16" }}>
+        <div className="camera-frame" style={{ aspectRatio: "3 / 4" }}>
           {cameraError ? (
             <div className="camera-error">{cameraError}</div>
           ) : (
@@ -200,21 +200,14 @@ export default function CaptureVideoPage() {
               playsInline
               muted
               className="camera-video"
-              // object-fit: contain (BUKAN cover). Ini poin pentingnya: yang
-              // sebenarnya bikin preview kelihatan "ke-zoom kek ratio foto"
-              // itu bukan soal resolusi yang diminta ke kamera, tapi "cover"
-              // yang maksa stream itu (apa pun rasio aslinya) di-crop biar
-              // penuh ngisi kotak 9:16 yang tinggi banget — makin beda jauh
-              // rasio aslinya dari 9:16, makin parah crop/zoom-nya.
-              // Dengan "contain", frame APA ADANYA dari kamera ditampilin utuh
-              // (gak dicrop/dizoom), sama seperti preview mode Video di
-              // kamera bawaan HP (yang juga dikasih letterbox, bukan full
-              //9:16 tanpa crop). Video yang KEREKAM juga ambil langsung dari
-              // stream mentah ini (bukan dari tampilan CSS-nya), jadi ini
-              // sekalian bikin preview WYSIWYG — apa yang kelihatan di layar
-              // = persis apa yang bakal ke-rekam.
+              // Kotak preview sekarang di-set 3/4 (samain sama rasio native
+              // yang emang dikasih browser buat stream kamera ini — sudah
+              // kebukti gabisa dipaksa 9:16 tanpa over-crop/zoom di device
+              // ini). Karena rasio kotak SUDAH sama kayak rasio stream-nya,
+              // "cover" di sini aman dipakai lagi (gak akan crop berlebihan
+              // kayak sebelumnya waktu kotaknya masih 9:16).
               style={{
-                objectFit: "contain",
+                objectFit: "cover",
                 background: "black",
                 transform: facingMode === "user" ? "scaleX(-1)" : "none",
               }}

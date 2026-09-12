@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import FilmstripSteps from "@/components/FilmstripSteps";
 import Spinner from "@/components/Spinner";
@@ -26,6 +26,7 @@ export default function ReviewPage() {
   // (terpisah dari loading compose di atas) — selama itu belum siap, tampilkan
   // animasi loading di atas video, bukan kotak kosong nunggu tombol play dipencet.
   const [videoReady, setVideoReady] = useState(false);
+  const reviewVideoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     if (!token) return;
@@ -64,6 +65,33 @@ export default function ReviewPage() {
       }
     })();
   }, [token, slug]);
+
+  // iOS Safari sering blokir auto-preload video (demi hemat data seluler),
+  // jadi event "video sudah ada framenya" (loadeddata) kadang gak pernah
+  // nembak sendiri sebelum user pencet play — spinner-nya jadi keliatan
+  // stuck selamanya. Jaring pengaman: kalau dalam beberapa detik videoReady
+  // belum juga true, paksa tampilkan video-nya (user masih bisa pencet
+  // tombol play bawaan), daripada spinner muter tanpa henti.
+  useEffect(() => {
+    if (!composedUrl || mediaType !== "VIDEO" || videoReady) return;
+    const timeout = setTimeout(() => setVideoReady(true), 4000);
+    return () => clearTimeout(timeout);
+  }, [composedUrl, mediaType, videoReady]);
+
+  function handleReviewVideoLoadedMetadata() {
+    const v = reviewVideoRef.current;
+    // Trik biar browser (terutama iOS) benar-benar nge-render frame pertama
+    // sebagai "thumbnail" — tanpa ini videonya bisa kelihatan hitam kosong
+    // sampai user pencet play sendiri, walau metadata-nya udah kebaca.
+    if (v && v.readyState < 2) {
+      try {
+        v.currentTime = Math.min(0.1, v.duration || 0.1);
+      } catch {
+        // ignore — beberapa browser gak suka di-seek sebelum benar2 ready
+      }
+    }
+  }
+
 
   // Simpan Kenangan sekarang tidak langsung save ke server — tergantung
   // paketnya, tamu masih perlu lanjut rekam suara/video dulu. Baru di
@@ -112,7 +140,8 @@ export default function ReviewPage() {
         <div className="review-preview">
           {loading && (
             <div className="review-loading">
-              <Spinner dark />
+              <Spinner dark size={44} />
+              <p className="review-loading-text">Menyusun hasil kamu…</p>
             </div>
           )}
 
@@ -125,17 +154,21 @@ export default function ReviewPage() {
             <div className="review-video-wrap">
               {!videoReady && (
                 <div className="review-loading review-video-loading">
-                  <Spinner dark />
+                  <Spinner dark size={44} />
+                  <p className="review-loading-text">Menyiapkan video…</p>
                 </div>
               )}
               {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
               <video
+                ref={reviewVideoRef}
                 src={composedUrl}
                 controls
-                preload="auto"
+                preload="metadata"
                 playsInline
                 style={{ opacity: videoReady ? 1 : 0 }}
+                onLoadedMetadata={handleReviewVideoLoadedMetadata}
                 onLoadedData={() => setVideoReady(true)}
+                onSeeked={() => setVideoReady(true)}
                 onError={() => setPreviewFailed(true)}
               />
             </div>
