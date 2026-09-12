@@ -93,12 +93,16 @@
 .slideshow-left-body .eyebrow {
   display: block;
   color: var(--color-gold-300);
-  margin-bottom: 10px;
+  margin-bottom: 14px;
+  font-size: 16px;
 }
 
 .slideshow-names {
-  font-size: clamp(38px, 5vw, 64px);
-  line-height: 1.15;
+  /* Diperbesar biar kebaca dari jauh (slideshow biasanya diputer di layar
+     venue/proyektor) — sekitar 2x dari ukuran sebelumnya, ngikutin lebar
+     kolom kiri (38% layar) biar mendekati separuh lebar kotaknya. */
+  font-size: clamp(44px, 7vw, 120px);
+  line-height: 1.1;
   font-style: italic;
   color: white;
   margin: 0;
@@ -106,7 +110,7 @@
 
 .slideshow-amp {
   display: block;
-  font-size: 1em;
+  font-size: 0.45em;
   font-style: normal;
   color: var(--color-gold-300);
   margin: 6px 0;
