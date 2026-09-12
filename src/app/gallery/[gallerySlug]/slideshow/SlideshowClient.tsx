@@ -180,7 +180,6 @@ export default function SlideshowClient({ gallerySlug }: { gallerySlug: string }
         <div className="slideshow-brand">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/brand/logo-white-2.png" alt="MioriBooth" className="slideshow-logo" />
-          <span className="slideshow-app-label">Virtual Photobooth</span>
         </div>
         <div className="slideshow-left-body">
           <span className="eyebrow">Wedding Memories Of</span>

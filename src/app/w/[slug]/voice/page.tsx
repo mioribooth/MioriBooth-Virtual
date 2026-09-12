@@ -141,9 +141,9 @@ export default function VoiceNotePage() {
         <div className="mic-notice-overlay">
           <div className="mic-notice-card">
             <IconMic size={28} />
-            <h3>Dekatkan HP ke mulutmu, ya</h3>
+            <h3>Dekatkan mikrofon ke arah mulut kamu 😊</h3>
             <p>
-              Supaya suaramu terekam jernih, dekatkan mikrofon HP ke mulut dan bicara dengan
+              Supaya suaramu terekam jernih, dekatkan mikrofon ke arah mulut kamu dan bicara dengan
               jelas — jangan sambil jauh-jauh dari layar, ya. Kedua mempelai bakal dengar pesan
               ini nanti!
             </p>
