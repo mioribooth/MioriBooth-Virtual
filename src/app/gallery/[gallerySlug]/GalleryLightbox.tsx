@@ -12,6 +12,14 @@ interface GalleryItem {
   videoNoteUrl: string | null;
 }
 
+// Cloudinary bisa generate thumbnail JPG dari video cuma dengan ganti
+// ekstensi file-nya di URL delivery (mp4/webm -> jpg) — dia otomatis ambil
+// satu frame dari videonya. Dipakai sebagai `poster` supaya video di galeri
+// gak nampil kotak hitam/kosong sebelum diputar.
+function videoPosterUrl(url: string): string {
+  return url.replace(/\.(mp4|webm|mov)(\?.*)?$/i, ".jpg$2");
+}
+
 export default function GalleryLightbox({ submissions }: { submissions: GalleryItem[] }) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
@@ -60,7 +68,13 @@ export default function GalleryLightbox({ submissions }: { submissions: GalleryI
             ) : (
               <span className="gallery-card-video-thumb">
                 {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-                <video src={s.composedUrl} preload="metadata" muted playsInline />
+                <video
+                  src={s.composedUrl}
+                  poster={videoPosterUrl(s.composedUrl)}
+                  preload="metadata"
+                  muted
+                  playsInline
+                />
                 <span className="gallery-play-badge">▶</span>
               </span>
             )}
@@ -110,7 +124,13 @@ export default function GalleryLightbox({ submissions }: { submissions: GalleryI
               <img src={active.composedUrl} alt={active.guestName ?? "Tamu"} />
             ) : (
               // eslint-disable-next-line jsx-a11y/media-has-caption
-              <video src={active.composedUrl} controls autoPlay playsInline />
+              <video
+                src={active.composedUrl}
+                poster={videoPosterUrl(active.composedUrl)}
+                controls
+                autoPlay
+                playsInline
+              />
             )}
             <div className="lightbox-info">
               <span className="lightbox-name">{active.guestName || "Tamu"}</span>

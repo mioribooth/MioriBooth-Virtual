@@ -21,7 +21,8 @@
   justify-content: center;
 }
 
-.success-preview img {
+.success-preview img,
+.success-preview video {
   height: 100%;
   width: auto;
   max-width: 100%;

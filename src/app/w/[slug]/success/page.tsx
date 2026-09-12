@@ -11,6 +11,7 @@ export default function SuccessPage() {
   const { slug } = useParams<{ slug: string }>();
   const [result, setResult] = useState<{
     composedUrl: string;
+    mediaType: "PHOTO" | "VIDEO";
     voiceNoteUrl: string | null;
     gallerySlug: string;
   } | null>(null);
@@ -35,7 +36,13 @@ export default function SuccessPage() {
       const res = await fetch(result.composedUrl);
       if (!res.ok) throw new Error("fetch gagal");
       const blob = await res.blob();
-      const ext = blob.type.includes("png") ? "png" : "jpg";
+      const ext = blob.type.includes("video")
+        ? blob.type.includes("webm")
+          ? "webm"
+          : "mp4"
+        : blob.type.includes("png")
+          ? "png"
+          : "jpg";
       const fileName = `miori-booth-${Date.now()}.${ext}`;
       const file = new File([blob], fileName, { type: blob.type || "image/jpeg" });
 
@@ -89,8 +96,15 @@ export default function SuccessPage() {
         </p>
 
         <div className="success-preview">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={result.composedUrl} alt="Hasil kenangan" />
+          {result.mediaType === "VIDEO" ? (
+            // Sengaja TIDAK autoPlay dan TIDAK muted — video baru jalan (dan
+            // baru ada suaranya) kalau tamu sendiri yang tekan tombol play.
+            // eslint-disable-next-line jsx-a11y/media-has-caption
+            <video src={result.composedUrl} controls playsInline />
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={result.composedUrl} alt="Hasil kenangan" />
+          )}
         </div>
 
         {result.voiceNoteUrl && (

@@ -107,8 +107,8 @@ button {
    senada sama kartu pilihan frame. Ini di-scope ke .booth-shell aja supaya
    form di dashboard admin (tetap terang) gak ikut kena. */
 .booth-shell .field-input {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.45);
   color: white;
 }
 

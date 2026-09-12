@@ -6,10 +6,10 @@ import FilmstripSteps from "@/components/FilmstripSteps";
 import Spinner from "@/components/Spinner";
 import { IconFlipCamera } from "@/components/icons";
 import { getBoothToken, patchSession } from "@/lib/wizardClient";
-import { uploadToCloudinary } from "@/lib/uploadClient";
+import { uploadToCloudinaryWithProgress } from "@/lib/uploadClient";
 import "../capture.css";
 
-const MAX_DURATION_SECONDS = 15;
+const MAX_DURATION_SECONDS = 60;
 
 export default function CaptureVideoPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -26,12 +26,14 @@ export default function CaptureVideoPage() {
   const [seconds, setSeconds] = useState(0);
   const [result, setResult] = useState<{ previewUrl: string; url: string } | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [finishing, setFinishing] = useState(false);
   const [facingMode, setFacingMode] = useState<"user" | "environment">("user");
   const [totalSteps, setTotalSteps] = useState(6);
 
   const token = getBoothToken(slug);
+  const secondsLeft = Math.max(0, MAX_DURATION_SECONDS - seconds);
 
   useEffect(() => {
     fetch(`/api/weddings/${slug}`)
@@ -121,8 +123,14 @@ export default function CaptureVideoPage() {
     const previewUrl = URL.createObjectURL(blob);
     setResult({ previewUrl, url: "" });
     setUploading(true);
+    setUploadProgress(0);
     try {
-      const uploaded = await uploadToCloudinary(blob, "video", "booth-virtual/raw-videos");
+      const uploaded = await uploadToCloudinaryWithProgress(
+        blob,
+        "video",
+        "booth-virtual/raw-videos",
+        setUploadProgress
+      );
       setResult({ previewUrl, url: uploaded.secure_url });
     } catch {
       setError("Upload video gagal, coba rekam ulang.");
@@ -135,6 +143,7 @@ export default function CaptureVideoPage() {
   function handleRetake() {
     setResult(null);
     setSeconds(0);
+    setUploadProgress(0);
   }
 
   // Urutan sekarang selalu: capture -> cek hasil (review). Rekam suara dan
@@ -200,7 +209,7 @@ export default function CaptureVideoPage() {
           )}
           {recording && (
             <div className="record-badge">
-              <span className="record-dot" /> {seconds}s
+              <span className="record-dot" /> REC · sisa {secondsLeft}d
             </div>
           )}
 
@@ -221,11 +230,17 @@ export default function CaptureVideoPage() {
           <div className="camera-frame-actions">
             {!result ? (
               <button
-                className="btn btn-primary btn-block"
+                className={`video-record-btn ${recording ? "is-recording" : ""}`}
                 onClick={recording ? stopRecording : startRecording}
                 disabled={!!cameraError}
+                type="button"
+                aria-label={recording ? "Berhenti merekam" : "Mulai merekam"}
               >
-                {recording ? "Berhenti Merekam" : "Mulai Rekam"}
+                {recording ? (
+                  <span className="video-record-btn-stop" />
+                ) : (
+                  <span className="video-record-btn-dot" />
+                )}
               </button>
             ) : (
               <button
@@ -238,11 +253,19 @@ export default function CaptureVideoPage() {
             )}
           </div>
         </div>
+        {!result && (
+          <p className="capture-shutter-hint">
+            {recording ? "Ketuk untuk berhenti" : "Ketuk untuk mulai rekam"}
+          </p>
+        )}
 
         {uploading && (
-          <p className="muted" style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10 }}>
-            <Spinner dark /> Mengunggah video...
-          </p>
+          <div className="upload-progress" style={{ marginTop: 12 }}>
+            <div className="upload-progress-track">
+              <div className="upload-progress-fill" style={{ width: `${uploadProgress}%` }} />
+            </div>
+            <span className="upload-progress-label">Mengunggah video... {uploadProgress}%</span>
+          </div>
         )}
         {error && (
           <p className="muted" style={{ color: "var(--color-danger)" }}>

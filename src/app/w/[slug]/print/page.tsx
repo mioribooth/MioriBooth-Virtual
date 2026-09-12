@@ -9,6 +9,7 @@ import "./print.css";
 
 interface SubmissionResult {
   composedUrl: string;
+  mediaType: "PHOTO" | "VIDEO";
   voiceNoteUrl: string | null;
   gallerySlug: string;
 }
@@ -44,9 +45,14 @@ export default function PrintPage() {
         setMediaType(session?.mediaType ?? "PHOTO");
         const wedding = await weddingRes.json().catch(() => null);
         if (wedding?.mediaMode) {
+          // Sama kayak di halaman review: kalau tamu merekam video sendiri
+          // (frame tipe VIDEO), langkah rekam suara/video tambahan dilewati,
+          // jadi print selalu ada di step ke-4 (index 3) dari total 5.
+          const isVideoCapture = (session?.mediaType ?? "PHOTO") === "VIDEO";
           const isPhotoOnly = wedding.mediaMode === "PHOTO_ONLY";
-          setTotalSteps(isPhotoOnly ? 5 : 6);
-          setCurrentIndex(isPhotoOnly ? 3 : 4);
+          const skipsExtraStep = isVideoCapture || isPhotoOnly;
+          setTotalSteps(skipsExtraStep ? 5 : 6);
+          setCurrentIndex(skipsExtraStep ? 3 : 4);
         }
 
         const res = await fetch("/api/submissions", {
@@ -61,6 +67,7 @@ export default function PrintPage() {
         const data = await res.json();
         setResult({
           composedUrl: data.composedUrl,
+          mediaType: session?.mediaType ?? "PHOTO",
           voiceNoteUrl: data.voiceNoteUrl ?? null,
           gallerySlug: data.gallerySlug,
         });

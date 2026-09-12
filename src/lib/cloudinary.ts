@@ -65,16 +65,24 @@ export function buildComposedPhotoUrl(params: {
 }
 
 /**
- * Versi video: 1 slot foto berupa video tamu, frame gambar (PNG) dioverlay
- * di atasnya. l_image: dipakai eksplisit karena base asset di sini adalah
- * video, jadi layer default perlu ditandai sebagai image, bukan video.
+ * Versi video: video tamu jadi kanvas dasar, di-crop/fill dulu ke ukuran
+ * kanvas frame (frameWidth x frameHeight) supaya proporsinya PAS, baru
+ * gambar frame (PNG, border/desain) ditempel penuh satu kanvas di atasnya.
+ * Tanpa eksplisit di-resize ke ukuran yang sama, frame bisa nongol kekecilan
+ * atau gak nutup penuh videonya (makanya sebelumnya kelihatan "kayak gak ada
+ * frame-nya").
  */
 export function buildComposedVideoUrl(params: {
   cloudName: string;
   framePublicId: string;
+  frameWidth: number;
+  frameHeight: number;
   rawVideoPublicId: string;
 }): string {
-  const { cloudName, framePublicId, rawVideoPublicId } = params;
+  const { cloudName, framePublicId, frameWidth, frameHeight, rawVideoPublicId } = params;
   const encodedFrameId = framePublicId.replace(/\//g, ":");
-  return `https://res.cloudinary.com/${cloudName}/video/upload/l_image:${encodedFrameId},fl_layer_apply,g_center/${rawVideoPublicId}.mp4`;
+  const base = `https://res.cloudinary.com/${cloudName}/video/upload`;
+  const baseResize = `w_${frameWidth},h_${frameHeight},c_fill,g_auto`;
+  const overlay = `l_image:${encodedFrameId},w_${frameWidth},h_${frameHeight},c_fill/fl_layer_apply,g_center`;
+  return `${base}/${baseResize}/${overlay}/${rawVideoPublicId}.mp4`;
 }

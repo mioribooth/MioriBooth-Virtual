@@ -35,7 +35,11 @@ export default function ReviewPage() {
         const wedding = await weddingRes.json().catch(() => null);
         if (wedding?.mediaMode) {
           setMediaMode(wedding.mediaMode);
-          setTotalSteps(wedding.mediaMode === "PHOTO_ONLY" ? 5 : 6);
+          // Kalau yang direkam tamu videonya sendiri (frame tipe VIDEO), langkah
+          // rekam suara/video tambahan dilewati apapun setting mediaMode wedding-nya
+          // — jadi total step-nya selalu 5 (frame, capture, review, print, selesai).
+          const isVideoCapture = (session?.mediaType ?? "PHOTO") === "VIDEO";
+          setTotalSteps(isVideoCapture || wedding.mediaMode === "PHOTO_ONLY" ? 5 : 6);
         }
         const res = await fetch("/api/compose", {
           method: "POST",
@@ -59,10 +63,14 @@ export default function ReviewPage() {
   // Simpan Kenangan sekarang tidak langsung save ke server — tergantung
   // paketnya, tamu masih perlu lanjut rekam suara/video dulu. Baru di
   // halaman animasi cetak (setelah itu semua) submission-nya benar-benar
-  // dikirim ke server.
+  // dikirim ke server. Kalau media yang direkam tamu SENDIRI sudah berupa
+  // video (frame tipe VIDEO), langkah rekam suara/video tambahan dilewati —
+  // gak masuk akal nambah rekaman lagi di atas video yang udah ada.
   function handleContinue() {
     if (!composedUrl) return;
-    if (mediaMode === "PHOTO_AND_VOICE") {
+    if (mediaType === "VIDEO") {
+      router.push(`/w/${slug}/print`);
+    } else if (mediaMode === "PHOTO_AND_VOICE") {
       router.push(`/w/${slug}/voice`);
     } else if (mediaMode === "PHOTO_AND_VIDEO") {
       router.push(`/w/${slug}/video-note`);

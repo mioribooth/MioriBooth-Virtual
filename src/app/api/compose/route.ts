@@ -53,6 +53,8 @@ export async function POST(req: NextRequest) {
     composedUrl = buildComposedVideoUrl({
       cloudName: CLOUD_NAME,
       framePublicId: frame.overlayPublicId,
+      frameWidth: frame.frameWidth,
+      frameHeight: frame.frameHeight,
       rawVideoPublicId: publicIdFromUrl(session.rawVideoUrl),
     });
   }

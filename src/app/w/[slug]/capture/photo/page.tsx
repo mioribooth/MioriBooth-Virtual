@@ -46,13 +46,25 @@ export default function CapturePhotoPage() {
   const countdownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const token = getBoothToken(slug);
 
-  // Ambil slotCount dari sesi
+  // Ambil slotCount dari sesi — dan kalau sebelumnya udah pernah ambil foto
+  // (rawPhotoUrls sudah ada di sesi, misal tamu balik lagi dari halaman cek
+  // hasil buat retake), pulihkan sebagai slot yang sudah terisi, jangan reset
+  // semuanya jadi kosong.
   useEffect(() => {
     if (!token) return;
     getSession(token).then((session) => {
       const count = session?.slotCount ?? 3;
       setSlotCount(count);
-      setSlots(Array.from({ length: count }, () => ({ status: "empty" as const })));
+      const existingUrls: string[] = session?.rawPhotoUrls ?? [];
+      setSlots(
+        Array.from({ length: count }, (_, i) => {
+          const url = existingUrls[i];
+          return url
+            ? { status: "captured" as const, previewUrl: url, url, uploading: false }
+            : { status: "empty" as const };
+        })
+      );
+      setActiveSlot(existingUrls.length < count ? existingUrls.length : 0);
     });
   }, [token]);
 
@@ -334,7 +346,7 @@ export default function CapturePhotoPage() {
                   onClick={() => handleRetake(reviewSlot)}
                   type="button"
                 >
-                  <IconRefresh /> Ambil Ulang
+                  <IconRefresh /> Retake
                 </button>
                 <button
                   className="btn btn-primary"
@@ -343,7 +355,7 @@ export default function CapturePhotoPage() {
                   disabled={reviewShot?.status === "captured" && reviewShot.uploading}
                   type="button"
                 >
-                  <IconCheck /> Gunakan Foto Ini
+                  <IconCheck /> Gunakan
                 </button>
               </div>
             ) : (
@@ -385,7 +397,7 @@ export default function CapturePhotoPage() {
                       type="button"
                       disabled={countdown !== null}
                     >
-                      <IconRefresh size={13} /> Ambil Ulang
+                      <IconRefresh size={13} /> Retake
                     </button>
                   </div>
                 </>

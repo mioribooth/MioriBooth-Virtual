@@ -28,6 +28,7 @@ export default function VoiceNotePage() {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [finishing, setFinishing] = useState(false);
+  const [showMicNotice, setShowMicNotice] = useState(true);
 
   const token = getBoothToken(slug);
 
@@ -135,6 +136,28 @@ export default function VoiceNotePage() {
   return (
     <div className="booth-shell">
       <FilmstripSteps total={6} currentIndex={3} />
+
+      {showMicNotice && (
+        <div className="mic-notice-overlay">
+          <div className="mic-notice-card">
+            <IconMic size={28} />
+            <h3>Dekatkan HP ke mulutmu, ya</h3>
+            <p>
+              Supaya suaramu terekam jernih, dekatkan mikrofon HP ke mulut dan bicara dengan
+              jelas — jangan sambil jauh-jauh dari layar, ya. Kedua mempelai bakal dengar pesan
+              ini nanti!
+            </p>
+            <button
+              type="button"
+              className="btn btn-primary btn-block"
+              onClick={() => setShowMicNotice(false)}
+            >
+              Siap, Mulai Rekam
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="booth-content">
         <span className="eyebrow">Langkah 4</span>
         <h2 className="font-display">Tinggalkan pesan suara</h2>
