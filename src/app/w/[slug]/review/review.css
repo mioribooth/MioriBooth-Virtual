@@ -32,6 +32,26 @@
   justify-content: center;
 }
 
+/* Wrapper video hasil compose: video-nya tetap dimuat di background (opacity 0)
+   supaya browser fetch metadata/frame duluan, sementara spinner nutupin di
+   atasnya sampai videonya beneran siap ditampilkan (onLoadedData). */
+.review-video-wrap {
+  position: relative;
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  display: flex;
+}
+
+.review-video-wrap video {
+  transition: opacity 0.2s ease;
+}
+
+.review-video-loading {
+  position: absolute;
+  inset: 0;
+}
+
 .review-error-card {
   background: white;
   border-radius: var(--radius-md);

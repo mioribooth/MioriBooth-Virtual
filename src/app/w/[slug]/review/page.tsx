@@ -22,6 +22,10 @@ export default function ReviewPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [previewFailed, setPreviewFailed] = useState(false);
+  // Video hasil compose butuh waktu buka metadata/frame pertamanya sendiri
+  // (terpisah dari loading compose di atas) — selama itu belum siap, tampilkan
+  // animasi loading di atas video, bukan kotak kosong nunggu tombol play dipencet.
+  const [videoReady, setVideoReady] = useState(false);
 
   useEffect(() => {
     if (!token) return;
@@ -51,6 +55,7 @@ export default function ReviewPage() {
           throw new Error(data.error ?? "Gagal menyusun hasil");
         }
         const data = await res.json();
+        setVideoReady(false);
         setComposedUrl(data.composedUrl);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Terjadi kesalahan");
@@ -117,8 +122,23 @@ export default function ReviewPage() {
           )}
 
           {!loading && composedUrl && !previewFailed && mediaType === "VIDEO" && (
-            // eslint-disable-next-line jsx-a11y/media-has-caption
-            <video src={composedUrl} controls onError={() => setPreviewFailed(true)} />
+            <div className="review-video-wrap">
+              {!videoReady && (
+                <div className="review-loading review-video-loading">
+                  <Spinner dark />
+                </div>
+              )}
+              {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+              <video
+                src={composedUrl}
+                controls
+                preload="auto"
+                playsInline
+                style={{ opacity: videoReady ? 1 : 0 }}
+                onLoadedData={() => setVideoReady(true)}
+                onError={() => setPreviewFailed(true)}
+              />
+            </div>
           )}
 
           {!loading && composedUrl && previewFailed && (

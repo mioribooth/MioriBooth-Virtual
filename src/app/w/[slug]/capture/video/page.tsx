@@ -48,11 +48,15 @@ export default function CaptureVideoPage() {
       streamRef.current?.getTracks().forEach((t) => t.stop());
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          // Gak minta aspectRatio spesifik di sini — itu bikin browser/kamera
-          // CROP/ZOOM stream-nya sendiri buat mendekati rasio yang diminta
-          // (efeknya kelihatan zoom banget). Biarkan kamera kasih pandangan
-          // alaminya, biar CSS (object-fit: contain) aja yang atur tampilannya.
-          video: { facingMode },
+          // Minta resolusi ideal portrait (9:16) langsung ke kamera — pakai
+          // width/height "ideal" (bukan aspectRatio "exact") supaya device
+          // (terutama HP) otomatis membuka stream-nya di rasio 9:16 tanpa
+          // over-crop/zoom paksa, dan tanpa perlu CSS nge-letterbox atas-bawah.
+          video: {
+            facingMode,
+            width: { ideal: 1080 },
+            height: { ideal: 1920 },
+          },
           audio: true,
         });
         if (!active) {
@@ -197,12 +201,11 @@ export default function CaptureVideoPage() {
               playsInline
               muted
               className="camera-video"
-              // object-fit: contain (bukan cover bawaan) — kamera HP defaultnya
-              // sering ngasih stream rasio 4:3/16:9, kalau dipaksa cover ke
-              // kotak 9:16 yang jauh lebih tinggi, hasilnya kelihatan zoom in
-              // banget (paling cuma nampilin bagian tengah stream-nya doang).
-              // Dengan contain, seluruh pandangan kamera kelihatan apa adanya.
-              style={{ objectFit: "contain", background: "black" }}
+              // object-fit: cover — sekarang stream kamera sudah diminta di
+              // rasio ideal 9:16 (lihat getUserMedia di atas), jadi cover
+              // tinggal ngisi penuh kotak viewfinder tanpa bikin bar
+              // hitam di atas-bawah, dengan crop minimal.
+              style={{ objectFit: "cover", background: "black" }}
             />
           )}
           {result && (
