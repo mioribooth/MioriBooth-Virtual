@@ -627,6 +627,47 @@ button {
   cursor: not-allowed;
 }
 
+/* Tombol naik/turun urutan frame — ditumpuk di pojok kiri-atas kartu
+   (berlawanan sama tombol hapus di kanan-atas), juga di ATAS <Link> editor. */
+.frame-reorder-controls {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.frame-reorder-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(47, 5, 18, 0.55);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.frame-reorder-btn:hover:not(:disabled) {
+  background: var(--color-gold-500);
+}
+
+.frame-reorder-btn:active:not(:disabled) {
+  transform: scale(0.9);
+}
+
+.frame-reorder-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
 .eyebrow {
   font-size: 12px;
   text-transform: uppercase;

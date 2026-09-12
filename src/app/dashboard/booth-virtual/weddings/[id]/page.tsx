@@ -5,7 +5,7 @@ import { getVendorFromCookies } from "@/lib/auth";
 import AdminTopbar from "@/components/AdminTopbar";
 import CopyLinkRow from "@/components/CopyLinkRow";
 import DeleteWeddingButton from "@/components/DeleteWeddingButton";
-import DeleteFrameButton from "@/components/DeleteFrameButton";
+import FrameGrid from "@/components/FrameGrid";
 import BackButton from "@/components/BackButton";
 
 export default async function WeddingDetailPage({
@@ -128,33 +128,21 @@ export default async function WeddingDetailPage({
           </Link>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px,1fr))", gap: 14, marginBottom: 30 }}>
-          {wedding.frames.map((f) => (
-            <div key={f.id} className="card" style={{ position: "relative" }}>
-              <DeleteFrameButton weddingId={wedding.id} frameId={f.id} frameName={f.name} />
-              <Link
-                href={`/dashboard/booth-virtual/weddings/${wedding.id}/frames/${f.id}/editor`}
-                style={{ textDecoration: "none", color: "inherit", display: "block" }}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={f.previewUrl ?? f.overlayImageUrl}
-                  alt={f.name}
-                  style={{ width: "100%", aspectRatio: "3/4", objectFit: "cover", borderRadius: 8, marginBottom: 8 }}
-                />
-                <strong style={{ fontSize: 14 }}>{f.name}</strong>
-                <div>
-                  <span className="badge badge-muted">
-                    {f.type === "PHOTO" ? `Foto · ${f.slotCount} slot` : "Video · 1 slot"}
-                  </span>
-                </div>
-              </Link>
-            </div>
-          ))}
-          {wedding.frames.length === 0 && (
-            <p className="muted">Belum ada frame. Tambahkan frame pertama.</p>
-          )}
-        </div>
+        <p className="muted" style={{ marginTop: -6, marginBottom: 14 }}>
+          Pakai tombol panah di tiap kartu buat atur urutan frame yang tamu lihat.
+        </p>
+
+        <FrameGrid
+          weddingId={wedding.id}
+          initialFrames={wedding.frames.map((f) => ({
+            id: f.id,
+            name: f.name,
+            type: f.type,
+            slotCount: f.slotCount,
+            previewUrl: f.previewUrl,
+            overlayImageUrl: f.overlayImageUrl,
+          }))}
+        />
 
         <Link
           href={`/dashboard/booth-virtual/weddings/${wedding.id}/submissions`}
