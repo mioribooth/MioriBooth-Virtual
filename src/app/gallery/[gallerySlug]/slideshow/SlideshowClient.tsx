@@ -13,6 +13,8 @@ interface SlideItem {
 }
 
 interface GalleryResponse {
+  slug: string;
+  showSlideshowQr: boolean;
   groomName: string;
   brideName: string;
   isExpired: boolean;
@@ -180,6 +182,7 @@ export default function SlideshowClient({ gallerySlug }: { gallerySlug: string }
         <div className="slideshow-brand">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/brand/logo-white-2.png" alt="MioriBooth" className="slideshow-logo" />
+          <span className="slideshow-app-label">Virtual Photobooth</span>
         </div>
         <div className="slideshow-left-body">
           <span className="eyebrow">Wedding Memories Of</span>
@@ -188,6 +191,31 @@ export default function SlideshowClient({ gallerySlug }: { gallerySlug: string }
             <span className="slideshow-amp">&amp;</span>
             {data.brideName}
           </h1>
+
+          {/* Ajakan buat tamu yang lihat slideshow di layar venue ikutan
+              nyoba booth-nya sendiri — QR di-generate dari link booth
+              (/w/[slug]) wedding ini lewat API QR eksternal (gak perlu
+              nambah dependency baru), diarahkan ke domain yang lagi
+              dipakai (window.location.origin) biar valid walau domainnya
+              custom. Bisa di-toggle admin lewat wedding.showSlideshowQr. */}
+          {data.showSlideshowQr && (
+            <div className="slideshow-qr-invite">
+              {typeof window !== "undefined" && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=8&data=${encodeURIComponent(
+                    `${window.location.origin}/w/${data.slug}`
+                  )}`}
+                  alt="QR Code Booth Virtual"
+                  className="slideshow-qr-img"
+                />
+              )}
+              <div className="slideshow-qr-copy">
+                <p className="slideshow-qr-text">Yuk, cobain juga booth-nya!</p>
+                <p className="slideshow-qr-caption">Scan pakai kamera HP kamu</p>
+              </div>
+            </div>
+          )}
         </div>
         <span className="slideshow-watermark">@mioribooth</span>
       </div>

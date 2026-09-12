@@ -54,6 +54,7 @@ model Wedding {
 
   accessExpiresAt DateTime // = eventDate + package.accessDurationDays (bisa diedit manual vendor)
   isActive        Boolean  @default(true)
+  showSlideshowQr Boolean  @default(true) // toggle admin: tampilkan/sembunyikan ajakan+QR booth di slideshow
 
   frames      FrameTemplate[]
   submissions GuestSubmission[]

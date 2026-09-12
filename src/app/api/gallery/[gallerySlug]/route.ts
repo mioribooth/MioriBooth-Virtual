@@ -19,6 +19,8 @@ export async function GET(
   const isExpired = new Date() > wedding.accessExpiresAt;
 
   return NextResponse.json({
+    slug: wedding.slug,
+    showSlideshowQr: wedding.showSlideshowQr,
     groomName: wedding.groomName,
     brideName: wedding.brideName,
     eventDate: wedding.eventDate,

@@ -26,6 +26,7 @@ interface WeddingData {
   welcomeText: string | null;
   clientPhone: string | null;
   clientAddress: string | null;
+  showSlideshowQr: boolean;
 }
 
 export default function EditWeddingPage() {
@@ -43,6 +44,7 @@ export default function EditWeddingPage() {
   const [welcomeText, setWelcomeText] = useState("");
   const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null);
   const [uploadingCover, setUploadingCover] = useState(false);
+  const [showSlideshowQr, setShowSlideshowQr] = useState(true);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -62,6 +64,7 @@ export default function EditWeddingPage() {
         setClientAddress(wedding.clientAddress ?? "");
         setWelcomeText(wedding.welcomeText ?? "");
         setCoverImageUrl(wedding.coverImageUrl);
+        setShowSlideshowQr(wedding.showSlideshowQr);
       })
       .catch(() => setError("Gagal memuat data wedding."))
       .finally(() => setLoading(false));
@@ -102,6 +105,7 @@ export default function EditWeddingPage() {
           welcomeText: welcomeText || undefined,
           clientPhone: clientPhone || undefined,
           clientAddress: clientAddress || undefined,
+          showSlideshowQr,
         }),
       });
       if (!res.ok) {
@@ -239,6 +243,25 @@ export default function EditWeddingPage() {
               onChange={(e) => setWelcomeText(e.target.value)}
               placeholder="Tinggalkan foto dan pesan suara terbaikmu untuk kami kenang selamanya."
             />
+          </div>
+
+          <div>
+            <label
+              className="field-label"
+              style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}
+            >
+              <input
+                type="checkbox"
+                checked={showSlideshowQr}
+                onChange={(e) => setShowSlideshowQr(e.target.checked)}
+                style={{ width: 16, height: 16 }}
+              />
+              Tampilkan ajakan + QR booth di Live Slideshow
+            </label>
+            <p className="muted" style={{ fontSize: 12, marginTop: 4 }}>
+              Kalau dimatikan, kartu "Yuk, cobain juga booth-nya!" beserta QR
+              code di layar slideshow venue disembunyikan.
+            </p>
           </div>
 
           {error && <p className="muted" style={{ color: "var(--color-danger)" }}>{error}</p>}

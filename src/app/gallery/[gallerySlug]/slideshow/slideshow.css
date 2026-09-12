@@ -116,6 +116,42 @@
   margin: 6px 0;
 }
 
+/* Ajakan cobain booth + QR code, ditaruh di bawah nama pengantin */
+.slideshow-qr-invite {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 28px;
+  padding: 16px 18px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-md);
+  width: fit-content;
+}
+
+.slideshow-qr-img {
+  width: 96px;
+  height: 96px;
+  border-radius: 8px;
+  background: white;
+  padding: 6px;
+  flex-shrink: 0;
+}
+
+.slideshow-qr-text {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 22px;
+  color: white;
+  margin: 0 0 4px;
+}
+
+.slideshow-qr-caption {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+}
+
 .slideshow-watermark {
   position: absolute;
   left: 48px;

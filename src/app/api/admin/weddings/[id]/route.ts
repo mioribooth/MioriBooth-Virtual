@@ -53,6 +53,7 @@ export async function PATCH(
     welcomeText,
     clientPhone,
     clientAddress,
+    showSlideshowQr,
   } = body ?? {};
 
   if (!groomName || !brideName || !eventDate || !packageId) {
@@ -85,6 +86,9 @@ export async function PATCH(
       clientPhone: clientPhone || null,
       clientAddress: clientAddress || null,
       accessExpiresAt,
+      // boolean — kalau field-nya gak dikirim (undefined) di body, biarkan
+      // nilai lama gak berubah, jangan ke-reset ke default true.
+      ...(typeof showSlideshowQr === "boolean" ? { showSlideshowQr } : {}),
     },
   });
 
