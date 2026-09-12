@@ -8,7 +8,7 @@
   overflow-y: hidden;
   scroll-snap-type: x mandatory;
   gap: 14px;
-  padding: 10px 7% 14px;
+  padding: 10px 14% 14px;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 }
@@ -19,7 +19,7 @@
 
 .frame-carousel-item {
   flex-shrink: 0;
-  width: 84%;
+  width: 72%;
   scroll-snap-align: center;
   transition: transform 0.05s linear, opacity 0.05s linear;
 }
@@ -44,15 +44,18 @@
   box-shadow: 0 0 0 3px rgba(216, 178, 122, 0.25), 0 10px 28px rgba(0, 0, 0, 0.25);
 }
 
-/* object-fit: contain (bukan cover) supaya FULL desain frame keliatan, gak
-   kepotong tepinya. Latar gelap transparan buat area letterbox-nya. */
+/* width:100%; height:auto (BUKAN aspect-ratio + object-fit) — beberapa
+   WebKit versi lama (termasuk in-app browser kayak WhatsApp) suka salah
+   render kombinasi aspect-ratio+object-fit di elemen <img> jadi malah
+   kepotong kayak cover, padahal maunya contain. Dengan height:auto, gambar
+   PASTI tampil di rasio aslinya, gak ada crop sama sekali — cuma konsekuensinya
+   tinggi kartu jadi ikut beda-beda tergantung rasio asli tiap frame. */
 .frame-option img {
   width: 100%;
-  aspect-ratio: 3 / 4;
-  object-fit: contain;
+  height: auto;
+  display: block;
   border-radius: var(--radius-sm);
   background: rgba(0, 0, 0, 0.18);
-  display: block;
 }
 
 .frame-selected-info {
