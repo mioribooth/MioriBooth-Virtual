@@ -68,3 +68,42 @@ export async function PATCH(
 
   return NextResponse.json(updated);
 }
+
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: { id: string; frameId: string } }
+) {
+  const vendor = await getVendorFromCookies();
+  if (!vendor) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const frame = await prisma.frameTemplate.findFirst({
+    where: {
+      id: params.frameId,
+      weddingId: params.id,
+      wedding: { vendorId: vendor.vendorId },
+    },
+    include: { _count: { select: { submissions: true } } },
+  });
+  if (!frame) {
+    return NextResponse.json({ error: "Frame tidak ditemukan" }, { status: 404 });
+  }
+
+  // GuestSubmission.frameId tidak di-cascade (biar hasil tamu yang sudah
+  // tersimpan gak ikut ilang cuma gara-gara framenya dihapus) — jadi frame
+  // yang sudah pernah dipakai tamu tidak boleh dihapus, harus dikasih tau
+  // eksplisit ke vendor kenapa gagal.
+  if (frame._count.submissions > 0) {
+    return NextResponse.json(
+      {
+        error: `Frame ini sudah dipakai ${frame._count.submissions} submission tamu, tidak bisa dihapus.`,
+      },
+      { status: 409 }
+    );
+  }
+
+  await prisma.frameTemplate.delete({ where: { id: frame.id } });
+
+  return NextResponse.json({ ok: true });
+}

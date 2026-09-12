@@ -592,6 +592,41 @@ button {
   padding: 18px;
 }
 
+/* Tombol hapus mengambang di pojok kanan-atas kartu frame, di ATAS <Link>
+   editor-nya (bukan di dalamnya) supaya klik hapus gak ikut trigger navigasi. */
+.frame-delete-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(47, 5, 18, 0.55);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.frame-delete-btn:hover {
+  background: var(--color-danger);
+}
+
+.frame-delete-btn:active {
+  transform: scale(0.92);
+}
+
+.frame-delete-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .eyebrow {
   font-size: 12px;
   text-transform: uppercase;

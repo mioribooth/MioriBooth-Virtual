@@ -5,6 +5,7 @@ import { getVendorFromCookies } from "@/lib/auth";
 import AdminTopbar from "@/components/AdminTopbar";
 import CopyLinkRow from "@/components/CopyLinkRow";
 import DeleteWeddingButton from "@/components/DeleteWeddingButton";
+import DeleteFrameButton from "@/components/DeleteFrameButton";
 import BackButton from "@/components/BackButton";
 
 export default async function WeddingDetailPage({
@@ -129,25 +130,26 @@ export default async function WeddingDetailPage({
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px,1fr))", gap: 14, marginBottom: 30 }}>
           {wedding.frames.map((f) => (
-            <Link
-              key={f.id}
-              href={`/dashboard/booth-virtual/weddings/${wedding.id}/frames/${f.id}/editor`}
-              className="card"
-              style={{ textDecoration: "none", color: "inherit" }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={f.previewUrl ?? f.overlayImageUrl}
-                alt={f.name}
-                style={{ width: "100%", aspectRatio: "3/4", objectFit: "cover", borderRadius: 8, marginBottom: 8 }}
-              />
-              <strong style={{ fontSize: 14 }}>{f.name}</strong>
-              <div>
-                <span className="badge badge-muted">
-                  {f.type === "PHOTO" ? `Foto · ${f.slotCount} slot` : "Video · 1 slot"}
-                </span>
-              </div>
-            </Link>
+            <div key={f.id} className="card" style={{ position: "relative" }}>
+              <DeleteFrameButton weddingId={wedding.id} frameId={f.id} frameName={f.name} />
+              <Link
+                href={`/dashboard/booth-virtual/weddings/${wedding.id}/frames/${f.id}/editor`}
+                style={{ textDecoration: "none", color: "inherit", display: "block" }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={f.previewUrl ?? f.overlayImageUrl}
+                  alt={f.name}
+                  style={{ width: "100%", aspectRatio: "3/4", objectFit: "cover", borderRadius: 8, marginBottom: 8 }}
+                />
+                <strong style={{ fontSize: 14 }}>{f.name}</strong>
+                <div>
+                  <span className="badge badge-muted">
+                    {f.type === "PHOTO" ? `Foto · ${f.slotCount} slot` : "Video · 1 slot"}
+                  </span>
+                </div>
+              </Link>
+            </div>
           ))}
           {wedding.frames.length === 0 && (
             <p className="muted">Belum ada frame. Tambahkan frame pertama.</p>
