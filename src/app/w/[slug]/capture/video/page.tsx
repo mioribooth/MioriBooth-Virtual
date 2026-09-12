@@ -200,14 +200,21 @@ export default function CaptureVideoPage() {
               playsInline
               muted
               className="camera-video"
-              // object-fit: cover — biar penuh ngisi kotak viewfinder 9:16
-              // tanpa maksa resolusi tertentu dari kamera (lihat komentar di
-              // getUserMedia). Mirror (scaleX(-1)) cuma buat kamera depan
-              // (facingMode "user") — kamera belakang jangan di-mirror,
-              // makanya di-override manual di sini (class .camera-video
-              // default-nya selalu mirror).
+              // object-fit: contain (BUKAN cover). Ini poin pentingnya: yang
+              // sebenarnya bikin preview kelihatan "ke-zoom kek ratio foto"
+              // itu bukan soal resolusi yang diminta ke kamera, tapi "cover"
+              // yang maksa stream itu (apa pun rasio aslinya) di-crop biar
+              // penuh ngisi kotak 9:16 yang tinggi banget — makin beda jauh
+              // rasio aslinya dari 9:16, makin parah crop/zoom-nya.
+              // Dengan "contain", frame APA ADANYA dari kamera ditampilin utuh
+              // (gak dicrop/dizoom), sama seperti preview mode Video di
+              // kamera bawaan HP (yang juga dikasih letterbox, bukan full
+              //9:16 tanpa crop). Video yang KEREKAM juga ambil langsung dari
+              // stream mentah ini (bukan dari tampilan CSS-nya), jadi ini
+              // sekalian bikin preview WYSIWYG — apa yang kelihatan di layar
+              // = persis apa yang bakal ke-rekam.
               style={{
-                objectFit: "cover",
+                objectFit: "contain",
                 background: "black",
                 transform: facingMode === "user" ? "scaleX(-1)" : "none",
               }}
