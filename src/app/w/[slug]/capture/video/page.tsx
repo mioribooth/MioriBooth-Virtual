@@ -48,7 +48,7 @@ export default function CaptureVideoPage() {
       streamRef.current?.getTracks().forEach((t) => t.stop());
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode },
+          video: { facingMode, aspectRatio: { ideal: 9 / 16 } },
           audio: true,
         });
         if (!active) {
@@ -183,7 +183,7 @@ export default function CaptureVideoPage() {
           <p className="muted">Maksimal {MAX_DURATION_SECONDS} detik</p>
         </div>
 
-        <div className="camera-frame">
+        <div className="camera-frame" style={{ aspectRatio: "9 / 16" }}>
           {cameraError ? (
             <div className="camera-error">{cameraError}</div>
           ) : (
@@ -193,7 +193,6 @@ export default function CaptureVideoPage() {
               playsInline
               muted
               className="camera-video"
-              style={{ transform: facingMode === "user" ? "scaleX(-1)" : "none" }}
             />
           )}
           {result && (
