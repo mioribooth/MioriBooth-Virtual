@@ -48,15 +48,14 @@ export default function CaptureVideoPage() {
       streamRef.current?.getTracks().forEach((t) => t.stop());
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          // Minta resolusi ideal portrait (9:16) langsung ke kamera — pakai
-          // width/height "ideal" (bukan aspectRatio "exact") supaya device
-          // (terutama HP) otomatis membuka stream-nya di rasio 9:16 tanpa
-          // over-crop/zoom paksa, dan tanpa perlu CSS nge-letterbox atas-bawah.
-          video: {
-            facingMode,
-            width: { ideal: 1080 },
-            height: { ideal: 1920 },
-          },
+          // Gak minta width/height/aspectRatio spesifik sama sekali —
+          // sudah dicoba portrait (1080x1920) dan landscape (1280x720),
+          // dua-duanya bikin browser/kamera crop digital paksa ke tengah
+          // (hasilnya nge-zoom cuma ke wajah, bukan FOV natural). Biarkan
+          // kamera kasih resolusi default aslinya; object-fit: cover di
+          // CSS/style yang urus biar keisi penuh kotak viewfinder, dengan
+          // crop merata dari CSS (bukan crop paksa dari constraint kamera).
+          video: { facingMode },
           audio: true,
         });
         if (!active) {
@@ -201,11 +200,17 @@ export default function CaptureVideoPage() {
               playsInline
               muted
               className="camera-video"
-              // object-fit: cover — sekarang stream kamera sudah diminta di
-              // rasio ideal 9:16 (lihat getUserMedia di atas), jadi cover
-              // tinggal ngisi penuh kotak viewfinder tanpa bikin bar
-              // hitam di atas-bawah, dengan crop minimal.
-              style={{ objectFit: "cover", background: "black" }}
+              // object-fit: cover — biar penuh ngisi kotak viewfinder 9:16
+              // tanpa maksa resolusi tertentu dari kamera (lihat komentar di
+              // getUserMedia). Mirror (scaleX(-1)) cuma buat kamera depan
+              // (facingMode "user") — kamera belakang jangan di-mirror,
+              // makanya di-override manual di sini (class .camera-video
+              // default-nya selalu mirror).
+              style={{
+                objectFit: "cover",
+                background: "black",
+                transform: facingMode === "user" ? "scaleX(-1)" : "none",
+              }}
             />
           )}
           {result && (
