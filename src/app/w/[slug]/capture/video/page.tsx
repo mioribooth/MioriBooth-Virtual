@@ -48,7 +48,11 @@ export default function CaptureVideoPage() {
       streamRef.current?.getTracks().forEach((t) => t.stop());
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode, aspectRatio: { ideal: 9 / 16 } },
+          // Gak minta aspectRatio spesifik di sini — itu bikin browser/kamera
+          // CROP/ZOOM stream-nya sendiri buat mendekati rasio yang diminta
+          // (efeknya kelihatan zoom banget). Biarkan kamera kasih pandangan
+          // alaminya, biar CSS (object-fit: contain) aja yang atur tampilannya.
+          video: { facingMode },
           audio: true,
         });
         if (!active) {
@@ -193,6 +197,12 @@ export default function CaptureVideoPage() {
               playsInline
               muted
               className="camera-video"
+              // object-fit: contain (bukan cover bawaan) — kamera HP defaultnya
+              // sering ngasih stream rasio 4:3/16:9, kalau dipaksa cover ke
+              // kotak 9:16 yang jauh lebih tinggi, hasilnya kelihatan zoom in
+              // banget (paling cuma nampilin bagian tengah stream-nya doang).
+              // Dengan contain, seluruh pandangan kamera kelihatan apa adanya.
+              style={{ objectFit: "contain", background: "black" }}
             />
           )}
           {result && (
@@ -202,7 +212,7 @@ export default function CaptureVideoPage() {
                 src={result.previewUrl}
                 controls
                 className="camera-video"
-                style={{ transform: "none" }}
+                style={{ transform: "none", objectFit: "contain", background: "black" }}
               />
             </div>
           )}
