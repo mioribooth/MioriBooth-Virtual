@@ -213,9 +213,9 @@
   background: radial-gradient(
       circle at 50% 40%,
       rgba(156, 42, 69, 0.35) 0%,
-      rgba(47, 5, 18, 0.82) 78%
+      rgba(var(--color-maroon-900-rgb), 0.82) 78%
     ),
-    rgba(47, 5, 18, 0.25);
+    rgba(var(--color-maroon-900-rgb), 0.25);
 }
 
 .slideshow-photo-wrap {
@@ -267,7 +267,7 @@
   font-style: italic;
   font-size: 26px;
   color: white;
-  background: rgba(47, 5, 18, 0.45);
+  background: rgba(var(--color-maroon-900-rgb), 0.45);
   padding: 6px 22px;
   border-radius: 999px;
   backdrop-filter: blur(6px);

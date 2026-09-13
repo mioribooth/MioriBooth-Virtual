@@ -54,7 +54,15 @@ export async function PATCH(
     clientPhone,
     clientAddress,
     showSlideshowQr,
+    theme,
   } = body ?? {};
+
+  if (theme !== undefined && theme !== "BURGUNDY" && theme !== "SKY_BLUE") {
+    return NextResponse.json(
+      { error: "theme harus 'BURGUNDY' atau 'SKY_BLUE'" },
+      { status: 400 }
+    );
+  }
 
   if (!groomName || !brideName || !eventDate || !packageId) {
     return NextResponse.json(
@@ -86,9 +94,10 @@ export async function PATCH(
       clientPhone: clientPhone || null,
       clientAddress: clientAddress || null,
       accessExpiresAt,
-      // boolean — kalau field-nya gak dikirim (undefined) di body, biarkan
-      // nilai lama gak berubah, jangan ke-reset ke default true.
+      // boolean/string — kalau field-nya gak dikirim (undefined) di body,
+      // biarkan nilai lama gak berubah.
       ...(typeof showSlideshowQr === "boolean" ? { showSlideshowQr } : {}),
+      ...(theme !== undefined ? { theme } : {}),
     },
   });
 

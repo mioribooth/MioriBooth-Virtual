@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Wedding" ADD COLUMN "theme" TEXT NOT NULL DEFAULT 'BURGUNDY';

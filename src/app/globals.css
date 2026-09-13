@@ -8,6 +8,7 @@
 
 :root {
   --color-maroon-900: #2f0512;
+  --color-maroon-900-rgb: 47, 5, 18;
   --color-maroon-700: #6d0f28;
   --color-maroon-500: #9c2a45;
   --color-cream-100: #faf6f4;
@@ -28,6 +29,38 @@
   --radius-lg: 26px;
 
   --shadow-soft: 0 12px 30px rgba(47, 5, 18, 0.14);
+}
+
+/* -----------------------------------------------------------------
+   TEMA BOOTH TAMU (dipilih per-wedding dari admin) — dibungkus lewat
+   layout.tsx di /w/[slug] dan /gallery/[gallerySlug], jadi cuma nimpa
+   variable warna di dalam subtree booth tamu + slideshow, TIDAK ikut
+   ngubah warna dashboard admin (yang tetap pakai burgundy dari :root).
+   CSS di landing.css/capture.css/slideshow.css dkk sama sekali gak
+   perlu diubah — mereka udah pakai var(--color-maroon-*) / gold, jadi
+   otomatis ikut kalau variable-nya di-override di sini.
+------------------------------------------------------------------ */
+.theme-burgundy {
+  /* sama persis kayak default :root — ditulis eksplisit biar jelas & gampang dibandingkan */
+  --color-maroon-900: #2f0512;
+  --color-maroon-900-rgb: 47, 5, 18;
+  --color-maroon-700: #6d0f28;
+  --color-maroon-500: #9c2a45;
+  --color-gold-500: #b08d57;
+  --color-gold-300: #d9bd8a;
+  --color-blush-200: #d9a8b3;
+  --shadow-soft: 0 12px 30px rgba(47, 5, 18, 0.14);
+}
+
+.theme-sky-blue {
+  --color-maroon-900: #0b3550;
+  --color-maroon-900-rgb: 11, 53, 80;
+  --color-maroon-700: #14567c;
+  --color-maroon-500: #3d8fc4;
+  --color-gold-500: #b08d57;
+  --color-gold-300: #d9bd8a;
+  --color-blush-200: #bfe0f2;
+  --shadow-soft: 0 12px 30px rgba(11, 53, 80, 0.16);
 }
 
 * {

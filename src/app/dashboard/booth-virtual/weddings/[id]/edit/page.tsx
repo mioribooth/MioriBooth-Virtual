@@ -27,6 +27,7 @@ interface WeddingData {
   clientPhone: string | null;
   clientAddress: string | null;
   showSlideshowQr: boolean;
+  theme: string;
 }
 
 export default function EditWeddingPage() {
@@ -45,6 +46,7 @@ export default function EditWeddingPage() {
   const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null);
   const [uploadingCover, setUploadingCover] = useState(false);
   const [showSlideshowQr, setShowSlideshowQr] = useState(true);
+  const [theme, setTheme] = useState("BURGUNDY");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -65,6 +67,7 @@ export default function EditWeddingPage() {
         setWelcomeText(wedding.welcomeText ?? "");
         setCoverImageUrl(wedding.coverImageUrl);
         setShowSlideshowQr(wedding.showSlideshowQr);
+        setTheme(wedding.theme);
       })
       .catch(() => setError("Gagal memuat data wedding."))
       .finally(() => setLoading(false));
@@ -106,6 +109,7 @@ export default function EditWeddingPage() {
           clientPhone: clientPhone || undefined,
           clientAddress: clientAddress || undefined,
           showSlideshowQr,
+          theme,
         }),
       });
       if (!res.ok) {
@@ -243,6 +247,18 @@ export default function EditWeddingPage() {
               onChange={(e) => setWelcomeText(e.target.value)}
               placeholder="Tinggalkan foto dan pesan suara terbaikmu untuk kami kenang selamanya."
             />
+          </div>
+
+          <div>
+            <label className="field-label">Tema Warna Booth &amp; Slideshow</label>
+            <CustomSelect value={theme} onChange={setTheme}>
+              <option value="BURGUNDY">Burgundy (default)</option>
+              <option value="SKY_BLUE">Sky Blue</option>
+            </CustomSelect>
+            <p className="muted" style={{ fontSize: 12, marginTop: 4 }}>
+              Berlaku dari halaman awal booth tamu sampai Live Slideshow.
+              Dashboard admin ini tetap burgundy, gak ikut berubah.
+            </p>
           </div>
 
           <div>
