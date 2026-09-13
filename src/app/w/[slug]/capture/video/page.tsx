@@ -16,6 +16,8 @@ export default function CaptureVideoPage() {
   const router = useRouter();
 
   const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animationFrameRef = useRef<number | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -31,6 +33,22 @@ export default function CaptureVideoPage() {
   const [finishing, setFinishing] = useState(false);
   const [facingMode, setFacingMode] = useState<"user" | "environment">("user");
   const [totalSteps, setTotalSteps] = useState(6);
+  // Exposure/pencahayaan manual. Live preview di-adjust lewat CSS filter di
+  // <video> (murah, instan). Buat hasil REKAMANNYA, dipakai pipeline canvas:
+  // tiap frame video digambar ulang ke <canvas> tersembunyi dengan filter
+  // brightness yang sama (lihat useEffect drawFrame di bawah), lalu itu
+  // canvas-lah yang di-capture jadi stream buat MediaRecorder (bukan stream
+  // kamera mentah) — exposureRef dipakai (bukan langsung state `exposure`)
+  // supaya loop requestAnimationFrame yang jalan terus-menerus selalu baca
+  // nilai paling baru tanpa perlu di-restart tiap slider digeser.
+  const [exposure, setExposure] = useState(0);
+  const exposureRef = useRef(0);
+  const exposureFilter = `brightness(${1 + exposure / 100})`;
+
+  function handleExposureChange(value: number) {
+    setExposure(value);
+    exposureRef.current = value;
+  }
 
   const token = getBoothToken(slug);
   const secondsLeft = Math.max(0, MAX_DURATION_SECONDS - seconds);
@@ -41,6 +59,36 @@ export default function CaptureVideoPage() {
       .then((wedding) => setTotalSteps(wedding.mediaMode === "PHOTO_ONLY" ? 5 : 6))
       .catch(() => {});
   }, [slug]);
+
+  // Loop yang terus-menerus nggambar frame video ke canvas tersembunyi
+  // dengan filter exposure diterapkan — jalan dari awal (bukan cuma pas
+  // rekam) biar pas tombol rekam ditekan, canvasnya udah "panas" dan siap
+  // di-capture jadi stream tanpa nunggu/delay/frame kosong di awal.
+  // SENGAJA gak di-mirror di sini (beda sama <video> live preview yang
+  // di-mirror lewat CSS) — biar hasil rekaman kamera depan tetap gak
+  // ke-mirror, sama kayak behaviour sebelumnya.
+  useEffect(() => {
+    function drawFrame() {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      if (video && canvas && video.readyState >= 2 && video.videoWidth > 0) {
+        if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+        }
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.filter = `brightness(${1 + exposureRef.current / 100})`;
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        }
+      }
+      animationFrameRef.current = requestAnimationFrame(drawFrame);
+    }
+    animationFrameRef.current = requestAnimationFrame(drawFrame);
+    return () => {
+      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -88,6 +136,25 @@ export default function CaptureVideoPage() {
     if (!streamRef.current) return;
     chunksRef.current = [];
 
+    // Rekam dari CANVAS (yang udah di-drawFrame dengan filter exposure),
+    // bukan langsung dari stream mentah kamera — ini yang bikin hasil
+    // penyesuaian gelap/terang beneran nempel di file video akhirnya, bukan
+    // cuma tampilan preview. canvas.captureStream() cuma punya track video
+    // (nggak ada audio), jadi audio-nya diambil manual dari stream mic asli
+    // lalu digabung jadi satu MediaStream.
+    // Fallback: kalau karena suatu hal canvas belum siap (dimensi masih 0 —
+    // harusnya nggak pernah kejadian karena drawFrame udah jalan dari awal),
+    // rekam langsung dari stream kamera mentah biar fitur utamanya tetap
+    // jalan walau exposure-nya gak ke-bakar.
+    const canvas = canvasRef.current;
+    const canvasReady = !!canvas && canvas.width > 0 && canvas.height > 0;
+    const recordStream = canvasReady
+      ? new MediaStream([
+          ...canvas!.captureStream(30).getVideoTracks(),
+          ...streamRef.current.getAudioTracks(),
+        ])
+      : streamRef.current;
+
     // Pilih mimeType yang didukung browser ini. Safari/iOS tidak mendukung
     // webm sama sekali (constructor bisa throw kalau dipaksa), jadi cek dulu
     // satu-satu dan pakai yang pertama didukung.
@@ -95,8 +162,8 @@ export default function CaptureVideoPage() {
     const supportedType = preferredTypes.find((t) => MediaRecorder.isTypeSupported(t));
 
     const recorder = supportedType
-      ? new MediaRecorder(streamRef.current, { mimeType: supportedType })
-      : new MediaRecorder(streamRef.current);
+      ? new MediaRecorder(recordStream, { mimeType: supportedType })
+      : new MediaRecorder(recordStream);
 
     recorder.ondataavailable = (e) => {
       if (e.data.size > 0) chunksRef.current.push(e.data);
@@ -210,6 +277,7 @@ export default function CaptureVideoPage() {
                 objectFit: "cover",
                 background: "black",
                 transform: facingMode === "user" ? "scaleX(-1)" : "none",
+                filter: exposureFilter,
               }}
             />
           )}
@@ -224,6 +292,7 @@ export default function CaptureVideoPage() {
               />
             </div>
           )}
+          <canvas ref={canvasRef} style={{ display: "none" }} />
           {recording && (
             <div className="record-badge">
               <span className="record-dot" /> REC · sisa {secondsLeft}d
@@ -241,6 +310,30 @@ export default function CaptureVideoPage() {
               >
                 <IconFlipCamera size={19} />
               </button>
+            </div>
+          )}
+
+          {/* Exposure di sini sekarang beneran ke-bakar ke video hasil
+              rekaman (lewat canvas pipeline) — disembunyikan pas lagi rekam
+              karena mengatur exposure di tengah rekaman bisa bikin transisi
+              kecerahan yang aneh di hasil videonya. */}
+          {!cameraError && !recording && !result && (
+            <div className="camera-exposure">
+              <span className="camera-exposure-icon" aria-hidden="true">
+                🌙
+              </span>
+              <input
+                type="range"
+                min={-50}
+                max={50}
+                value={exposure}
+                onChange={(e) => handleExposureChange(Number(e.target.value))}
+                className="camera-exposure-slider"
+                aria-label="Atur kecerahan kamera"
+              />
+              <span className="camera-exposure-icon" aria-hidden="true">
+                ☀️
+              </span>
             </div>
           )}
 
