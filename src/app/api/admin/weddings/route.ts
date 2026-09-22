@@ -42,8 +42,20 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json().catch(() => null);
-  const { groomName, brideName, eventDate, packageId, coverImageUrl, welcomeText, clientPhone, clientAddress } =
-    body ?? {};
+  const {
+    groomName,
+    brideName,
+    eventDate,
+    packageId,
+    coverImageUrl,
+    coverImagePosX,
+    coverImagePosY,
+    coverImageScale,
+    titleFontScale,
+    welcomeText,
+    clientPhone,
+    clientAddress,
+  } = body ?? {};
 
   if (!groomName || !brideName || !eventDate || !packageId) {
     return NextResponse.json(
@@ -81,6 +93,10 @@ export async function POST(req: NextRequest) {
       brideName,
       eventDate: eventDateObj,
       coverImageUrl: coverImageUrl ?? null,
+      coverImagePosX: typeof coverImagePosX === "number" ? coverImagePosX : undefined,
+      coverImagePosY: typeof coverImagePosY === "number" ? coverImagePosY : undefined,
+      coverImageScale: typeof coverImageScale === "number" ? coverImageScale : undefined,
+      titleFontScale: typeof titleFontScale === "number" ? titleFontScale : undefined,
       welcomeText: welcomeText ?? null,
       clientPhone: clientPhone || null,
       clientAddress: clientAddress || null,

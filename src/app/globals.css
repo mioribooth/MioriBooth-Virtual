@@ -975,3 +975,16 @@ button {
   font-size: 22px;
   margin: 0;
 }
+
+/* Form wedding (baru/edit) dengan live preview di sebelah kanan — di layar
+   sempit, tumpuk jadi 1 kolom dan preview-nya taruh di bawah form (gak
+   sticky lagi, karena di layar sempit sticky sidebar kepotong/menuh-menuhin). */
+@media (max-width: 860px) {
+  .wedding-form-layout {
+    grid-template-columns: 1fr !important;
+  }
+  .wedding-form-preview {
+    position: static !important;
+    top: auto !important;
+  }
+}

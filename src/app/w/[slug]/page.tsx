@@ -54,7 +54,14 @@ export default async function LandingPage({
         <div className="landing-cover">
           {wedding.coverImageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={wedding.coverImageUrl} alt={`${wedding.groomName} & ${wedding.brideName}`} />
+            <img
+              src={wedding.coverImageUrl}
+              alt={`${wedding.groomName} & ${wedding.brideName}`}
+              style={{
+                objectPosition: `${wedding.coverImagePosX}% ${wedding.coverImagePosY}%`,
+                transform: `scale(${wedding.coverImageScale})`,
+              }}
+            />
           ) : (
             <div className="landing-cover-placeholder" />
           )}
@@ -63,9 +70,14 @@ export default async function LandingPage({
 
         <div className="booth-content landing-content">
           <span className="eyebrow">Wedding Memories Of</span>
-          <h1 className="font-display landing-title">
+          <h1
+            className="font-display landing-title"
+            style={{ fontSize: `${30 * wedding.titleFontScale}px` }}
+          >
             {wedding.groomName}
-            <span className="landing-amp">&amp;</span>
+            <span className="landing-amp" style={{ fontSize: `${18 * wedding.titleFontScale}px` }}>
+              &amp;
+            </span>
             {wedding.brideName}
           </h1>
           <p className="muted landing-date">{eventDateLabel}</p>

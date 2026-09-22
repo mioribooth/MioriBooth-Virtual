@@ -56,6 +56,10 @@ model Wedding {
   isActive        Boolean  @default(true)
   showSlideshowQr Boolean  @default(true) // toggle admin: tampilkan/sembunyikan ajakan+QR booth di slideshow
   theme           String   @default("BURGUNDY") // "BURGUNDY" | "SKY_BLUE" — warna tema booth tamu + slideshow, dipilih admin
+  coverImagePosX  Float    @default(50) // 0-100, posisi horizontal foto cover (object-position)
+  coverImagePosY  Float    @default(50) // 0-100, posisi vertikal foto cover (object-position)
+  coverImageScale Float    @default(1) // 1 = fit normal, >1 = zoom in — diatur admin lewat editor pan/zoom
+  titleFontScale  Float    @default(1) // pengali ukuran font nama pengantin di halaman awal booth
 
   frames      FrameTemplate[]
   submissions GuestSubmission[]

@@ -1,0 +1,128 @@
+.cover-dropzone {
+  aspect-ratio: 4 / 5;
+  max-width: 260px;
+  width: 100%;
+  border: 2px dashed var(--color-cream-200);
+  border-radius: var(--radius-md);
+  background: var(--color-cream-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+
+.cover-dropzone:hover {
+  border-color: var(--color-gold-500);
+  background: #fbf6ee;
+}
+
+.cover-dropzone.is-dragover {
+  border-color: var(--color-gold-500);
+  background: #fbf3e2;
+  transform: scale(1.02);
+}
+
+.cover-dropzone-empty,
+.cover-dropzone-uploading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+  padding: 20px;
+  color: var(--color-ink-600);
+}
+
+.cover-dropzone-icon {
+  font-size: 34px;
+  /* Animasi kecil biar dropzone kerasa hidup, bukan ikon statis */
+  animation: cover-icon-float 2.4s ease-in-out infinite;
+}
+
+@keyframes cover-icon-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.cover-dropzone-uploading p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Kotak adjust (pan & zoom) — muncul begitu ada foto ke-upload */
+.cover-adjust-frame {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  max-width: 260px;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--color-maroon-900);
+  cursor: grab;
+  touch-action: none;
+  box-shadow: var(--shadow-soft);
+}
+
+.cover-adjust-frame:active {
+  cursor: grabbing;
+}
+
+.cover-adjust-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.cover-adjust-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.cover-reupload-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  color: white;
+}
+
+.cover-reupload-overlay p {
+  color: white;
+}
+
+.cover-adjust-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  max-width: 260px;
+}
+
+.cover-zoom-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  font-size: 14px;
+}
+
+.cover-zoom-control input[type="range"] {
+  flex: 1;
+}
