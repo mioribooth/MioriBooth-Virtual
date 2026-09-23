@@ -60,6 +60,8 @@ model Wedding {
   coverImagePosY  Float    @default(50) // 0-100, posisi vertikal foto cover (object-position)
   coverImageScale Float    @default(1) // 1 = fit normal, >1 = zoom in — diatur admin lewat editor pan/zoom
   titleFontScale  Float    @default(1) // pengali ukuran font nama pengantin di halaman awal booth
+  titleFontFamily String   @default("cormorant") // "cormorant" | "playfair" | "greatvibes" | "ebgaramond"
+  nameOrder       String   @default("GROOM_FIRST") // "GROOM_FIRST" | "BRIDE_FIRST" — urutan nama yang ditampilkan
 
   frames      FrameTemplate[]
   submissions GuestSubmission[]

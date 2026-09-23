@@ -59,11 +59,19 @@ export async function PATCH(
     clientAddress,
     showSlideshowQr,
     theme,
+    titleFontFamily,
+    nameOrder,
   } = body ?? {};
 
   if (theme !== undefined && theme !== "BURGUNDY" && theme !== "SKY_BLUE") {
     return NextResponse.json(
       { error: "theme harus 'BURGUNDY' atau 'SKY_BLUE'" },
+      { status: 400 }
+    );
+  }
+  if (nameOrder !== undefined && nameOrder !== "GROOM_FIRST" && nameOrder !== "BRIDE_FIRST") {
+    return NextResponse.json(
+      { error: "nameOrder harus 'GROOM_FIRST' atau 'BRIDE_FIRST'" },
       { status: 400 }
     );
   }
@@ -106,6 +114,8 @@ export async function PATCH(
       // biarkan nilai lama gak berubah.
       ...(typeof showSlideshowQr === "boolean" ? { showSlideshowQr } : {}),
       ...(theme !== undefined ? { theme } : {}),
+      ...(titleFontFamily !== undefined ? { titleFontFamily } : {}),
+      ...(nameOrder !== undefined ? { nameOrder } : {}),
     },
   });
 

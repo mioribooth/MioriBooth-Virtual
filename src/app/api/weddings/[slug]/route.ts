@@ -25,6 +25,7 @@ export async function GET(
     gallerySlug: wedding.gallerySlug,
     groomName: wedding.groomName,
     brideName: wedding.brideName,
+    nameOrder: wedding.nameOrder,
     eventDate: wedding.eventDate,
     coverImageUrl: wedding.coverImageUrl,
     welcomeText: wedding.welcomeText,

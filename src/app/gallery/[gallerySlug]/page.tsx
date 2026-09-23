@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { orderNames } from "@/lib/nameOrder";
 import GalleryLightbox from "./GalleryLightbox";
 import "./gallery.css";
 
@@ -29,7 +30,7 @@ export default async function GalleryPage({
       <header className="gallery-header">
         <span className="eyebrow">Wedding Gallery</span>
         <h1 className="font-display">
-          {wedding.groomName} &amp; {wedding.brideName}
+          {orderNames(wedding.groomName, wedding.brideName, wedding.nameOrder).join(" & ")}
         </h1>
         <p className="muted">
           {wedding.submissions.length} kenangan tersimpan dari tamu undangan

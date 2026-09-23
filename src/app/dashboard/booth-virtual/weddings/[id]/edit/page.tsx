@@ -3,12 +3,16 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { uploadToCloudinary } from "@/lib/uploadClient";
-import CustomSelect from "@/components/CustomSelect";
 import DatePicker from "@/components/DatePicker";
 import Spinner from "@/components/Spinner";
 import BackButton from "@/components/BackButton";
 import WeddingLandingPreview from "@/components/WeddingLandingPreview";
 import CoverPhotoEditor, { CoverAdjust } from "../../CoverPhotoEditor";
+import CustomListbox from "../../CustomListbox";
+import FontSizeStepper from "../../FontSizeStepper";
+import FontFamilyPicker from "../../FontFamilyPicker";
+import ThemePicker from "../../ThemePicker";
+import NameOrderToggle from "../../NameOrderToggle";
 
 interface Package {
   id: string;
@@ -29,6 +33,8 @@ interface WeddingData {
   coverImagePosY: number;
   coverImageScale: number;
   titleFontScale: number;
+  titleFontFamily: string;
+  nameOrder: string;
   welcomeText: string | null;
   clientPhone: string | null;
   clientAddress: string | null;
@@ -51,8 +57,10 @@ export default function EditWeddingPage() {
   const [welcomeText, setWelcomeText] = useState("");
   const [cover, setCover] = useState<CoverAdjust>({ url: null, posX: 50, posY: 50, scale: 1 });
   const [titleFontScale, setTitleFontScale] = useState(1);
+  const [titleFontFamily, setTitleFontFamily] = useState("cormorant");
+  const [nameOrder, setNameOrder] = useState<"GROOM_FIRST" | "BRIDE_FIRST">("GROOM_FIRST");
   const [showSlideshowQr, setShowSlideshowQr] = useState(true);
-  const [theme, setTheme] = useState("BURGUNDY");
+  const [theme, setTheme] = useState<"BURGUNDY" | "SKY_BLUE">("BURGUNDY");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -78,8 +86,10 @@ export default function EditWeddingPage() {
           scale: wedding.coverImageScale,
         });
         setTitleFontScale(wedding.titleFontScale);
+        setTitleFontFamily(wedding.titleFontFamily);
+        setNameOrder(wedding.nameOrder === "BRIDE_FIRST" ? "BRIDE_FIRST" : "GROOM_FIRST");
         setShowSlideshowQr(wedding.showSlideshowQr);
-        setTheme(wedding.theme);
+        setTheme(wedding.theme === "SKY_BLUE" ? "SKY_BLUE" : "BURGUNDY");
       })
       .catch(() => setError("Gagal memuat data wedding."))
       .finally(() => setLoading(false));
@@ -116,6 +126,8 @@ export default function EditWeddingPage() {
           coverImagePosY: cover.posY,
           coverImageScale: cover.scale,
           titleFontScale,
+          titleFontFamily,
+          nameOrder,
           welcomeText: welcomeText || undefined,
           clientPhone: clientPhone || undefined,
           clientAddress: clientAddress || undefined,
@@ -193,20 +205,22 @@ export default function EditWeddingPage() {
             </div>
             <div>
               <label className="field-label">Paket</label>
-              <CustomSelect value={packageId} onChange={setPackageId} required>
-                {packages.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name} —{" "}
-                    {p.mediaMode === "PHOTO_AND_VIDEO"
+              <CustomListbox
+                value={packageId}
+                onChange={setPackageId}
+                placeholder="Pilih paket"
+                options={packages.map((p) => ({
+                  value: p.id,
+                  label: p.name,
+                  description: `${
+                    p.mediaMode === "PHOTO_AND_VIDEO"
                       ? "Foto & Pesan Video"
                       : p.mediaMode === "PHOTO_AND_VOICE"
                       ? "Foto & Voice Note"
-                      : "Foto saja"}{" "}
-                    · Akses{" "}
-                    {p.accessDurationDays} hari · Rp{p.price.toLocaleString("id-ID")}
-                  </option>
-                ))}
-              </CustomSelect>
+                      : "Foto saja"
+                  } · Akses ${p.accessDurationDays} hari · Rp${p.price.toLocaleString("id-ID")}`,
+                }))}
+              />
               <p className="muted" style={{ fontSize: 12, marginTop: 6 }}>
                 Mengganti paket atau tanggal acara akan menghitung ulang tanggal akses berakhir.
               </p>
@@ -247,21 +261,25 @@ export default function EditWeddingPage() {
             </div>
 
             <div>
-              <label className="field-label">
-                Ukuran Font Nama Pengantin{" "}
-                <span className="muted" style={{ fontWeight: 400 }}>
-                  ({Math.round(titleFontScale * 100)}%)
-                </span>
-              </label>
-              <input
-                type="range"
-                min={0.7}
-                max={1.8}
-                step={0.05}
-                value={titleFontScale}
-                onChange={(e) => setTitleFontScale(Number(e.target.value))}
-                style={{ width: "100%" }}
+              <label className="field-label">Urutan Nama</label>
+              <NameOrderToggle
+                value={nameOrder}
+                onChange={setNameOrder}
+                groomName={groomName}
+                brideName={brideName}
               />
+            </div>
+
+            <div>
+              <label className="field-label">
+                Ukuran Font Nama Pengantin
+              </label>
+              <FontSizeStepper scale={titleFontScale} onChange={setTitleFontScale} />
+            </div>
+
+            <div>
+              <label className="field-label">Gaya Font Nama Pengantin</label>
+              <FontFamilyPicker value={titleFontFamily} onChange={setTitleFontFamily} />
             </div>
 
             <div>
@@ -277,10 +295,7 @@ export default function EditWeddingPage() {
 
             <div>
               <label className="field-label">Tema Warna Booth &amp; Slideshow</label>
-              <CustomSelect value={theme} onChange={setTheme}>
-                <option value="BURGUNDY">Burgundy (default)</option>
-                <option value="SKY_BLUE">Sky Blue</option>
-              </CustomSelect>
+              <ThemePicker value={theme} onChange={setTheme} />
               <p className="muted" style={{ fontSize: 12, marginTop: 4 }}>
                 Berlaku dari halaman awal booth tamu sampai Live Slideshow.
                 Dashboard admin ini tetap burgundy, gak ikut berubah.
@@ -323,6 +338,7 @@ export default function EditWeddingPage() {
             <WeddingLandingPreview
               groomName={groomName}
               brideName={brideName}
+              nameOrder={nameOrder}
               eventDateLabel={eventDateLabel}
               welcomeText={welcomeText}
               coverImageUrl={cover.url}
@@ -330,7 +346,8 @@ export default function EditWeddingPage() {
               coverPosY={cover.posY}
               coverScale={cover.scale}
               titleFontScale={titleFontScale}
-              theme={theme === "SKY_BLUE" ? "SKY_BLUE" : "BURGUNDY"}
+              titleFontFamily={titleFontFamily}
+              theme={theme}
             />
           </div>
         </div>

@@ -23,6 +23,7 @@ export async function GET(
     showSlideshowQr: wedding.showSlideshowQr,
     groomName: wedding.groomName,
     brideName: wedding.brideName,
+    nameOrder: wedding.nameOrder,
     eventDate: wedding.eventDate,
     accessExpiresAt: wedding.accessExpiresAt,
     isExpired,

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import FilmstripSteps from "@/components/FilmstripSteps";
 import { getBoothToken, patchSession } from "@/lib/wizardClient";
+import { orderNames } from "@/lib/nameOrder";
 import "./frame.css";
 
 interface FrameOption {
@@ -17,6 +18,7 @@ interface FrameOption {
 interface WeddingData {
   groomName: string;
   brideName: string;
+  nameOrder: string;
   mediaMode: "PHOTO_ONLY" | "PHOTO_AND_VOICE" | "PHOTO_AND_VIDEO";
   isExpired: boolean;
   frames: FrameOption[];
@@ -150,7 +152,8 @@ export default function FrameSelectPage() {
         <span className="eyebrow">Langkah 1</span>
         <h2 className="font-display">Pilih frame favoritmu</h2>
         <p className="muted" style={{ marginBottom: 18 }}>
-          Untuk {wedding.groomName} &amp; {wedding.brideName}
+          Untuk{" "}
+          {orderNames(wedding.groomName, wedding.brideName, wedding.nameOrder).join(" & ")}
         </p>
 
         <label className="field-label" htmlFor="guestName">

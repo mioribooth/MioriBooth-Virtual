@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { orderNames } from "@/lib/nameOrder";
 import "./slideshow.css";
 
 interface SlideItem {
@@ -17,6 +18,7 @@ interface GalleryResponse {
   showSlideshowQr: boolean;
   groomName: string;
   brideName: string;
+  nameOrder: string;
   isExpired: boolean;
   submissions: SlideItem[];
 }
@@ -128,11 +130,12 @@ export default function SlideshowClient({ gallerySlug }: { gallerySlug: string }
   }
 
   if (!started) {
+    const [firstName, secondName] = orderNames(data.groomName, data.brideName, data.nameOrder);
     return (
       <div className="slideshow-shell slideshow-state">
         <span className="eyebrow">Live Slideshow</span>
         <h1 className="font-display">
-          {data.groomName} &amp; {data.brideName}
+          {firstName} &amp; {secondName}
         </h1>
         <p className="muted">
           {data.submissions.length} kenangan siap ditampilkan. Layar ini akan berjalan otomatis
@@ -146,11 +149,12 @@ export default function SlideshowClient({ gallerySlug }: { gallerySlug: string }
   }
 
   if (data.submissions.length === 0) {
+    const [firstName, secondName] = orderNames(data.groomName, data.brideName, data.nameOrder);
     return (
       <div className="slideshow-shell slideshow-state">
         <span className="eyebrow">Live Slideshow</span>
         <h1 className="font-display">
-          {data.groomName} &amp; {data.brideName}
+          {firstName} &amp; {secondName}
         </h1>
         <p className="muted">Menunggu kenangan pertama dari tamu…</p>
       </div>
@@ -187,9 +191,9 @@ export default function SlideshowClient({ gallerySlug }: { gallerySlug: string }
         <div className="slideshow-left-body">
           <span className="eyebrow">Wedding Memories Of</span>
           <h1 className="font-display slideshow-names">
-            {data.groomName}
+            {orderNames(data.groomName, data.brideName, data.nameOrder)[0]}
             <span className="slideshow-amp">&amp;</span>
-            {data.brideName}
+            {orderNames(data.groomName, data.brideName, data.nameOrder)[1]}
           </h1>
 
           {/* Ajakan buat tamu yang lihat slideshow di layar venue ikutan

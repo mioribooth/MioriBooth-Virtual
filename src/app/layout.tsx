@@ -1,12 +1,42 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Manrope } from "next/font/google";
+import {
+  Cormorant_Garamond,
+  Playfair_Display,
+  Great_Vibes,
+  EB_Garamond,
+  Manrope,
+} from "next/font/google";
 import "./globals.css";
 
-const display = Cormorant_Garamond({
+// Beberapa pilihan font nama pengantin buat dipilih admin (lihat
+// FontFamilyPicker) — semua di-load statis di sini (next/font/google emang
+// wajib begitu), masing-masing dapat CSS variable sendiri, dipakai kondisional
+// lewat wedding.titleFontFamily.
+const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
   weight: ["500", "600", "700"],
   style: ["normal", "italic"],
   variable: "--font-display",
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-playfair",
+});
+
+const greatvibes = Great_Vibes({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-greatvibes",
+});
+
+const ebgaramond = EB_Garamond({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-ebgaramond",
 });
 
 const body = Manrope({
@@ -66,7 +96,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id">
-      <body className={`${display.variable} ${body.variable}`}>{children}</body>
+      <body className={`${cormorant.variable} ${playfair.variable} ${greatvibes.variable} ${ebgaramond.variable} ${body.variable}`}>{children}</body>
     </html>
   );
 }

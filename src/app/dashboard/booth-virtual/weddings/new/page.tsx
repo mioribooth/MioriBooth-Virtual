@@ -3,12 +3,16 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { uploadToCloudinary } from "@/lib/uploadClient";
-import CustomSelect from "@/components/CustomSelect";
 import DatePicker from "@/components/DatePicker";
 import Spinner from "@/components/Spinner";
 import BackButton from "@/components/BackButton";
 import WeddingLandingPreview from "@/components/WeddingLandingPreview";
 import CoverPhotoEditor, { CoverAdjust } from "../CoverPhotoEditor";
+import CustomListbox from "../CustomListbox";
+import FontSizeStepper from "../FontSizeStepper";
+import FontFamilyPicker from "../FontFamilyPicker";
+import ThemePicker from "../ThemePicker";
+import NameOrderToggle from "../NameOrderToggle";
 
 interface Package {
   id: string;
@@ -30,6 +34,9 @@ export default function NewWeddingPage() {
   const [welcomeText, setWelcomeText] = useState("");
   const [cover, setCover] = useState<CoverAdjust>({ url: null, posX: 50, posY: 50, scale: 1 });
   const [titleFontScale, setTitleFontScale] = useState(1);
+  const [titleFontFamily, setTitleFontFamily] = useState("cormorant");
+  const [nameOrder, setNameOrder] = useState<"GROOM_FIRST" | "BRIDE_FIRST">("GROOM_FIRST");
+  const [theme, setTheme] = useState<"BURGUNDY" | "SKY_BLUE">("BURGUNDY");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -73,6 +80,9 @@ export default function NewWeddingPage() {
           coverImagePosY: cover.posY,
           coverImageScale: cover.scale,
           titleFontScale,
+          titleFontFamily,
+          nameOrder,
+          theme,
           welcomeText: welcomeText || undefined,
           clientPhone: clientPhone || undefined,
           clientAddress: clientAddress || undefined,
@@ -136,20 +146,22 @@ export default function NewWeddingPage() {
             </div>
             <div>
               <label className="field-label">Paket</label>
-              <CustomSelect value={packageId} onChange={setPackageId} required>
-                {packages.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name} —{" "}
-                    {p.mediaMode === "PHOTO_AND_VIDEO"
+              <CustomListbox
+                value={packageId}
+                onChange={setPackageId}
+                placeholder="Pilih paket"
+                options={packages.map((p) => ({
+                  value: p.id,
+                  label: p.name,
+                  description: `${
+                    p.mediaMode === "PHOTO_AND_VIDEO"
                       ? "Foto & Pesan Video"
                       : p.mediaMode === "PHOTO_AND_VOICE"
                       ? "Foto & Voice Note"
-                      : "Foto saja"}{" "}
-                    · Akses{" "}
-                    {p.accessDurationDays} hari · Rp{p.price.toLocaleString("id-ID")}
-                  </option>
-                ))}
-              </CustomSelect>
+                      : "Foto saja"
+                  } · Akses ${p.accessDurationDays} hari · Rp${p.price.toLocaleString("id-ID")}`,
+                }))}
+              />
             </div>
 
             <div style={{ borderTop: "1px solid var(--color-cream-200)", paddingTop: 16 }}>
@@ -187,21 +199,25 @@ export default function NewWeddingPage() {
             </div>
 
             <div>
-              <label className="field-label">
-                Ukuran Font Nama Pengantin{" "}
-                <span className="muted" style={{ fontWeight: 400 }}>
-                  ({Math.round(titleFontScale * 100)}%)
-                </span>
-              </label>
-              <input
-                type="range"
-                min={0.7}
-                max={1.8}
-                step={0.05}
-                value={titleFontScale}
-                onChange={(e) => setTitleFontScale(Number(e.target.value))}
-                style={{ width: "100%" }}
+              <label className="field-label">Urutan Nama</label>
+              <NameOrderToggle
+                value={nameOrder}
+                onChange={setNameOrder}
+                groomName={groomName}
+                brideName={brideName}
               />
+            </div>
+
+            <div>
+              <label className="field-label">
+                Ukuran Font Nama Pengantin
+              </label>
+              <FontSizeStepper scale={titleFontScale} onChange={setTitleFontScale} />
+            </div>
+
+            <div>
+              <label className="field-label">Gaya Font Nama Pengantin</label>
+              <FontFamilyPicker value={titleFontFamily} onChange={setTitleFontFamily} />
             </div>
 
             <div>
@@ -213,6 +229,11 @@ export default function NewWeddingPage() {
                 onChange={(e) => setWelcomeText(e.target.value)}
                 placeholder="Tinggalkan foto dan pesan suara terbaikmu untuk kami kenang selamanya."
               />
+            </div>
+
+            <div>
+              <label className="field-label">Tema Warna Booth &amp; Slideshow</label>
+              <ThemePicker value={theme} onChange={setTheme} />
             </div>
 
             {error && <p className="muted" style={{ color: "var(--color-danger)" }}>{error}</p>}
@@ -232,6 +253,7 @@ export default function NewWeddingPage() {
             <WeddingLandingPreview
               groomName={groomName}
               brideName={brideName}
+              nameOrder={nameOrder}
               eventDateLabel={eventDateLabel}
               welcomeText={welcomeText}
               coverImageUrl={cover.url}
@@ -239,6 +261,8 @@ export default function NewWeddingPage() {
               coverPosY={cover.posY}
               coverScale={cover.scale}
               titleFontScale={titleFontScale}
+              titleFontFamily={titleFontFamily}
+              theme={theme}
             />
           </div>
         </div>

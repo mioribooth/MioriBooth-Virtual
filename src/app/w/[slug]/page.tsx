@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/prisma";
+import { orderNames } from "@/lib/nameOrder";
+import { getTitleFont } from "@/lib/titleFonts";
 import StartBoothButton from "./StartBoothButton";
 import SplashScreen from "./SplashScreen";
 import "./landing.css";
@@ -48,6 +50,9 @@ export default async function LandingPage({
     year: "numeric",
   });
 
+  const [firstName, secondName] = orderNames(wedding.groomName, wedding.brideName, wedding.nameOrder);
+  const titleFont = getTitleFont(wedding.titleFontFamily);
+
   return (
     <SplashScreen>
       <div className="booth-shell landing-shell">
@@ -72,13 +77,17 @@ export default async function LandingPage({
           <span className="eyebrow">Wedding Memories Of</span>
           <h1
             className="font-display landing-title"
-            style={{ fontSize: `${30 * wedding.titleFontScale}px` }}
+            style={{
+              fontSize: `${30 * wedding.titleFontScale}px`,
+              fontFamily: titleFont.cssVar,
+              fontStyle: titleFont.italic ? "italic" : "normal",
+            }}
           >
-            {wedding.groomName}
+            {firstName}
             <span className="landing-amp" style={{ fontSize: `${18 * wedding.titleFontScale}px` }}>
               &amp;
             </span>
-            {wedding.brideName}
+            {secondName}
           </h1>
           <p className="muted landing-date">{eventDateLabel}</p>
 

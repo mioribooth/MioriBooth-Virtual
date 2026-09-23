@@ -5,10 +5,13 @@
 // Jadi preview ini DIJAMIN selalu sama persis kayak yang bakal dilihat tamu,
 // gak akan "kelewatan" kalau landing.css diubah lagi nanti.
 import "../app/w/[slug]/landing.css";
+import { orderNames } from "@/lib/nameOrder";
+import { getTitleFont } from "@/lib/titleFonts";
 
 export interface WeddingLandingPreviewProps {
   groomName: string;
   brideName: string;
+  nameOrder: string;
   eventDateLabel: string;
   welcomeText: string;
   coverImageUrl: string | null;
@@ -16,6 +19,7 @@ export interface WeddingLandingPreviewProps {
   coverPosY: number;
   coverScale: number;
   titleFontScale: number;
+  titleFontFamily: string;
   theme?: "BURGUNDY" | "SKY_BLUE";
 }
 
@@ -29,6 +33,7 @@ const PREVIEW_HEIGHT = 560;
 export default function WeddingLandingPreview({
   groomName,
   brideName,
+  nameOrder,
   eventDateLabel,
   welcomeText,
   coverImageUrl,
@@ -36,9 +41,16 @@ export default function WeddingLandingPreview({
   coverPosY,
   coverScale,
   titleFontScale,
+  titleFontFamily,
   theme = "BURGUNDY",
 }: WeddingLandingPreviewProps) {
   const themeClass = theme === "SKY_BLUE" ? "theme-sky-blue" : "theme-burgundy";
+  const [firstName, secondName] = orderNames(
+    groomName || "Nama Pria",
+    brideName || "Nama Wanita",
+    nameOrder
+  );
+  const titleFont = getTitleFont(titleFontFamily);
 
   return (
     <div className={themeClass}>
@@ -76,13 +88,17 @@ export default function WeddingLandingPreview({
           <span className="eyebrow">Wedding Memories Of</span>
           <h1
             className="font-display landing-title"
-            style={{ fontSize: `${30 * titleFontScale}px` }}
+            style={{
+              fontSize: `${30 * titleFontScale}px`,
+              fontFamily: titleFont.cssVar,
+              fontStyle: titleFont.italic ? "italic" : "normal",
+            }}
           >
-            {groomName || "Nama Pria"}
+            {firstName}
             <span className="landing-amp" style={{ fontSize: `${18 * titleFontScale}px` }}>
               &amp;
             </span>
-            {brideName || "Nama Wanita"}
+            {secondName}
           </h1>
           <p className="muted landing-date">{eventDateLabel || "Tanggal acara"}</p>
           <p className="muted landing-welcome">
