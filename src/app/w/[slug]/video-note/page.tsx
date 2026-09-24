@@ -160,7 +160,7 @@ export default function VideoNotePage() {
   if (phase === "choice") {
     return (
       <div className="booth-shell">
-        <FilmstripSteps total={6} currentIndex={3} />
+        <FilmstripSteps total={7} currentIndex={4} />
         <div className="booth-content" style={{ justifyContent: "center", textAlign: "center" }}>
           <span className="eyebrow">Langkah 4</span>
           <h2 className="font-display" style={{ margin: "6px 0 10px" }}>
@@ -189,7 +189,7 @@ export default function VideoNotePage() {
 
   return (
     <div className="booth-shell">
-      <FilmstripSteps total={6} currentIndex={3} />
+      <FilmstripSteps total={7} currentIndex={4} />
       <div className="booth-content">
         <div className="capture-header">
           <span className="eyebrow">Langkah 4</span>

@@ -44,7 +44,7 @@ export default function ReviewPage() {
           // rekam suara/video tambahan dilewati apapun setting mediaMode wedding-nya
           // — jadi total step-nya selalu 5 (frame, capture, review, print, selesai).
           const isVideoCapture = (session?.mediaType ?? "PHOTO") === "VIDEO";
-          setTotalSteps(isVideoCapture || wedding.mediaMode === "PHOTO_ONLY" ? 5 : 6);
+          setTotalSteps(isVideoCapture || wedding.mediaMode === "PHOTO_ONLY" ? 6 : 7);
         }
         const res = await fetch("/api/compose", {
           method: "POST",
@@ -129,7 +129,7 @@ export default function ReviewPage() {
 
   return (
     <div className="booth-shell">
-      <FilmstripSteps total={totalSteps} currentIndex={2} />
+      <FilmstripSteps total={totalSteps} currentIndex={3} />
       <div className="booth-content">
         <span className="eyebrow">Langkah 3</span>
         <h2 className="font-display">Cek hasilnya</h2>

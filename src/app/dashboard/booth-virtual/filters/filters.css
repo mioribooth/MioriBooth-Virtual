@@ -1,0 +1,59 @@
+.lut-dropzone {
+  border: 2px dashed var(--color-cream-200);
+  border-radius: var(--radius-md);
+  background: var(--color-cream-100);
+  padding: 30px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+
+.lut-dropzone:hover {
+  border-color: var(--color-gold-500);
+}
+
+.lut-dropzone.is-dragover {
+  border-color: var(--color-gold-500);
+  background: #fbf3e2;
+  transform: scale(1.01);
+}
+
+.lut-dropzone-icon {
+  font-size: 30px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.lut-preview-row {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.lut-preview-canvas {
+  width: 140px;
+  height: 175px;
+  border-radius: 8px;
+  display: block;
+  box-shadow: var(--shadow-soft);
+}
+
+.lut-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lut-list-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: white;
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  box-shadow: var(--shadow-soft);
+  font-weight: 600;
+  font-size: 14px;
+}

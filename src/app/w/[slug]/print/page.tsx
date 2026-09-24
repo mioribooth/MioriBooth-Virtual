@@ -27,8 +27,8 @@ export default function PrintPage() {
   const token = getBoothToken(slug);
 
   const [mediaType, setMediaType] = useState<"PHOTO" | "VIDEO">("PHOTO");
-  const [totalSteps, setTotalSteps] = useState(6);
-  const [currentIndex, setCurrentIndex] = useState(4);
+  const [totalSteps, setTotalSteps] = useState(7);
+  const [currentIndex, setCurrentIndex] = useState(5);
   const [result, setResult] = useState<SubmissionResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const submittedRef = useRef(false);
@@ -47,12 +47,12 @@ export default function PrintPage() {
         if (wedding?.mediaMode) {
           // Sama kayak di halaman review: kalau tamu merekam video sendiri
           // (frame tipe VIDEO), langkah rekam suara/video tambahan dilewati,
-          // jadi print selalu ada di step ke-4 (index 3) dari total 5.
+          // jadi print selalu ada di step ke-5 (index 4) dari total 6.
           const isVideoCapture = (session?.mediaType ?? "PHOTO") === "VIDEO";
           const isPhotoOnly = wedding.mediaMode === "PHOTO_ONLY";
           const skipsExtraStep = isVideoCapture || isPhotoOnly;
-          setTotalSteps(skipsExtraStep ? 5 : 6);
-          setCurrentIndex(skipsExtraStep ? 3 : 4);
+          setTotalSteps(skipsExtraStep ? 6 : 7);
+          setCurrentIndex(skipsExtraStep ? 4 : 5);
         }
 
         const res = await fetch("/api/submissions", {

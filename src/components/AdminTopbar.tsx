@@ -18,6 +18,9 @@ export default function AdminTopbar({ vendorName }: { vendorName: string }) {
         Miori Booth · Virtual Photobooth
       </Link>
       <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 14 }}>
+        <Link href="/dashboard/booth-virtual/filters" className="admin-topbar-link">
+          Filter Foto/Video
+        </Link>
         <span className="admin-vendor-avatar">{vendorName.charAt(0).toUpperCase()}</span>
         <span>{vendorName}</span>
         <button onClick={handleLogout} className="admin-logout-btn">

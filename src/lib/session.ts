@@ -9,6 +9,7 @@ const LOGIN_RATE_LIMIT_PREFIX = "booth:login-ratelimit:";
 export type WizardStep =
   | "frame_selected"
   | "capture_done"
+  | "filter_done"
   | "voice_done"
   | "composed";
 

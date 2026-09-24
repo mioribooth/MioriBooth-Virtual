@@ -1,0 +1,104 @@
+.filter-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+
+.filter-loading {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.filter-main-preview {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-maroon-900);
+  margin-bottom: 14px;
+  flex-shrink: 0;
+}
+
+.filter-main-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.filter-processing-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: white;
+}
+
+.filter-processing-overlay p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.filter-strip {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.filter-chip {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  width: 68px;
+}
+
+.filter-chip img,
+.filter-chip-fallback {
+  width: 60px;
+  height: 75px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.filter-chip.is-selected img,
+.filter-chip.is-selected .filter-chip-fallback {
+  border-color: var(--color-gold-300);
+}
+
+.filter-chip span:last-child {
+  font-size: 10px;
+  color: white;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 68px;
+}
+
+.filter-chip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

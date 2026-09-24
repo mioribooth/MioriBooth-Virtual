@@ -142,7 +142,7 @@ export default function FrameSelectPage() {
     );
   }
 
-  const totalSteps = wedding.mediaMode === "PHOTO_ONLY" ? 5 : 6;
+  const totalSteps = wedding.mediaMode === "PHOTO_ONLY" ? 6 : 7;
   const selectedFrame = wedding.frames[selectedIndex];
 
   return (

@@ -43,6 +43,12 @@ export default function CapturePhotoPage() {
   const [reviewSlot, setReviewSlot] = useState<number | null>(null);
   const [facingMode, setFacingMode] = useState<"user" | "environment">("user");
   const [totalSteps, setTotalSteps] = useState(6);
+  // Exposure/pencahayaan manual — -50..50, default 0 (netral). Diterapkan
+  // sebagai CSS/canvas filter brightness(), bukan lewat exposure hardware
+  // kamera (constraint exposureCompensation nyaris gak didukung browser
+  // mobile/iOS Safari), jadi ini cara paling reliable lintas device.
+  const [exposure, setExposure] = useState(0);
+  const exposureFilter = `brightness(${1 + exposure / 100})`;
   const countdownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const token = getBoothToken(slug);
 
@@ -72,7 +78,7 @@ export default function CapturePhotoPage() {
   useEffect(() => {
     fetch(`/api/weddings/${slug}`)
       .then((res) => res.json())
-      .then((wedding) => setTotalSteps(wedding.mediaMode === "PHOTO_ONLY" ? 5 : 6))
+      .then((wedding) => setTotalSteps(wedding.mediaMode === "PHOTO_ONLY" ? 6 : 7))
       .catch(() => {});
   }, [slug]);
 
@@ -106,6 +112,9 @@ export default function CapturePhotoPage() {
       active = false;
       streamRef.current?.getTracks().forEach((t) => t.stop());
       if (countdownTimerRef.current) clearTimeout(countdownTimerRef.current);
+      if (typeof window !== "undefined" && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
     };
   }, [facingMode]);
 
@@ -114,19 +123,41 @@ export default function CapturePhotoPage() {
     setFacingMode((m) => (m === "user" ? "environment" : "user"));
   }
 
+  // Suara hitungan mundur pakai Web Speech API (text-to-speech bawaan
+  // browser) — jadi gak perlu nyiapin file audio sendiri. Auto-play aman di
+  // sini karena selalu dipanggil dari dalam startCountdown(), yang cuma
+  // jalan gara-gara tap tombol (user gesture), bukan otomatis pas halaman
+  // dibuka (browser modern block audio auto-play tanpa interaksi user).
+  function speakCountdown(n: number) {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+    const text = n === 3 ? "Tiga" : n === 2 ? "Dua" : n === 1 ? "Satu" : "Cheese!";
+    try {
+      window.speechSynthesis.cancel(); // stop ucapan sebelumnya biar gak numpuk/lag
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = "id-ID";
+      utter.rate = 1.05;
+      window.speechSynthesis.speak(utter);
+    } catch {
+      // beberapa browser lama gak dukung — diemin aja, jangan sampai crash
+    }
+  }
+
   // Countdown 3-2-1 sebelum kamera otomatis jepret — biar kerasa seperti photobooth fisik.
   function startCountdown() {
     if (countdown !== null || reviewSlot !== null || slots[activeSlot]?.status === "captured" || cameraError) return;
     let n = 3;
     setCountdown(n);
+    speakCountdown(n);
     const tick = () => {
       countdownTimerRef.current = setTimeout(() => {
         n -= 1;
         if (n <= 0) {
           setCountdown(null);
+          speakCountdown(0);
           handleCapture();
         } else {
           setCountdown(n);
+          speakCountdown(n);
           tick();
         }
       }, 800);
@@ -167,6 +198,9 @@ export default function CapturePhotoPage() {
     canvas.height = sHeight * outputScale;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+    // Terapkan exposure yang sama kayak yang dilihat tamu di preview live,
+    // biar hasil fotonya WYSIWYG (apa yang keliatan di layar = hasil akhir).
+    ctx.filter = exposureFilter;
     // Mirror horizontal cuma untuk kamera depan, supaya hasil sesuai apa yang
     // dilihat tamu di preview (selfie). Kamera belakang tidak perlu di-mirror.
     if (facingMode === "user") {
@@ -249,7 +283,7 @@ export default function CapturePhotoPage() {
       const urls = slots.map((s) => (s.status === "captured" ? s.url : "")).filter(Boolean);
       await patchSession(token, { rawPhotoUrls: urls, step: "capture_done" });
       streamRef.current?.getTracks().forEach((t) => t.stop());
-      router.push(`/w/${slug}/review`);
+      router.push(`/w/${slug}/filter`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Terjadi kesalahan");
       setFinishing(false);
@@ -289,7 +323,10 @@ export default function CapturePhotoPage() {
               playsInline
               muted
               className="camera-video"
-              style={{ transform: facingMode === "user" ? "scaleX(-1)" : "none" }}
+              style={{
+                transform: facingMode === "user" ? "scaleX(-1)" : "none",
+                filter: exposureFilter,
+              }}
             />
           )}
 
@@ -308,6 +345,29 @@ export default function CapturePhotoPage() {
               >
                 <IconFlipCamera size={19} />
               </button>
+            </div>
+          )}
+
+          {/* Slider exposure/pencahayaan — nyala terus selama belum masuk
+              mode review, biar tamu bisa terus koreksi sambil ngeliat live
+              preview-nya langsung berubah terang/gelap. */}
+          {!cameraError && reviewSlot === null && (
+            <div className="camera-exposure">
+              <span className="camera-exposure-icon" aria-hidden="true">
+                🌙
+              </span>
+              <input
+                type="range"
+                min={-50}
+                max={50}
+                value={exposure}
+                onChange={(e) => setExposure(Number(e.target.value))}
+                className="camera-exposure-slider"
+                aria-label="Atur kecerahan kamera"
+              />
+              <span className="camera-exposure-icon" aria-hidden="true">
+                ☀️
+              </span>
             </div>
           )}
 

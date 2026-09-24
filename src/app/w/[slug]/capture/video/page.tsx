@@ -56,7 +56,7 @@ export default function CaptureVideoPage() {
   useEffect(() => {
     fetch(`/api/weddings/${slug}`)
       .then((res) => res.json())
-      .then((wedding) => setTotalSteps(wedding.mediaMode === "PHOTO_ONLY" ? 5 : 6))
+      .then((wedding) => setTotalSteps(wedding.mediaMode === "PHOTO_ONLY" ? 6 : 7))
       .catch(() => {});
   }, [slug]);
 
@@ -229,7 +229,7 @@ export default function CaptureVideoPage() {
     try {
       await patchSession(token, { rawVideoUrl: result.url, step: "capture_done" });
       streamRef.current?.getTracks().forEach((t) => t.stop());
-      router.push(`/w/${slug}/review`);
+      router.push(`/w/${slug}/filter`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Terjadi kesalahan");
       setFinishing(false);

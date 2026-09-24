@@ -976,6 +976,20 @@ button {
   margin: 0;
 }
 
+.admin-topbar-link {
+  color: var(--color-cream-100);
+  opacity: 0.85;
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 1px solid transparent;
+  transition: opacity 0.15s ease, border-color 0.15s ease;
+}
+
+.admin-topbar-link:hover {
+  opacity: 1;
+  border-color: var(--color-gold-300);
+}
+
 /* Form wedding (baru/edit) dengan live preview di sebelah kanan — di layar
    sempit, tumpuk jadi 1 kolom dan preview-nya taruh di bawah form (gak
    sticky lagi, karena di layar sempit sticky sidebar kepotong/menuh-menuhin). */

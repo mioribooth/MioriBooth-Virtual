@@ -12,7 +12,7 @@ export interface CloudinaryUploadResult {
 
 export async function uploadToCloudinary(
   blob: Blob,
-  resourceType: "image" | "video",
+  resourceType: "image" | "video" | "raw",
   folder?: string
 ): Promise<CloudinaryUploadResult> {
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;

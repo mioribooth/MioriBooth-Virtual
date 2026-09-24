@@ -16,12 +16,29 @@ datasource db {
 }
 
 model Vendor {
-  id        String    @id @default(cuid())
-  email     String    @unique
-  password  String // hashed (bcrypt)
-  name      String
-  weddings  Wedding[]
-  createdAt DateTime  @default(now())
+  id           String        @id @default(cuid())
+  email        String        @unique
+  password     String // hashed (bcrypt)
+  name         String
+  weddings     Wedding[]
+  colorFilters ColorFilter[]
+  createdAt    DateTime      @default(now())
+}
+
+// LUT filter (.cube) yang diupload admin sendiri, dipilih tamu di halaman
+// "Pilih Filter" setelah capture — diterapkan cuma ke foto/videonya
+// (dibakar ke piksel raw-nya SEBELUM di-compose sama frame), frame overlay
+// gak pernah kena filter ini karena itu ditempel belakangan lewat Cloudinary
+// transformation di atas media yang sudah difilter.
+model ColorFilter {
+  id           String   @id @default(cuid())
+  vendorId     String
+  vendor       Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  name         String
+  lutFileUrl   String // .cube file, disimpan apa adanya (Cloudinary raw upload)
+  lutSize      Int // ukuran grid 3D LUT (LUT_3D_SIZE), buat dipakai di WebGL/canvas
+  order        Int      @default(0)
+  createdAt    DateTime @default(now())
 }
 
 model BoothPackage {
