@@ -1,0 +1,26 @@
+.text-message-panel {
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  padding: 28px 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.text-message-panel .message-type-icon {
+  background: rgba(109, 15, 40, 0.08);
+  color: var(--color-maroon-700);
+}
+
+.text-message-input {
+  width: 100%;
+  resize: none;
+  font-family: inherit;
+}
+
+.text-message-counter {
+  align-self: flex-end;
+  font-size: 12px;
+  margin-top: 6px;
+}

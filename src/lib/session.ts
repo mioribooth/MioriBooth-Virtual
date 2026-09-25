@@ -11,6 +11,7 @@ export type WizardStep =
   | "capture_done"
   | "filter_done"
   | "voice_done"
+  | "text_done"
   | "composed";
 
 export interface WizardSession {
@@ -23,6 +24,7 @@ export interface WizardSession {
   rawVideoUrl?: string;
   voiceNoteUrl?: string;
   voiceDuration?: number;
+  textMessage?: string;
   videoNoteUrl?: string;
   videoDuration?: number;
   composedUrl?: string;

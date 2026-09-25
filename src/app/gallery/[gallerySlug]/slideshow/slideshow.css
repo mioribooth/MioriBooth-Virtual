@@ -262,6 +262,34 @@
   animation: slideshow-slide-in 0.9s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* Kartu pesan teks tamu — ditaruh di atas caption nama, bawah media */
+.slideshow-text-message {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: 100px;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  animation: slideshow-slide-in 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.slideshow-text-message p {
+  margin: 0;
+  max-width: 640px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(16px, 2.4vw, 26px);
+  color: white;
+  line-height: 1.4;
+  background: rgba(var(--color-maroon-900-rgb), 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: var(--radius-md);
+  padding: 14px 22px;
+}
+
 .slideshow-name {
   font-family: var(--font-display);
   font-style: italic;

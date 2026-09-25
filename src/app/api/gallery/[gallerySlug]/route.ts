@@ -35,6 +35,7 @@ export async function GET(
           mediaType: s.mediaType,
           composedUrl: s.composedUrl,
           voiceNoteUrl: s.voiceNoteUrl,
+          textMessage: s.textMessage,
           voiceDuration: s.voiceDuration,
           createdAt: s.createdAt,
         })),

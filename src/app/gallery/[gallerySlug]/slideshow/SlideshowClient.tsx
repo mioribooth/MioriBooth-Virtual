@@ -10,6 +10,7 @@ interface SlideItem {
   mediaType: string; // "PHOTO" | "VIDEO"
   composedUrl: string;
   voiceNoteUrl: string | null;
+  textMessage: string | null;
   createdAt: string;
 }
 
@@ -26,6 +27,8 @@ interface GalleryResponse {
 const POLL_INTERVAL_MS = 15_000;
 const PHOTO_ONLY_DURATION_MS = 6_000; // foto tanpa pesan suara
 const PHOTO_WITH_VOICE_MAX_MS = 20_000; // batas atas kalau pesan suara panjang
+const PHOTO_WITH_TEXT_MIN_MS = 8_000; // waktu baca minimal buat pesan teks
+const PHOTO_WITH_TEXT_MAX_MS = 16_000; // batas atas biar gak kelamaan nunggu tamu lain
 const VIDEO_MAX_MS = 30_000; // batas atas kalau video panjang
 
 export default function SlideshowClient({ gallerySlug }: { gallerySlug: string }) {
@@ -84,6 +87,14 @@ export default function SlideshowClient({ gallerySlug }: { gallerySlug: string }
       advanceTimer.current = setTimeout(goNext, VIDEO_MAX_MS);
     } else if (current.voiceNoteUrl) {
       advanceTimer.current = setTimeout(goNext, PHOTO_WITH_VOICE_MAX_MS);
+    } else if (current.textMessage) {
+      // Kasih waktu baca proporsional ke panjang pesannya (kira-kira kecepatan
+      // baca santai), dibatasi antara 8-16 detik biar slideshow tetap jalan.
+      const readingMs = Math.min(
+        PHOTO_WITH_TEXT_MAX_MS,
+        Math.max(PHOTO_WITH_TEXT_MIN_MS, 3_000 + current.textMessage.length * 80)
+      );
+      advanceTimer.current = setTimeout(goNext, readingMs);
     } else {
       advanceTimer.current = setTimeout(goNext, PHOTO_ONLY_DURATION_MS);
     }
@@ -279,6 +290,12 @@ export default function SlideshowClient({ gallerySlug }: { gallerySlug: string }
               autoPlay
               onEnded={goNext}
             />
+          )}
+
+          {current.mediaType === "PHOTO" && !current.voiceNoteUrl && current.textMessage && (
+            <div key={current.id + "-text"} className="slideshow-text-message">
+              <p>&ldquo;{current.textMessage}&rdquo;</p>
+            </div>
           )}
 
           <div key={current.id + "-caption"} className="slideshow-caption">

@@ -13,6 +13,7 @@ export default function SuccessPage() {
     composedUrl: string;
     mediaType: "PHOTO" | "VIDEO";
     voiceNoteUrl: string | null;
+    textMessage: string | null;
     gallerySlug: string;
   } | null>(null);
   const [downloading, setDownloading] = useState(false);
@@ -110,6 +111,12 @@ export default function SuccessPage() {
         {result.voiceNoteUrl && (
           <div style={{ width: "100%", marginBottom: 16 }}>
             <AudioPlayer src={result.voiceNoteUrl} variant="dark" />
+          </div>
+        )}
+
+        {result.textMessage && (
+          <div className="success-text-message">
+            <p>&ldquo;{result.textMessage}&rdquo;</p>
           </div>
         )}
 

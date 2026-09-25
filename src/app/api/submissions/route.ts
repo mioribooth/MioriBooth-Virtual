@@ -33,12 +33,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Masa akses booth ini sudah berakhir" }, { status: 410 });
   }
 
-  // Pesan suara cuma wajib buat mode PHOTO_AND_VOICE — dan cuma kalau tamu
-  // memang mengambil FOTO (bukan video). Kalau tamu pilih frame video, video
-  // itu sendiri sudah jadi "pesan"-nya, gak perlu rekam suara tambahan lagi.
-  const needsVoice = wedding.package.mediaMode === "PHOTO_AND_VOICE" && session.mediaType !== "VIDEO";
-  if (needsVoice && !session.voiceNoteUrl) {
-    return NextResponse.json({ error: "Pesan suara belum direkam" }, { status: 400 });
+  // Pesan (suara ATAU teks) cuma wajib buat mode PHOTO_AND_VOICE — dan cuma
+  // kalau tamu memang mengambil FOTO (bukan video). Kalau tamu pilih frame
+  // video, video itu sendiri sudah jadi "pesan"-nya, gak perlu tambahan lagi.
+  const needsMessage = wedding.package.mediaMode === "PHOTO_AND_VOICE" && session.mediaType !== "VIDEO";
+  if (needsMessage && !session.voiceNoteUrl && !session.textMessage) {
+    return NextResponse.json({ error: "Pesan suara/teks belum diisi" }, { status: 400 });
   }
 
   const submission = await prisma.guestSubmission.create({
@@ -52,6 +52,7 @@ export async function POST(req: NextRequest) {
       composedUrl: session.composedUrl,
       voiceNoteUrl: session.voiceNoteUrl ?? null,
       voiceDuration: session.voiceDuration ?? null,
+      textMessage: session.textMessage ?? null,
       videoNoteUrl: session.videoNoteUrl ?? null,
       videoDuration: session.videoDuration ?? null,
     },
@@ -64,6 +65,7 @@ export async function POST(req: NextRequest) {
     composedUrl: submission.composedUrl,
     mediaType: submission.mediaType,
     voiceNoteUrl: submission.voiceNoteUrl,
+    textMessage: submission.textMessage,
     gallerySlug: wedding.gallerySlug,
   });
 }

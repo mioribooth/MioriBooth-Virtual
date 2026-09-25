@@ -1,0 +1,45 @@
+.message-type-options {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.message-type-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  text-align: left;
+  padding: 22px 20px;
+  border-radius: var(--radius-lg);
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.12s ease, border-color 0.15s ease;
+}
+
+.message-type-card:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: var(--color-gold-300);
+}
+
+.message-type-card:active {
+  transform: scale(0.98);
+}
+
+.message-type-card strong {
+  font-size: 17px;
+}
+
+.message-type-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px;
+  color: var(--color-gold-300);
+}

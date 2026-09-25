@@ -104,7 +104,7 @@ export default function ReviewPage() {
     if (mediaType === "VIDEO") {
       router.push(`/w/${slug}/print`);
     } else if (mediaMode === "PHOTO_AND_VOICE") {
-      router.push(`/w/${slug}/voice`);
+      router.push(`/w/${slug}/message-type`);
     } else if (mediaMode === "PHOTO_AND_VIDEO") {
       router.push(`/w/${slug}/video-note`);
     } else {

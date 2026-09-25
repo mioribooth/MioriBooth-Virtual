@@ -11,6 +11,7 @@ interface SubmissionResult {
   composedUrl: string;
   mediaType: "PHOTO" | "VIDEO";
   voiceNoteUrl: string | null;
+  textMessage: string | null;
   gallerySlug: string;
 }
 
@@ -69,6 +70,7 @@ export default function PrintPage() {
           composedUrl: data.composedUrl,
           mediaType: session?.mediaType ?? "PHOTO",
           voiceNoteUrl: data.voiceNoteUrl ?? null,
+          textMessage: data.textMessage ?? null,
           gallerySlug: data.gallerySlug,
         });
       } catch (err) {

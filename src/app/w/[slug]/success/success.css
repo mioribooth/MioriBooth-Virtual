@@ -37,3 +37,23 @@
   gap: 10px;
   flex-shrink: 0;
 }
+
+.success-text-message {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+.success-text-message p {
+  margin: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 16px;
+  color: white;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+}

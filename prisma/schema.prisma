@@ -122,6 +122,8 @@ model GuestSubmission {
   voiceNoteUrl  String? // null kalau paket PHOTO_ONLY
   voiceDuration Int?
 
+  textMessage String? // alternatif dari voice note — tamu pilih tulis pesan teks, bukan rekam suara
+
   videoNoteUrl  String? // pesan video opsional (maks 60 detik), khusus paket PHOTO_AND_VIDEO
   videoDuration Int?
 

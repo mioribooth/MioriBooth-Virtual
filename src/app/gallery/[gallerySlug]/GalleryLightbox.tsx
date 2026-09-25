@@ -9,6 +9,7 @@ interface GalleryItem {
   mediaType: string; // "PHOTO" | "VIDEO"
   composedUrl: string;
   voiceNoteUrl: string | null;
+  textMessage: string | null;
   videoNoteUrl: string | null;
 }
 
@@ -135,6 +136,9 @@ export default function GalleryLightbox({ submissions }: { submissions: GalleryI
             <div className="lightbox-info">
               <span className="lightbox-name">{active.guestName || "Tamu"}</span>
               {active.voiceNoteUrl && <AudioPlayer src={active.voiceNoteUrl} variant="dark" />}
+              {active.textMessage && (
+                <p className="gallery-text-message">&ldquo;{active.textMessage}&rdquo;</p>
+              )}
               {active.videoNoteUrl && (
                 <>
                   <span className="lightbox-video-note-label">Pesan Video</span>
