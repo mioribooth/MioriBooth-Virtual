@@ -47,7 +47,13 @@ export default function TextMessagePage() {
   return (
     <div className="booth-shell">
       <FilmstripSteps total={7} currentIndex={4} />
-      <div className="booth-content">
+      {/* Dibungkus scroll container sendiri (bukan pinning tombol pakai
+          marginTop:auto di flex column non-scroll) — soalnya pas keyboard
+          HP muncul, viewport keliatan menyusut dan tombol "Lanjutkan" jadi
+          ke-dorong ke luar layar & gak bisa dijangkau sama sekali kalau
+          parent-nya overflow:hidden. Dengan scroll di sini, tamu tinggal
+          scroll dikit buat liat tombolnya, gak akan pernah "ilang". */}
+      <div className="booth-content text-message-scroll">
         <span className="eyebrow">Langkah 4</span>
         <h2 className="font-display">Tulis pesanmu</h2>
         <p className="muted" style={{ marginBottom: 20 }}>
@@ -60,7 +66,7 @@ export default function TextMessagePage() {
           </span>
           <textarea
             className="field-input text-message-input"
-            rows={6}
+            rows={5}
             value={message}
             maxLength={MAX_LENGTH}
             onChange={(e) => setMessage(e.target.value)}
@@ -78,21 +84,19 @@ export default function TextMessagePage() {
           )}
         </div>
 
-        <div style={{ marginTop: "auto", paddingTop: 20 }}>
-          <button
-            className="btn btn-primary btn-block"
-            onClick={handleFinish}
-            disabled={!message.trim() || finishing}
-          >
-            {finishing ? (
-              <>
-                <Spinner /> Memproses...
-              </>
-            ) : (
-              "Lanjutkan"
-            )}
-          </button>
-        </div>
+        <button
+          className="btn btn-primary btn-block text-message-submit"
+          onClick={handleFinish}
+          disabled={!message.trim() || finishing}
+        >
+          {finishing ? (
+            <>
+              <Spinner /> Memproses...
+            </>
+          ) : (
+            "Lanjutkan"
+          )}
+        </button>
       </div>
     </div>
   );

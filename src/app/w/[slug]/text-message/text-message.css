@@ -1,3 +1,16 @@
+/* Scroll container khusus halaman ini — override .booth-content bawaan
+   (yang biasanya flex/overflow-hidden) biar konten bisa di-scroll pas
+   keyboard HP kebuka dan ruang vertikal jadi sempit. */
+.text-message-scroll {
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  display: block !important;
+  height: auto !important;
+  flex: 1 1 auto;
+  min-height: 0;
+  padding-bottom: 32px;
+}
+
 .text-message-panel {
   background: white;
   border-radius: var(--radius-lg);
@@ -17,10 +30,31 @@
   width: 100%;
   resize: none;
   font-family: inherit;
+  /* .field-input global kemungkinan didesain buat form di atas background
+     gelap (makanya teksnya putih) — di sini panelnya PUTIH, jadi warna teks
+     harus di-override eksplisit ke gelap, kalau nggak teks yang diketik
+     jadi putih-di-atas-putih alias gak keliatan sama sekali. */
+  color: var(--color-ink-900);
+  caret-color: var(--color-maroon-700);
+  /* Batasi tinggi maksimalnya (bukan cuma andalin rows=5) biar di layar
+     pendek gak makan porsi sampai tombol Lanjutkan ketutup/kejauhan. */
+  max-height: 32dvh;
+}
+
+.text-message-input::placeholder {
+  color: var(--color-ink-600);
+  opacity: 0.6;
 }
 
 .text-message-counter {
   align-self: flex-end;
   font-size: 12px;
   margin-top: 6px;
+}
+
+.text-message-submit {
+  margin-top: 20px;
+  /* Biar tombolnya gak nempel ke tepi paling bawah pas di-scroll — ada jarak
+     aman dari home-indicator/notch HP. */
+  margin-bottom: env(safe-area-inset-bottom, 0px);
 }
