@@ -3,6 +3,7 @@
   flex-direction: column;
   min-height: 0;
   flex: 1;
+  overflow-y: auto;
 }
 
 .filter-loading {
@@ -12,14 +13,24 @@
   justify-content: center;
 }
 
+/* Sebelumnya cuma pakai aspect-ratio (4/5) dengan width:100% — di layar HP
+   yang gak terlalu tinggi, itu bikin kotak preview jadi lebih tinggi dari
+   sisa ruang yang ada, jadi filter-strip & tombol Lanjut di bawahnya
+   ke-dorong keluar layar / ketutup. Sekarang tingginya dibatasi eksplisit
+   (persentase tinggi layar, dengan batas atas 320px), lebar menyesuaikan
+   otomatis lewat aspect-ratio — jadi filter-strip + tombol selalu kebagian
+   tempat yang cukup di bawahnya. */
 .filter-main-preview {
   position: relative;
-  width: 100%;
+  width: auto;
+  height: 34dvh;
+  max-height: 300px;
+  min-height: 180px;
   aspect-ratio: 4 / 5;
   border-radius: var(--radius-md);
   overflow: hidden;
   background: var(--color-maroon-900);
-  margin-bottom: 14px;
+  margin: 0 auto 14px;
   flex-shrink: 0;
 }
 
@@ -53,6 +64,7 @@
   gap: 10px;
   overflow-x: auto;
   padding-bottom: 6px;
+  flex-shrink: 0;
   -webkit-overflow-scrolling: touch;
 }
 

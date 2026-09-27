@@ -185,10 +185,7 @@ export default function FilterPage() {
       <FilmstripSteps total={totalSteps} currentIndex={2} />
       <div className="booth-content filter-content">
         <span className="eyebrow">Pilih Filter</span>
-        <h2 className="font-display">Suka yang mana?</h2>
-        <p className="muted" style={{ marginBottom: 14 }}>
-          Filter cuma ngubah warna foto/videonya — frame tetap sama persis.
-        </p>
+        <h2 className="font-display">Silahkan pilih filter</h2>
 
         {loading ? (
           <div className="filter-loading">
